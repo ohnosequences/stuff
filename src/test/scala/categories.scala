@@ -42,7 +42,10 @@ case object Scala extends AnyCategory {
   // wrap, unwrap
   implicit def asFunction[A0 <: Objects, B0 <: Objects](f: A0 => B0): Function[A0,B0] = new Function(f)
   implicit def asFunction1Again[F <: Morphisms](ff: AnyMorphism.is[F]): F#Source => F#Target = ff.f
+
+  case object Id extends IdentityFunctor(Scala)
 }
+
 
 
 class ScalaCategoryTest extends FunSuite {
@@ -59,7 +62,7 @@ class ScalaCategoryTest extends FunSuite {
     val zz = in(Scala) { { x: String => x.length } } ∘ Scala.id[String]
 
     val l = ({ x: String => x.length }: Scala.C[String,Int]) ∘ Scala.id[String]
-    // NOTE won't work, I don't know why. You need o explicitly ascribe at the beginning. 
+    // NOTE won't work, I don't know why. You need o explicitly ascribe at the beginning.
     // val l2 = { x: String => x.length } ∘ Scala.id[String]
 
     val f = { x: Int => x.toString }
@@ -67,5 +70,17 @@ class ScalaCategoryTest extends FunSuite {
     val zzz = l >=> f
 
     val www = (f: Scala.C[Int,String]) >=> Scala.id[String] >=> { x: String => x.length }
+  }
+
+  test("Functors on Scala") {
+
+    val f: Scala.C[Int,String] = { x: Int => x.toString }
+
+    assert { Scala.Id(f) === f }
+
+    val IdTwice = Scala.Id >=> Scala.Id
+
+    assert { IdTwice(f) === f }
+
   }
 }
