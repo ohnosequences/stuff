@@ -21,23 +21,13 @@ abstract class Functor[
   val source: AnyCategory.is[Source0],
   val target: AnyCategory.is[Target0]
 )
-  extends
-    AnyFunctor
-{
+extends AnyFunctor {
+
   type Source = Source0
   type Target = Target0
 }
 
 case object AnyFunctor {
-
-  type between[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
-
-    type Source = src;
-    type Target = tgt;
-  }
-
-  type ⟶[src <: AnyCategory, tgt <: AnyCategory] = between[src,tgt]
-  type ➔[src <: AnyCategory, tgt <: AnyCategory] = between[src,tgt]
 
   type is[functor <: AnyFunctor] = functor with AnyFunctor {
 
@@ -46,8 +36,11 @@ case object AnyFunctor {
     type F[Z <: Source#Objects] = functor#F[Z]
   }
 
-  type to[src <: AnyCategory] = AnyFunctor { type Source = src; }
-  type from[tgt <: AnyCategory] = AnyFunctor { type Target = tgt; }
+  type ⟶[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
+
+    type Source = src;
+    type Target = tgt;
+  }
 
   type ∘[g0 <: AnyFunctor { type Source = f0#Target }, f0 <: AnyFunctor] =
     FunctorComposition[f0,g0]
@@ -61,7 +54,7 @@ case object AnyFunctor {
   }
 }
 
-trait AnyIdentityFunctor extends AnyFunctor { idf =>
+trait AnyIdentityFunctor extends AnyFunctor {
 
   type On <: AnyCategory
   val on: AnyCategory.is[On]
@@ -76,14 +69,12 @@ trait AnyIdentityFunctor extends AnyFunctor { idf =>
   final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] = f
 }
 
-class IdentityFunctor[On0 <: AnyCategory](val on: AnyCategory.is[On0])
-  extends
-    AnyIdentityFunctor
-{
+class IdentityFunctor[On0 <: AnyCategory](val on: AnyCategory.is[On0]) extends AnyIdentityFunctor {
+
   type On = On0
 }
 
-trait AnyFunctorComposition extends AnyFunctor { composition =>
+trait AnyFunctorComposition extends AnyFunctor {
 
   type FirstF <: AnyFunctor
   val firstF: FirstF
@@ -108,7 +99,11 @@ class FunctorComposition[
   F0 <: AnyFunctor,
   S0 <: AnyFunctor { type Source = F0#Target }
 ]
-(val firstF:F0, val secondF: S0) extends AnyFunctorComposition {
+(
+  val firstF:F0,
+  val secondF: S0
+)
+extends AnyFunctorComposition {
 
   type FirstF = F0
   type SecondF = S0

@@ -42,7 +42,7 @@ case object AnyCategory {
     type C[X <: Cat#Objects, Y <: Cat#Objects] = Cat#C[X,Y]
   }
 
-  final implicit class MorphismsSyntax [
+  implicit final class MorphismsSyntax [
     cat <: AnyCategory,
     Y <: cat#Objects,
     Z <: cat#Objects
@@ -50,7 +50,7 @@ case object AnyCategory {
     val g: cat#C[Y,Z]
   )
   extends AnyVal {
-    
+
     final def ∘[X <: cat#Objects](f: cat#C[X,Y])(implicit c: AnyCategory.is[cat]): cat#C[X,Z] =
       c.compose(g,f)
 
