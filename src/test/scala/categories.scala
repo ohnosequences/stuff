@@ -25,7 +25,7 @@ case object Scala extends AnyCategory {
 
 class ScalaCategoryTest extends FunSuite {
 
-  import Scala._
+  import AnyCategory._
 
   test("Syntax for Scala category") {
 
@@ -38,13 +38,13 @@ class ScalaCategoryTest extends FunSuite {
 
     // val zz = in(Scala) { { x: String => x.length } } ∘ Scala.id[String]
 
-    val l = Scala.id[String] >=> { x: String => x.length }
+    val l = AnyCategory.MorphismsSyntax(Scala.id[String]) >=> { x: String => x.length }
     // NOTE won't work, I don't know why. You need o explicitly ascribe at the beginning.
     // val l2 = { x: String => x.length } ∘ Scala.id[String]
 
     val f = { x: Int => x.toString }
 
-    val www = (f: C[Int,String]) >=> Scala.id[String] >=> { x: String => x.length }
+    val www = (f: Scala.C[Int,String]) >=> Scala.id[String] >=> { x: String => x.length }
   }
 
   test("Functors on Scala") {
