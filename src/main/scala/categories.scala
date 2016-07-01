@@ -1,6 +1,5 @@
 package ohnosequences.stuff
 
-
 trait AnyCategory {
 
   type Objects
@@ -8,7 +7,6 @@ trait AnyCategory {
 
   implicit val me: this.type = this
 
-  // is this needed??? at this level?
   type C[X <: Objects, Y <: Objects] <: Morphisms { type Source = X; type Target = Y }
 
   def id[X <: Objects]: C[X,X]
@@ -44,14 +42,15 @@ case object AnyCategory {
     type C[X <: Cat#Objects, Y <: Cat#Objects] = Cat#C[X,Y]
   }
 
-  final implicit class MorphismsSyntax[
+  final implicit class MorphismsSyntax [
     cat <: AnyCategory,
     Y <: cat#Objects,
     Z <: cat#Objects
-  ](val g: cat#C[Y,Z])
-    extends
-      AnyVal
-  {
+  ](
+    val g: cat#C[Y,Z]
+  )
+  extends AnyVal {
+    
     final def ∘[X <: cat#Objects](f: cat#C[X,Y])(implicit c: AnyCategory.is[cat]): cat#C[X,Z] =
       c.compose(g,f)
 
