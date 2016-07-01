@@ -1,42 +1,34 @@
 package ohnosequences.stuff
 
-trait AnyNatT { nat =>
+trait AnyNaturalTransformation {
 
   type SourceCat <: AnyCategory
-  lazy val sourceCat: AnyCategory.is[SourceCat] = sourceF.source
+  lazy val sourceCat: SourceCat = sourceF.source
   type TargetCat <: AnyCategory
-  lazy val targetCat: AnyCategory.is[TargetCat] = targetF.target
+  lazy val targetCat: TargetCat = sourceF.target
 
   type SourceF <: AnyFunctor { type Source = SourceCat; type Target = TargetCat }
-  val sourceF: AnyFunctor.is[SourceF]
+  val sourceF: SourceF
 
   type TargetF <: AnyFunctor { type Source = SourceCat; type Target = TargetCat }
-  val targetF: AnyFunctor.is[TargetF]
+  val targetF: TargetF
 
   def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]]
 
   final def apply[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = at[X]
 }
 
-object AnyNatT {
+object AnyNaturalTransformation {
 
-  type is[N <: AnyNatT] = N with AnyNatT {
+  type is[N <: AnyNaturalTransformation] = N with AnyNaturalTransformation {
     type SourceCat = N#SourceCat; type TargetCat = N#TargetCat;
     type SourceF = N#SourceF; type TargetF = N#TargetF;
   }
 
-  // type between[src <: AnyFunctor, tgt <: AnyFunctor.between[src#Source, src#Target]] = AnyNatT {
-  //
-  //   type SourceCat = src#Source
-  //   type TargetCat = src#Target
-  //   type SourceF = src
-  //   type TargetF = tgt
-  // }
-
   type ~>[
     src <: AnyFunctor,
     tgt <: AnyFunctor { type Source = src#Source; type Target = src#Target }
-  ] = AnyNatT {
+  ] = AnyNaturalTransformation {
 
     type SourceCat = src#Source
     type TargetCat = src#Target
@@ -45,50 +37,51 @@ object AnyNatT {
   }
 }
 
+trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
 
-trait AnyIdNatT extends AnyNatT {
+  type OnF <: AnyFunctor
+  val onF: OnF
 
-  type OnF <: AnyFunctor // { type Source = SourceCat; type Target = TargetCat }
-  val onF: AnyFunctor.is[OnF]
+  type SourceCat = onF.Source
+  type TargetCat = onF.Target
 
-  type SourceCat = OnF#Source
-  type TargetCat = OnF#Target
+  type SourceF = onF.type
+  lazy val sourceF: SourceF = onF: onF.type
+  type TargetF = onF.type
+  lazy val targetF: TargetF = onF: onF.type
 
-  type SourceF = AnyFunctor.is[OnF]
-  lazy val sourceF = onF
-  type TargetF = AnyFunctor.is[OnF]
-  lazy val targetF = onF
-
-  final def at[X <: SourceCat#Objects]: TargetCat#C[OnF#F[X], OnF#F[X]] = targetCat.id[OnF#F[X]]
+  final def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = onF.target.id
 }
 
-class IdNatT[OnF0 <: AnyFunctor](val onF: AnyFunctor.is[OnF0]) extends AnyIdNatT {
+case class IdentityNaturalTransformation[OnF0 <: AnyFunctor](val onF: OnF0) extends AnyIdentityNaturalTransformation {
 
   type OnF = OnF0
 }
+
+
 //
-// trait AnyVerticalComposition extends AnyNatT { composition =>
+// trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
 //
-//   import AnyFunctor._, AnyNatT._
+//   import AnyFunctor._, AnyNaturalTransformation._
 //
 //   type SourceCat <: AnyCategory
 //   type TargetCat <: AnyCategory
 //
 //   type MiddleFunctor <: SourceCat ⟶ TargetCat
 //
-//   type First <: AnyNatT {
+//   type First <: AnyNaturalTransformation {
 //     type SourceCat = composition.SourceCat;
 //     type TargetCat = composition.TargetCat;
 //     type TargetF = composition.MiddleFunctor;
 //   }
-//   val first: AnyNatT.is[First]
+//   val first: AnyNaturalTransformation.is[First]
 //
-//   type Second <: AnyNatT {
+//   type Second <: AnyNaturalTransformation {
 //     type SourceCat = composition.SourceCat;
 //     type TargetCat = composition.TargetCat;
 //     type SourceF = composition.MiddleFunctor;
 //   }
-//   val second: AnyNatT.is[Second]
+//   val second: AnyNaturalTransformation.is[Second]
 //
 //   type SourceF = First#SourceF
 //   lazy val sourceF = first.sourceF

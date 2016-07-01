@@ -44,6 +44,7 @@ case object Scala extends AnyCategory {
   implicit def asFunction1Again[F <: Morphisms](ff: AnyMorphism.is[F]): F#Source => F#Target = ff.f
 
   case object Id extends IdentityFunctor(Scala)
+  // case object IdNat extends IdentityNaturalTransformation(Id)
 }
 
 
@@ -82,5 +83,11 @@ class ScalaCategoryTest extends FunSuite {
 
     assert { IdTwice(f) === f }
 
+  }
+
+  test("Natural transformations on Scala") {
+
+    val idNat = new IdentityNaturalTransformation(Scala.Id)
+    assert { idNat[String]("") === Scala.id[String]("") }
   }
 }
