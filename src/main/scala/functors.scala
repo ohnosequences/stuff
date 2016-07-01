@@ -3,10 +3,10 @@ package ohnosequences.stuff
 trait AnyFunctor {
 
   type Source <: AnyCategory
-  val source: AnyCategory.is[Source]
+  val source: Source // AnyCategory.is[Source]
 
   type Target <: AnyCategory
-  val target: AnyCategory.is[Target]
+  val target: Target // AnyCategory.is[Target]
 
   type F[Z <: Source#Objects] <: Target#Objects
 
@@ -18,16 +18,18 @@ abstract class Functor[
   Target0 <: AnyCategory
 ]
 (
-  val source: AnyCategory.is[Source0],
-  val target: AnyCategory.is[Target0]
+  val source: Source0,// AnyCategory.is[Source0],
+  val target: Target0// AnyCategory.is[Target0]
 )
 extends AnyFunctor {
 
   type Source = Source0
   type Target = Target0
 }
-
+//
 case object AnyFunctor {
+
+  def is[F <: AnyFunctor](f: F): AnyFunctor.is[F] = f.asInstanceOf[AnyFunctor.is[F]]
 
   type is[functor <: AnyFunctor] = functor with AnyFunctor {
 
@@ -35,41 +37,42 @@ case object AnyFunctor {
     type Target = functor#Target;
     type F[Z <: Source#Objects] = functor#F[Z]
   }
-
-  type ⟶[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
-
-    type Source = src;
-    type Target = tgt;
-  }
-
-  type ∘[g0 <: AnyFunctor { type Source = f0#Target }, f0 <: AnyFunctor] =
-    FunctorComposition[f0,g0]
-
-  type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
-    FunctorComposition[f0,g0]
-
-  implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
-
-    def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 = new FunctorComposition[F0,G0](f,g)
-  }
+//
+//   type ⟶[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
+//
+//     type Source = src;
+//     type Target = tgt;
+//   }
+//   //
+//   // type ∘[g0 <: AnyFunctor { type Source = f0#Target }, f0 <: AnyFunctor] =
+//   //   FunctorComposition[f0,g0]
+//   //
+//   // type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
+//   //   FunctorComposition[f0,g0]
+//   //
+  // implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
+  //
+  //   def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 = new FunctorComposition[F0,G0](f,g)
+  // }
 }
-
+//
 trait AnyIdentityFunctor extends AnyFunctor {
 
   type On <: AnyCategory
-  val on: AnyCategory.is[On]
+  val on: On //AnyCategory.is[On]
 
-  type Source = On
-  lazy val source = on
-  type Target = On
-  lazy val target = on
+  type Source = On // on.type
+  lazy val source: Source = on
+  type Target = On // on.type
+  lazy val target: Target = on
 
   type F[Z <: Source#Objects] = Z
 
-  final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] = f
+  final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] =
+    f
 }
 
-class IdentityFunctor[On0 <: AnyCategory](val on: AnyCategory.is[On0]) extends AnyIdentityFunctor {
+class IdentityFunctor[On0 <: AnyCategory](val on: On0) extends AnyIdentityFunctor {
 
   type On = On0
 }
@@ -77,22 +80,24 @@ class IdentityFunctor[On0 <: AnyCategory](val on: AnyCategory.is[On0]) extends A
 trait AnyFunctorComposition extends AnyFunctor {
 
   type FirstF <: AnyFunctor
-  val firstF: FirstF
+  val firstF: FirstF // AnyFunctor.is[FirstF]
 
   type SecondF <: AnyFunctor {
       type Source = FirstF#Target;
     }
-  val secondF: SecondF
+  val secondF: SecondF // AnyFunctor.is[SecondF]
 
-  type Source = firstF.Source
-  lazy val source: AnyCategory.is[Source] = firstF.source
-  type Target = secondF.Target
-  lazy val target: AnyCategory.is[Target] = secondF.target
+  type Source = FirstF#Source // <: FirstF#Source
+  lazy val source: Source = firstF.source
+  type Target = SecondF#Target // <: SecondF#Target
+  lazy val target: Target = secondF.target
 
-  type F[Z <: Source#Objects] = secondF.F[firstF.F[Z]]
+  type F[Z <: Source#Objects] = SecondF#F[FirstF#F[Z]]
 
-  final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] =
-    secondF(firstF(f))
+  // final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] =
+  //   secondF(
+  //     (firstF: FirstF)(f)
+  //   )
 }
 
 class FunctorComposition[
@@ -100,11 +105,15 @@ class FunctorComposition[
   S0 <: AnyFunctor { type Source = F0#Target }
 ]
 (
-  val firstF:F0,
+  val firstF: F0,
   val secondF: S0
 )
 extends AnyFunctorComposition {
 
   type FirstF = F0
   type SecondF = S0
+
+  // NOTE I know this is dangerous. I want to check whether everything works as long as you use it safely
+  final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] =
+    AnyFunctor.is(secondF)(AnyFunctor.is(firstF)(f))
 }
