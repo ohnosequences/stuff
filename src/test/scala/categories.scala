@@ -17,7 +17,7 @@ case object Scala extends AnyCategory {
   final def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] =
     (g, f) => f andThen g
 
-  case object Id extends IdentityFunctor(Scala)
+  val Id = new IdentityFunctor(Scala)
   // case object IdNat extends IdentityNaturalTransformation(Id)
 }
 
@@ -28,15 +28,6 @@ class ScalaCategoryTest extends FunSuite {
   import AnyCategory._
 
   test("Syntax for Scala category") {
-
-    // def in[
-    //   Cat <: AnyCategory,
-    //   X <: Cat#Objects,
-    //   Y <: Cat#Objects
-    // ]
-    // (cat: AnyCategory.is[Cat])(expr: => Cat#C[X,Y]): Cat#C[X,Y] = expr
-
-    // val zz = in(Scala) { { x: String => x.length } } ∘ Scala.id[String]
 
     val l = AnyCategory.MorphismsSyntax(Scala.id[String]) >=> { x: String => x.length }
     // NOTE won't work, I don't know why. You need o explicitly ascribe at the beginning.
@@ -60,8 +51,8 @@ class ScalaCategoryTest extends FunSuite {
   }
 
   test("Natural transformations on Scala") {
-    //
-    // val idNat = new IdentityNaturalTransformation(Scala.Id)
-    // assert { idNat[String]("") === Scala.id[String]("") }
+
+    val idNat = IdentityNaturalTransformation(Scala.Id)
+    assert { Scala.Id.id[String]("") === Scala.id[String]("") }
   }
 }

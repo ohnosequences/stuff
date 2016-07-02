@@ -47,15 +47,17 @@ case object AnyFunctor {
 //   // type ∘[g0 <: AnyFunctor { type Source = f0#Target }, f0 <: AnyFunctor] =
 //   //   FunctorComposition[f0,g0]
 //   //
-//   // type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
-//   //   FunctorComposition[f0,g0]
-//   //
-  // implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
-  //
-  //   def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 = new FunctorComposition[F0,G0](f,g)
-  // }
+  type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
+    FunctorComposition[f0,g0]
+
+  implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
+
+    def id: IdentityNaturalTransformation[F0] = IdentityNaturalTransformation(f)
+
+    def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 = new FunctorComposition[F0,G0](f,g)
+  }
 }
-//
+
 trait AnyIdentityFunctor extends AnyFunctor {
 
   type On <: AnyCategory

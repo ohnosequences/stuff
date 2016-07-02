@@ -1,62 +1,63 @@
-// package ohnosequences.stuff
-//
-// trait AnyNaturalTransformation {
-//
-//   type SourceCat <: AnyCategory
-//   lazy val sourceCat: SourceCat = sourceF.source
-//   type TargetCat <: AnyCategory
-//   lazy val targetCat: TargetCat = sourceF.target
-//
-//   type SourceF <: AnyFunctor { type Source = SourceCat; type Target = TargetCat }
-//   val sourceF: SourceF
-//
-//   type TargetF <: AnyFunctor { type Source = SourceCat; type Target = TargetCat }
-//   val targetF: TargetF
-//
-//   def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]]
-//
-//   final def apply[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = at[X]
-// }
-//
-// object AnyNaturalTransformation {
-//
-//   type is[N <: AnyNaturalTransformation] = N with AnyNaturalTransformation {
-//     type SourceCat = N#SourceCat; type TargetCat = N#TargetCat;
-//     type SourceF = N#SourceF; type TargetF = N#TargetF;
-//   }
-//
-//   type ~>[
-//     src <: AnyFunctor,
-//     tgt <: AnyFunctor { type Source = src#Source; type Target = src#Target }
-//   ] = AnyNaturalTransformation {
-//
-//     type SourceCat = src#Source
-//     type TargetCat = src#Target
-//     type SourceF = src
-//     type TargetF = tgt
-//   }
-// }
-//
-// trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
-//
-//   type OnF <: AnyFunctor
-//   val onF: OnF
-//
-//   type SourceCat = onF.Source
-//   type TargetCat = onF.Target
-//
-//   type SourceF = onF.type
-//   lazy val sourceF: SourceF = onF: onF.type
-//   type TargetF = onF.type
-//   lazy val targetF: TargetF = onF: onF.type
-//
-//   final def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = onF.target.id
-// }
-//
-// case class IdentityNaturalTransformation[OnF0 <: AnyFunctor](val onF: OnF0) extends AnyIdentityNaturalTransformation {
-//
-//   type OnF = OnF0
-// }
+package ohnosequences.stuff
+
+trait AnyNaturalTransformation {
+
+  type SourceCat = SourceF#Source // <: AnyCategory
+  type TargetCat = SourceF#Target // <: AnyCategory
+
+  type SourceF <: AnyFunctor
+  val sourceF: SourceF
+
+  type TargetF <: AnyFunctor { type Source = SourceF#Source; type Target = SourceF#Target }
+  val targetF: TargetF
+
+  def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]]
+
+  final def apply[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = at[X]
+}
+
+case object AnyNaturalTransformation {
+
+  type is[N <: AnyNaturalTransformation] = N with AnyNaturalTransformation {
+
+    type SourceF = N#SourceF;
+    type TargetF = N#TargetF;
+  }
+
+  type ~>[
+    src <: AnyFunctor,
+    tgt <: AnyFunctor { type Source = src#Source; type Target = src#Target }
+  ] = AnyNaturalTransformation {
+
+    type SourceCat = src#Source
+    type TargetCat = src#Target
+    type SourceF = src
+    type TargetF = tgt
+  }
+}
+
+trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
+
+  type OnF <: AnyFunctor
+  val onF: OnF
+
+  type SourceF = OnF
+  lazy val sourceF: SourceF = onF
+
+  // NOTE I don't see how to avoid this here :(
+  type TargetF = AnyFunctor.is[OnF]
+  lazy val targetF: TargetF = AnyFunctor.is(onF)
+}
+
+case class IdentityNaturalTransformation[OnF0 <: AnyFunctor](val onF: OnF0) extends AnyIdentityNaturalTransformation {
+
+  type OnF = OnF0
+
+  final def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], OnF#F[X]] = {
+
+    AnyCategory.is(targetF.target).id
+  }
+}
 //
 //
 // //
