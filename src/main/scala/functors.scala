@@ -38,17 +38,16 @@ case object AnyFunctor {
     type F[Z <: Source#Objects] = functor#F[Z]
   }
 //
-//   type ⟶[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
-//
-//     type Source = src;
-//     type Target = tgt;
-//   }
+  type ⟶[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
+
+    type Source = src;
+    type Target = tgt;
+  }
 //   //
 //   // type ∘[g0 <: AnyFunctor { type Source = f0#Target }, f0 <: AnyFunctor] =
 //   //   FunctorComposition[f0,g0]
 //   //
-  type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
-    FunctorComposition[f0,g0]
+  type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] = FunctorComposition[f0,g0]
 
   implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
 

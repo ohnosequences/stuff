@@ -52,7 +52,6 @@ class ScalaCategoryTest extends FunSuite {
 
   test("Natural transformations on Scala") {
 
-    val idNat = IdentityNaturalTransformation(Scala.Id)
     assert { Scala.Id.id[String]("") === Scala.id[String]("") }
   }
 }
