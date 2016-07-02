@@ -75,10 +75,6 @@ case class IdentityNaturalTransformation[OnF0 <: AnyFunctor](val onF: OnF0) exte
 
 trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
 
-  // type SourceCat = First#SourceCat
-  // type TargetCat = First#TargetCat
-
-
   type First <: AnyNaturalTransformation {
     type SourceCat = composition.SourceCat
     type TargetCat = composition.TargetCat
@@ -124,6 +120,11 @@ case class VerticalComposition[
 
   type Second = AnyNaturalTransformation.is[S0]
   val second: Second = AnyNaturalTransformation.is(_second)
+}
+
+trait AnyHorizontalComposition extends AnyNaturalTransformation { horiz =>
+
+  // I think I need to have the 4 functors as explicit types here
 }
 
 
