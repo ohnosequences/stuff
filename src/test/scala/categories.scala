@@ -51,6 +51,6 @@ class ScalaCategoryTest extends FunSuite {
 
     val zz = Scala.Id.id >=> Scala.Id.id
 
-    assert { (Scala.Id.id >=> Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
+    assert { (Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
   }
 }

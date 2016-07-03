@@ -10,7 +10,7 @@ trait AnyMonad extends AnyFunctor {
   type Target = On
   lazy val target = on
 
-  type F[X <: On#Objects] = Functor#F[X]
+  type F[X <: Functor#Source#Objects] = Functor#F[X]
 
   type Functor <: On ⟶ On
   val functor: Functor
@@ -25,27 +25,45 @@ trait AnyMonad extends AnyFunctor {
     AnyFunctor.is(functor)(f)
 }
 
-case class IdentityMonad[C <: AnyCategory](val on: C) extends AnyMonad {
+case object AnyMonad {
 
-  type On = C
+  def is[M <: AnyMonad](m: M): is[M] = m.asInstanceOf[is[M]]
 
-  type Functor = IdentityFunctor[On]
-  val functor = on.Id
+  type is[M <: AnyMonad] = M with AnyMonad {
 
-  type η  = IdentityNaturalTransformation[Functor]
-  val η   = IdentityNaturalTransformation(functor)
+    type On = AnyCategory.is[M#On]
+    // type Source = M#Source
+    // type Target = M#Target
+    type Functor = AnyFunctor.is[M#Functor]
+// type Fnctr = AnyF.is[m0#Fnctr];
+    type F[X <: M#Functor#Source#Objects] = M#Functor#F[X]
 
-  case object Mu extends AnyNaturalTransformation {
-
-    type SourceF = (Functor >=> Functor)
-    val sourceF = functor >=> functor
-    type TargetF = Functor
-    val targetF = functor
-
-    def at[X <: On#Objects]: On#C[SourceF#F[X], TargetF#F[X]] =
-      AnyCategory.is(on).id[X]
+    type η = M#η
+    type μ = M#μ
   }
-
-  type μ  = Mu.type
-  val μ   = Mu
 }
+
+// case class IdentityMonad[C <: AnyCategory](val on: C) extends AnyMonad {
+//
+//   type On = C
+//
+//   type Functor = IdentityFunctor[On]
+//   val functor = on.Id
+//
+//   type η  = IdentityNaturalTransformation[Functor]
+//   val η   = IdentityNaturalTransformation(functor)
+//
+//   case object Mu extends AnyNaturalTransformation {
+//
+//     type SourceF = (Functor >=> Functor)
+//     val sourceF = functor >=> functor
+//     type TargetF = Functor
+//     val targetF = functor
+//
+//     def at[X <: On#Objects]: On#C[SourceF#F[X], TargetF#F[X]] =
+//       AnyCategory.is(on).id[X]
+//   }
+//
+//   type μ  = Mu.type
+//   val μ   = Mu
+// }
