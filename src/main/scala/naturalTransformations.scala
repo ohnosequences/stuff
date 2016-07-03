@@ -2,7 +2,7 @@ package ohnosequences.stuff
 
 import AnyFunctor._
 
-trait AnyNaturalTransformation {
+trait AnyNaturalTransformation { nat =>
 
   type SourceCat = SourceF#Source //  <: AnyCategory
   lazy val sourceCat: SourceCat = sourceF.source
@@ -12,12 +12,30 @@ trait AnyNaturalTransformation {
   type SourceF <: AnyFunctor // SourceCat ⟶ TargetCat
   val sourceF: SourceF
 
-  type TargetF <: AnyFunctor { type Source = SourceF#Source; type Target = SourceF#Target }// SourceCat ⟶ TargetCat
+  type TargetF <: SourceCat ⟶ TargetCat
+  // type TargetF <: AnyFunctor { type Source = SourceF#Source; type Target = SourceF#Target }// SourceCat ⟶ TargetCat
   val targetF: TargetF
 
   def at[X <: SourceF#Source#Objects]: TargetF#Target#C[SourceF#F[X], TargetF#F[X]]
 
   final def apply[X <: SourceF#Source#Objects]: TargetF#Target#C[SourceF#F[X], TargetF#F[X]] = at[X]
+
+  def >=>[
+    M <: AnyNaturalTransformation {
+      type SourceF    = nat.TargetF
+      type SourceCat  = nat.SourceCat
+      type TargetCat  = nat.TargetCat
+      type TargetF <: nat.SourceCat ⟶ nat.TargetCat
+    }
+  ]
+  (m: M): AnyVerticalComposition { type First = nat.type; type Second = M } =
+    new AnyVerticalComposition {
+
+      type First = nat.type
+      val first: First = nat
+      type Second = M
+      val second = m
+    }
 }
 
 case object AnyNaturalTransformation {
@@ -33,6 +51,18 @@ case object AnyNaturalTransformation {
     type SourceF = N#SourceF;
     type TargetF = N#TargetF;
   }
+
+  implicit final class Syntax[N <: AnyNaturalTransformation](val n: N) {
+
+    // def >=>[
+    //   M <: AnyNaturalTransformation {
+    //     type SourceF    = n.TargetF
+    //     type SourceCat  = n.SourceCat
+    //     type TargetCat  = n.TargetCat
+    //     // type TargetF <: SourceCat ⟶ TargetCat
+    //   }
+    // ](m: M): AnyVerticalComposition { type First = N; type Second = M } = ???
+  }
 }
 
 trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
@@ -40,14 +70,15 @@ trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
   type OnF <: AnyFunctor
   val onF: OnF
 
-  type SourceF = OnF
-  lazy val sourceF: SourceF = onF
+  type SourceF = AnyFunctor.is[OnF]
+  lazy val sourceF: SourceF = AnyFunctor.is(onF)
 
   // NOTE I don't see how to avoid this here :(
-  type TargetF = OnF { type Source = OnF#Source; type Target = OnF#Target; type F[X <: Source#Objects] = OnF#F[X] }
+  // type TargetF = onF.type
+  type TargetF = AnyFunctor.is[OnF] // OnF { type Source = OnF#Source; type Target = OnF#Target; type F[X <: Source#Objects] = OnF#F[X] }
   lazy val targetF: TargetF = AnyFunctor.is(onF)
 
-  final def at[X <: OnF#Source#Objects]: TargetF#Target#C[SourceF#F[X], TargetF#F[X]] = {
+  final def at[X <: SourceCat#Objects]: OnF#Target#C[OnF#F[X], OnF#F[X]] = {
 
     AnyCategory.is(targetCat).id[OnF#F[X]]
   }
@@ -65,12 +96,12 @@ trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
   val first: First //AnyNaturalTransformation.is[First]
 
   type Second <: AnyNaturalTransformation {
-    type SourceF = first.TargetF
-    type SourceCat = first.SourceCat
-    type TargetCat = first.TargetCat
+    type SourceF    = first.TargetF
+    type SourceCat  = first.SourceCat
+    type TargetCat  = first.TargetCat
     type TargetF <: SourceCat ⟶ TargetCat
   }
-  val second: AnyNaturalTransformation.is[Second]
+  val second: Second // AnyNaturalTransformation.is[Second]
 
   // type SourceCat = First#SourceF#Source
   // override lazy val sourceCat: AnyCategory.is[SourceCat] = AnyCategory.is(first.sourceCat)
@@ -91,9 +122,9 @@ trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
       first.TargetF#F[X]
     ] = first.at[X]
 
-    val www: first.TargetF#Target#C[first.TargetF#F[X], Second#TargetF#F[X]] = second.at[X]
+    val www: first.TargetF#Target#C[first.TargetF#F[X], Second#TargetF#F[X]] = AnyNaturalTransformation.is(second).at[X]
 
-    AnyCategory.is(first.targetF.target).compose[first.SourceF#F[X], first.TargetF#F[X], Second#TargetF#F[X]](www, zzz)
+    AnyCategory.is(first.targetF.target).compose(www, zzz)
   }
 }
 //

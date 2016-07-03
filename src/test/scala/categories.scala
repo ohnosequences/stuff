@@ -49,8 +49,8 @@ class ScalaCategoryTest extends FunSuite {
 
     assert { Scala.Id.id[String]("") === Scala.id[String]("") }
 
-    // val zz = VerticalComposition(Scala.Id.id, Scala.Id.id)
+    val zz = Scala.Id.id >=> Scala.Id.id
 
-    // assert { VerticalComposition(Scala.Id.id, Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
+    assert { (Scala.Id.id >=> Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
   }
 }
