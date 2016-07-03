@@ -3,7 +3,7 @@ package ohnosequences.stuff
 trait AnyFunctor { functor =>
 
   type Source <: AnyCategory
-  val source: Source
+  val source: Source //AnyCategory.is[Source]
 
   type Target <: AnyCategory
   val target: Target
