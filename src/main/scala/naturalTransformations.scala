@@ -22,26 +22,16 @@ trait AnyNaturalTransformation {
 
 case object AnyNaturalTransformation {
 
-  def is[N <: AnyNaturalTransformation](n: N): AnyNaturalTransformation.is[N] = n.asInstanceOf[AnyNaturalTransformation.is[N]]
+  def is[N <: AnyNaturalTransformation](n: N): AnyNaturalTransformation.is[N] =
+    n.asInstanceOf[AnyNaturalTransformation.is[N]]
 
   type is[N <: AnyNaturalTransformation] = N with AnyNaturalTransformation {
-    //
+
     type SourceCat = N#SourceCat;
     type TargetCat = N#TargetCat;
 
     type SourceF = N#SourceF;
     type TargetF = N#TargetF;
-  }
-
-  type ~>[
-    src <: AnyFunctor,
-    tgt <: AnyFunctor // { type Source = src#Source; type Target = src#Target }
-  ] = AnyNaturalTransformation {
-
-    type SourceCat = src#Source
-    type TargetCat = src#Target
-    type SourceF = src
-    type TargetF = tgt
   }
 }
 
@@ -122,9 +112,8 @@ case class VerticalComposition[
   val second: Second = AnyNaturalTransformation.is(_second)
 }
 
-trait AnyHorizontalComposition extends AnyNaturalTransformation { horiz =>
+trait AnyHorizontalComposition extends AnyNaturalTransformation {
 
-  // I think I need to have the 4 functors as explicit types here
   type C1 <: AnyCategory;
   type C2 <: AnyCategory;
   type C3 <: AnyCategory
@@ -139,7 +128,9 @@ trait AnyHorizontalComposition extends AnyNaturalTransformation { horiz =>
 
   type First <: AnyNaturalTransformation {
 
-    type SourceCat = C1; type TargetCat = C2
+    type SourceCat = C1;
+    type TargetCat = C2;
+
     type SourceF = F1;
     type TargetF = G1;
   }
@@ -147,7 +138,9 @@ trait AnyHorizontalComposition extends AnyNaturalTransformation { horiz =>
 
   type Second <: AnyNaturalTransformation {
 
-    type SourceCat = C2; type TargetCat = C3;
+    type SourceCat = C2;
+    type TargetCat = C3;
+
     type SourceF = F2;
     type TargetF = G2;
   }
@@ -160,7 +153,7 @@ trait AnyHorizontalComposition extends AnyNaturalTransformation { horiz =>
   type TargetF = G1 >=> G2
 
   def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = {
-
-    c3.compose( second.at, F2(first.at) )
+    
+    c3.compose( second.at, F2(first.at[X]) )
   }
 }

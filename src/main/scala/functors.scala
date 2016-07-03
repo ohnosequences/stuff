@@ -73,7 +73,7 @@ trait AnyIdentityFunctor extends AnyFunctor {
   final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] = f
 }
 
-class IdentityFunctor[On0 <: AnyCategory](val on: On0) extends AnyIdentityFunctor {
+case class IdentityFunctor[On0 <: AnyCategory](val on: On0) extends AnyIdentityFunctor {
 
   type On = On0
 }

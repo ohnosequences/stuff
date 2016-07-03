@@ -10,6 +10,7 @@ trait AnyCategory {
 
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z]
 
+  // implicit val me: AnyCategory.is[this.type] = this
   implicit val me: this.type = this
 }
 
@@ -32,7 +33,7 @@ case object AnyCategory {
   )
   extends AnyVal {
 
-    final def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: cat): cat#C[Y,W] =
-      AnyCategory.is(c).compose(h,g)
+    final def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: AnyCategory.is[cat]): cat#C[Y,W] =
+      c.compose(h,g)
   }
 }
