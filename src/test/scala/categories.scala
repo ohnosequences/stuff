@@ -6,7 +6,7 @@ import ohnosequences.stuff._
 
 case object Scala extends AnyCategory {
 
-  implicit def whyNot[A0,B0](f: A0 => B0): C[A0,B0] = f
+  // implicit def whyNot[A0,B0](f: A0 => B0): C[A0,B0] = f
 
   type Objects    = Any
   type C[X,Y] = X => Y

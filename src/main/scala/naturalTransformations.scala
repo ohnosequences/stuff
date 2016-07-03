@@ -9,7 +9,7 @@ trait AnyNaturalTransformation {
   type TargetCat <: AnyCategory
   val targetCat: TargetCat
 
-  type SourceF <: AnyFunctor { type Source = SourceCat; type Target = TargetCat }// SourceCat ⟶ TargetCat
+  type SourceF <: SourceCat ⟶ TargetCat
   val sourceF: SourceF
 
   type TargetF <: SourceCat ⟶ TargetCat
@@ -125,93 +125,42 @@ case class VerticalComposition[
 trait AnyHorizontalComposition extends AnyNaturalTransformation { horiz =>
 
   // I think I need to have the 4 functors as explicit types here
+  type C1 <: AnyCategory;
+  type C2 <: AnyCategory;
+  type C3 <: AnyCategory
+  val c3: AnyCategory.is[C3]
+
+  type F1 <: C1 ⟶ C2
+  type F2 <: C2 ⟶ C3
+  val F2: AnyFunctor.is[F2]
+
+  type G1 <: C1 ⟶ C2
+  type G2 <: C2 ⟶ C3
+
+  type First <: AnyNaturalTransformation {
+
+    type SourceCat = C1; type TargetCat = C2
+    type SourceF = F1;
+    type TargetF = G1;
+  }
+  val first: AnyNaturalTransformation.is[First]
+
+  type Second <: AnyNaturalTransformation {
+
+    type SourceCat = C2; type TargetCat = C3;
+    type SourceF = F2;
+    type TargetF = G2;
+  }
+  val second: AnyNaturalTransformation.is[Second]
+
+  type SourceCat = C1
+  type TargetCat = C3
+
+  type SourceF = F1 >=> F2
+  type TargetF = G1 >=> G2
+
+  def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = {
+
+    c3.compose( second.at, F2(first.at) )
+  }
 }
-
-
-
-// case class VerticalComposition[
-//   F0 <: AnyNaturalTransformation,
-//   S0 <: AnyNaturalTransformation {
-//     type SourceF = F0#TargetF { type Source = F0#SourceF#Source }
-//     type TargetF <: AnyFunctor {
-//       type Source = F0#SourceF#Source
-//       type Target = F0#SourceF#Target
-//     }
-//   }
-// ](val first: F0, val second: S0) extends AnyVerticalComposition {
-//
-//   type First  = F0
-//   type Second = S0
-//
-//   final def at[X <: SourceF#Source#Objects]: TargetF#Target#C[SourceF#F[X], TargetF#F[X]] = {
-//
-//     // val tf: AnyFunctor.is[F0]
-//     val cat: AnyCategory.is[F0#SourceF#Target] = AnyCategory.is(targetF.target)
-//
-//     val f = AnyNaturalTransformation.is[First](first)
-//     val s: AnyNaturalTransformation.is[S0] = AnyNaturalTransformation.is[S0](second)
-//
-//     val tf: AnyFunctor.is[TargetF] = AnyFunctor.is(s.targetF)
-//     val tc: AnyCategory.is[Second#TargetF#Target] = AnyCategory.is(tf.target)
-//     // import cat._
-//
-//     // val zz: TargetF#Target#C[SourceF#F[X], First#TargetF#F[X]] = s.at[X]
-//
-//     tc.compose[F0#SourceF#F[X],F0#TargetF#F[X],S0#TargetF#F[X]]( s.at[X], f.at[X] )
-//     // cat.compose[F0#SourceF#F[X],F0#TargetF#F[X],S0#TargetF#F[X]]( f.at[X], second.at[X] )
-//     // val tF: AnyFunctor.is[F0#TargetF] = AnyFunctor.is[Second#TargetF](second.targetF)
-//     // val tCat: AnyCategory.is[F0#TargetF#Target] = AnyCategory.is[Second#TargetF#Target](tF.target)
-//
-//     // (tCat: TargetF#Target).compose(
-//     //   AnyNaturalTransformation.is[First](first).at[X],
-//     //   AnyNaturalTransformation.is[Second](second).at[First#TargetF#F[X]] )
-//     //  >=> second.at
-//     // second.at ∘ first.at
-//     ???
-//   }
-// }
-
-//
-// trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
-//
-//   // import AnyFunctor._, AnyNaturalTransformation._
-//   //
-//   // type SourceCat <: AnyCategory
-//   // type TargetCat <: AnyCategory
-//
-//   // type MiddleFunctor <: SourceCat ⟶ TargetCat
-//
-//   type First <: AnyNaturalTransformation // {
-//     // type SourceCat  = composition.SourceCat;
-//     // type TargetCat  = composition.TargetCat;
-//     // type TargetF    = composition.MiddleFunctor;
-//   // }
-//   val first: First // AnyNaturalTransformation.is[First]
-//
-//   type Second <: AnyNaturalTransformation {
-//
-//     type SourceF = composition.First#TargetF
-//     // type SourceCat  = composition.SourceCat;
-//     // type TargetCat  = composition.TargetCat;
-//     // type SourceF    = composition.MiddleFunctor;
-//   }
-//   val second: Second // AnyNaturalTransformation.is[Second]
-//
-//   type SourceCat = first.SourceF#Source
-//   type TargetCat = second.TargetF#Target
-//
-//   type SourceF = First#SourceF
-//   lazy val sourceF = first.sourceF
-//   type TargetF = second.TargetF
-//   lazy val targetF = second.targetF
-//
-//   import AnyCategory._
-//
-//   final def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = {
-//
-//     // targetCat.compose( first.at[X], second.at[MiddleFunctor#F[X]]  )
-//     //  >=> second.at
-//     // second.at ∘ first.at
-//     ???
-//   }
-// }
