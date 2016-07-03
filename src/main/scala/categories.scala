@@ -36,4 +36,9 @@ case object AnyCategory {
     final def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: AnyCategory.is[cat]): cat#C[Y,W] =
       c.compose(h,g)
   }
+
+  implicit class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
+
+    def Id: IdentityFunctor[Cat] = IdentityFunctor(cat)
+  }
 }

@@ -28,8 +28,6 @@ class ScalaCategoryTest extends FunSuite {
   test("Syntax for Scala category") {
 
     val l = AnyCategory.MorphismsSyntax(Scala.id[String]) >=> { x: String => x.length }
-    // NOTE won't work, I don't know why. You need o explicitly ascribe at the beginning.
-    // val l2 = { x: String => x.length } ∘ Scala.id[String]
 
     val f = { x: Int => x.toString }
 
@@ -51,8 +49,8 @@ class ScalaCategoryTest extends FunSuite {
 
     assert { Scala.Id.id[String]("") === Scala.id[String]("") }
 
-    val zz = VerticalComposition(Scala.Id.id, Scala.Id.id)
+    // val zz = VerticalComposition(Scala.Id.id, Scala.Id.id)
 
-    assert { VerticalComposition(Scala.Id.id, Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
+    // assert { VerticalComposition(Scala.Id.id, Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
   }
 }

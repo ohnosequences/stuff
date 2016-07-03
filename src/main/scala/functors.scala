@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-trait AnyFunctor {
+trait AnyFunctor { functor =>
 
   type Source <: AnyCategory
   val source: Source
@@ -37,11 +37,11 @@ case object AnyFunctor {
     type Target = functor#Target;
     type F[Z <: Source#Objects] = functor#F[Z]
   }
-//
+
   type ⟶[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
 
-    type Source = src;
-    type Target = tgt;
+    type Source <: src;
+    type Target <: tgt;
   }
 //   //
 //   // type ∘[g0 <: AnyFunctor { type Source = f0#Target }, f0 <: AnyFunctor] =
