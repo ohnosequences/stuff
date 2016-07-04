@@ -37,15 +37,15 @@ trait AnyKleisliFunctor extends AnyFunctor {
   type Target <: AnyKleisliCategory
   val target: Target
 
-  type F[X <: Source#Objects] = X
+  type F[X <: target.Cat#Objects] = X
 
-  def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X],F[Y]] = {
+  def apply[A <: target.Cat#Objects, B <: Source#Objects](f: target.Cat#C[A,B]): Target#C[F[A],F[B]] = {
 
     // TODO proper syntax
     import AnyCategory._
     implicit val c = target.cat
 
-    f >=> target.monad.η[Y]
+    f >=> target.monad.η[B]
   }
 }
 

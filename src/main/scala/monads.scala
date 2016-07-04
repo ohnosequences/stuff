@@ -3,7 +3,7 @@ package ohnosequences.stuff
 trait AnyMonad {
 
   type On <: AnyCategory
-  val on: AnyCategory.is[On] = AnyCategory.is(functor.source)
+  lazy val on: AnyCategory.is[On] = AnyCategory.is(functor.source)
 
   type Source = On
   lazy val source: Source = on
@@ -52,14 +52,14 @@ case class IdentityMonad[C <: AnyCategory](val id: IdentityFunctor[C]) extends A
   case object Mu extends AnyNaturalTransformation {
 
     type SourceF = (Functor >=> Functor)
-    val sourceF = functor >=> functor
+    lazy val sourceF = functor >=> functor
     type TargetF = Functor
-    val targetF = functor
+    lazy val targetF = functor
 
     def at[X <: On#Objects]: On#C[SourceF#F[X], TargetF#F[X]] =
       AnyCategory.is(on).id[X]
   }
 
   type μ  = Mu.type
-  val μ   = Mu
+  lazy val μ   = Mu
 }

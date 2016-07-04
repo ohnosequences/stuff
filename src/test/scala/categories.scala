@@ -53,4 +53,18 @@ class ScalaCategoryTest extends FunSuite {
 
     assert { (Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
   }
+
+  test("monads and kleisli categories") {
+
+    val idMonad = IdentityMonad(Scala.Id)
+
+    val klCat = KleisliCategory(idMonad)
+
+    val klF = kleisliFunctor(klCat)
+
+    val f = { x: String => x.length }
+
+    // NOTE why the types?
+    assert { klF[String,Int](f)("hola") === 4 }
+  }
 }
