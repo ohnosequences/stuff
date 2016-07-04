@@ -13,8 +13,12 @@ trait AnyMonad {
   type Functor <: On ⟶ On
   val functor: AnyFunctor.is[Functor]
 
-  type η <: AnyIdentityFunctor ~> Functor
-  val η: η
+  type η <: AnyNaturalTransformation {
+    type SourceF = AnyFunctor.is[IdentityFunctor[On]]; // type SourceCat = On;
+    type TargetF = Functor //<: Functor
+  }
+    // AnyIdentityFunctor ~> Functor {  }
+  val η: AnyNaturalTransformation.is[η]
 
   type μ <: (Functor >=> Functor) ~> Functor
   val μ: AnyNaturalTransformation.is[μ]
