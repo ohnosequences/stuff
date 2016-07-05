@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-trait AnyMonad {
+trait AnyMonad extends AnyFunctor {
 
   type On <: AnyCategory
   lazy val on: On = functor.source
@@ -11,7 +11,7 @@ trait AnyMonad {
   lazy val target: Target = on
 
   type Functor <: On ⟶ On
-  val functor: Functor // AnyFunctor.is[Functor]
+  val functor: Functor
 
   type F[X <: On#Objects] = Functor#F[X]
 
