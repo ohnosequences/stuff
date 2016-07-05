@@ -54,7 +54,29 @@ case object ListM extends AnyMonad {
     val targetF = ListF
     def at[X]: X => List[X] = List(_)
   }
+}
 
+case object ScalaProduct extends AnyMonoidalStructure {
+
+  type On = Scala.type
+  val on: On = Scala
+
+  type ⊗[X, Y] = (X,Y)
+  type ×[X, Y] = X ⊗ Y
+
+  type I = Unit
+
+  // NOTE no bounds needed in this case
+  def ⊗[A, B, C, D](f: A => B, g: C => D): (A × C) => (B × D) =
+    { case (a,b) => (f(a), g(b)) }
+
+  def ×[A, B, C, D](f: A => B, g: C => D): (A × C) => (B × D) = ⊗(f,g)
+
+  def assoc_right[A, B, C]: (A × B) × C => A × (B × C) =
+    { case ((a,b), c) => (a, (b,c)) }
+
+  def assoc_left[A, B, C]: A × (B × C) => (A × B) × C =
+    { case (a, (b,c)) => ((a,b), c) }
 }
 
 
@@ -113,5 +135,18 @@ class ScalaCategoryTest extends FunSuite {
     val g = { xs: String => xs.toList }
 
     println { ListKLU[String,Char](g)(List("hola", "scalac")) }
+  }
+
+  test("monoidal structures") {
+
+    import ScalaProduct._
+    import AnyMonoidalStructure._
+
+    val f: Scala.C[String, Int]  = { x: String => x.length }
+    val g: Scala.C[Int, Boolean] = { x: Int => (x % 2) == 0 }
+
+    val fg = f ⊗ g
+
+    val (a,b) = fg("hola", 12)
   }
 }
