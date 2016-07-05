@@ -4,16 +4,15 @@ import AnyFunctor._
 
 trait AnyNaturalTransformation { nat =>
 
-  type SourceCat = SourceF#Source //  <: AnyCategory
-  lazy val sourceCat: SourceCat = sourceF.source
-  type TargetCat = SourceF#Target // <: AnyCategory
-  lazy val targetCat: TargetCat = sourceF.target
+  type SourceCat <: AnyCategory // >: SourceF#Source <: SourceF#Source //  <: AnyCategory
+  val sourceCat: SourceCat // = sourceF.source
+  type TargetCat <: AnyCategory // >: SourceF#Target <: SourceF#Target // <: AnyCategory
+  val targetCat: TargetCat // = sourceF.target
 
-  type SourceF <: AnyFunctor // SourceCat ⟶ TargetCat
+  type SourceF <: SourceCat ⟶ TargetCat
   val sourceF: SourceF
 
   type TargetF <: SourceCat ⟶ TargetCat
-  // type TargetF <: AnyFunctor { type Source = SourceF#Source; type Target = SourceF#Target }// SourceCat ⟶ TargetCat
   val targetF: TargetF
 
   def at[X <: SourceF#Source#Objects]: TargetF#Target#C[SourceF#F[X], TargetF#F[X]]
@@ -38,6 +37,29 @@ trait AnyNaturalTransformation { nat =>
     }
 }
 
+abstract class NaturalTransformation[
+  SourceCat0 <: AnyCategory,
+  TargetCat0 <: AnyCategory,
+  SourceF0 <: SourceCat0 ⟶ TargetCat0,
+  TargetF0 <: SourceCat0 ⟶ TargetCat0
+]
+(
+  val sourceCat: SourceCat0,
+  val sourceF: SourceF0,
+  val targetF: TargetF0,
+  val targetCat: TargetCat0
+)
+extends AnyNaturalTransformation {
+
+  type SourceCat = SourceCat0
+  type TargetCat = TargetCat0
+
+  type SourceF = SourceF0
+  type TargetF = TargetF0
+}
+
+
+
 case object AnyNaturalTransformation {
 
   def is[N <: AnyNaturalTransformation](n: N): AnyNaturalTransformation.is[N] =
@@ -45,8 +67,8 @@ case object AnyNaturalTransformation {
 
   type is[N <: AnyNaturalTransformation] = N with AnyNaturalTransformation {
     //
-    // type SourceCat = N#SourceF#Source;
-    // type TargetCat = N#TargetF#Target;
+    type SourceCat = N#SourceCat;
+    type TargetCat = N#TargetCat;
 
     type SourceF = N#SourceF;
     type TargetF = N#TargetF;
@@ -67,16 +89,19 @@ case object AnyNaturalTransformation {
 
 trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
 
-  type OnF <: AnyFunctor
+  type OnF <: SourceCat ⟶ TargetCat
   val onF: OnF
 
-  type SourceF = AnyFunctor.is[OnF]
-  lazy val sourceF: SourceF = AnyFunctor.is(onF)
+  // type SourceCat = OnF#Source
+  lazy val sourceCat = sourceF.source
+  // type TargetCat = OnF#Target
+  lazy val targetCat = targetF.target
 
-  // NOTE I don't see how to avoid this here :(
-  // type TargetF = onF.type
-  type TargetF = AnyFunctor.is[OnF] // OnF { type Source = OnF#Source; type Target = OnF#Target; type F[X <: Source#Objects] = OnF#F[X] }
-  lazy val targetF: TargetF = AnyFunctor.is(onF)
+  type SourceF = OnF // AnyFunctor.is[OnF]
+  lazy val sourceF: SourceF = onF // AnyFunctor.is(onF)
+
+  type TargetF = OnF // OnF { type Source = OnF#Source; type Target = OnF#Target; type F[X <: Source#Objects] = OnF#F[X] }
+  lazy val targetF: TargetF = onF // AnyFunctor.is(onF)
 
   final def at[X <: SourceCat#Objects]: OnF#Target#C[OnF#F[X], OnF#F[X]] = {
 
@@ -84,8 +109,15 @@ trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
   }
 }
 
-case class IdentityNaturalTransformation[OnF0 <: AnyFunctor](val onF: OnF0) extends AnyIdentityNaturalTransformation {
+case class IdentityNaturalTransformation[
+  SourceCat0 <: AnyCategory,
+  OnF0 <: SourceCat0 ⟶ TargetCat0,
+  TargetCat0 <: AnyCategory
+]
+(val onF: OnF0) extends AnyIdentityNaturalTransformation {
 
+  type SourceCat = SourceCat0
+  type TargetCat = TargetCat0
   type OnF = OnF0
 }
 
@@ -103,8 +135,10 @@ trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
   }
   val second: Second // AnyNaturalTransformation.is[Second]
 
-  // type SourceCat = First#SourceF#Source
-  // override lazy val sourceCat: AnyCategory.is[SourceCat] = AnyCategory.is(first.sourceCat)
+  type SourceCat = first.SourceF#Source
+  lazy val sourceCat: SourceCat = first.sourceCat // AnyCategory.is(first.sourceCat)
+  type TargetCat = Second#TargetF#Target
+  lazy val targetCat = targetF.target
 
   // type TargetCat = Second#TargetF#Target
   // val targetCat: AnyCategory.is[TargetCat] = AnyCategory.is(second.targetCat)

@@ -43,17 +43,17 @@ case object AnyFunctor {
     type Source <: src;
     type Target <: tgt;
   }
-//   //
-//   // type ∘[g0 <: AnyFunctor { type Source = f0#Target }, f0 <: AnyFunctor] =
-//   //   FunctorComposition[f0,g0]
-//   //
-  // type >=>[f0 <: AnyFunctor, g0] = FunctorComposition[f0,g0]
 
   implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
 
-    def id: IdentityNaturalTransformation[F0] = IdentityNaturalTransformation(f)
+    def id[F00 >: F0 <: F0 { type Source = F0#Source; type Target = F0#Target}](implicit
+      source: F0#Source,
+      target: F0#Target
+    )
+    : IdentityNaturalTransformation[F0#Source, F00, F0#Target] = IdentityNaturalTransformation(f: F00)
 
-    def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 = new FunctorComposition[F0,G0](f,g)
+    def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 =
+      new FunctorComposition[F0,G0](f,g)
   }
 }
 
@@ -62,10 +62,10 @@ trait AnyIdentityFunctor extends AnyFunctor {
   type On <: AnyCategory
   val on: On
 
-  type Source = On
+  type Source >: On <: On
   lazy val source: Source = on
 
-  type Target = On
+  type Target >: On <: On
   lazy val target: Target = on
 
   type F[Z <: Source#Objects] = Z
@@ -76,6 +76,8 @@ trait AnyIdentityFunctor extends AnyFunctor {
 case class IdentityFunctor[On0 <: AnyCategory](val on: On0) extends AnyIdentityFunctor {
 
   type On = On0
+  type Source = On
+  type Target = On
 }
 
 trait AnyFunctorComposition extends AnyFunctor {

@@ -37,6 +37,6 @@ case object AnyCategory {
 
   implicit class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
 
-    def Id: IdentityFunctor[Cat] = IdentityFunctor(cat)
+    def Id: IdentityFunctor[Cat] = IdentityFunctor[Cat](cat)
   }
 }

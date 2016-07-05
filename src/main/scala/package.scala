@@ -13,6 +13,8 @@ package object stuff {
 
   type ~>[src <: AnyFunctor, tgt <: AnyFunctor] = AnyNaturalTransformation {
 
+    type SourceCat = SourceF#Source
+    type TargetCat = TargetF#Target
     type SourceF <: src;
     type TargetF >: tgt <: tgt;
   }

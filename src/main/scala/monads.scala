@@ -16,7 +16,9 @@ trait AnyMonad extends AnyFunctor {
   type F[X <: On#Objects] = Functor#F[X]
 
   type η <: AnyNaturalTransformation {
-    type SourceF = AnyFunctor.is[IdentityFunctor[On]]; // type SourceCat = On;
+    type SourceCat = On
+    type TargetCat = On
+    type SourceF = IdentityFunctor[On] // AnyFunctor.is[IdentityFunctor[On]]; // type SourceCat = On;
     type TargetF = Functor //<: Functor
   }
     // AnyIdentityFunctor ~> Functor {  }
@@ -57,22 +59,15 @@ case object AnyMonad {
   }
 }
 
-case class IdentityMonad[C <: AnyCategory](val id: IdentityFunctor[C]) extends AnyMonad {
+case class IdentityMonad[C <: AnyCategory](c: C) extends MonadOn(c)(c.Id) {
+  //
+  // type On = C
+  // type Functor = IdentityFunctor[On]
 
-  type On = C
+  type η  = IdentityNaturalTransformation[On, IdentityFunctor[On], On]
+  val η   = IdentityNaturalTransformation[On, IdentityFunctor[On], On](functor)
 
-  type Functor = AnyFunctor.is[IdentityFunctor[On]]
-  val functor = AnyFunctor.is(id)
-
-  type η  = IdentityNaturalTransformation[IdentityFunctor[On]]
-  val η   = IdentityNaturalTransformation(id)
-
-  case object Mu extends AnyNaturalTransformation {
-
-    type SourceF = (Functor >=> Functor)
-    lazy val sourceF = functor >=> functor
-    type TargetF = Functor
-    lazy val targetF = functor
+  case object Mu extends NaturalTransformation(on, functor >=> functor, functor, on) {
 
     def at[X <: On#Objects]: On#C[SourceF#F[X], TargetF#F[X]] =
       AnyCategory.is(on).id[X]
