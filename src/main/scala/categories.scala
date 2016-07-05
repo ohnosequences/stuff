@@ -3,14 +3,12 @@ package ohnosequences.stuff
 trait AnyCategory {
 
   type Objects
-  // NOTE I don't know if we will need some sort of bound here
   type C[X <: Objects, Y <: Objects]
 
   def id[X <: Objects]: C[X,X]
 
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z]
 
-  // implicit val me: AnyCategory.is[this.type] = this
   implicit val me: this.type = this
 }
 

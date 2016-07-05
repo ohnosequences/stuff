@@ -10,9 +10,8 @@ trait AnyMonoidalStructure {
 
   def ⊗[A <: On#Objects, B <: On#Objects, C <: On#Objects, D <: On#Objects](f: On#C[A,B], g: On#C[C,D]): On#C[A ⊗ C, B ⊗ D]
 
-  def assoc_right[A <: On#Objects, B <: On#Objects, C <: On#Objects]: On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)]
-  def assoc_left[A <: On#Objects, B <: On#Objects, C <: On#Objects]: On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C]
-  // TODO associate, left and right unit
+  def assoc_right [A <: On#Objects, B <: On#Objects, C <: On#Objects]: On#C[ (A ⊗ B) ⊗ C, A ⊗ (B ⊗ C) ]
+  def assoc_left  [A <: On#Objects, B <: On#Objects, C <: On#Objects]: On#C[ A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C ]
 
   implicit val me: this.type = this
 }
