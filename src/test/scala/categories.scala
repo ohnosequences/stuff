@@ -25,11 +25,11 @@ case object ListF extends Functor(Scala, Scala) {
   def apply[X,Y](f: X => Y): List[X] => List[Y] = { xs: List[X] => xs map f }
 }
 
-case object ListM extends AnyMonad {
+case object ListM extends MonadOn(Scala)(ListF) {
 
-  type On = Scala.type
-  type Functor = ListF.type
-  val functor = ListF
+  // type On = Scala.type
+  // type Functor = ListF.type
+  // val functor = ListF
 
   type μ = mu.type
   val μ = mu

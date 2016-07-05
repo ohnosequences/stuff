@@ -28,6 +28,20 @@ trait AnyMonad extends AnyFunctor {
   def apply[X <: On#Objects, Y <: On#Objects](f: On#C[X,Y]): On#C[F[X], F[Y]] = AnyFunctor.is(functor)(f)
 }
 
+abstract class MonadOn[
+  On0 <: AnyCategory,
+  Functor0 <: On0 ⟶ On0
+](
+  val cat: On0
+)(
+  val functor: Functor0
+)
+extends AnyMonad {
+
+  type On = On0
+  type Functor = Functor0
+}
+
 case object AnyMonad {
 
   def is[M <: AnyMonad](m: M): is[M] = m.asInstanceOf[is[M]]
