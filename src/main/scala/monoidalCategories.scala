@@ -3,6 +3,7 @@ package ohnosequences.stuff
 trait AnyMonoidalStructure {
 
   type On <: AnyCategory
+  val on: On
 
   type ⊗ [X <: On#Objects, Y <: On#Objects] <: On#Objects
 

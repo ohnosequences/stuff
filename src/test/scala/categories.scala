@@ -56,6 +56,26 @@ case object ListM extends AnyMonad {
   }
 }
 
+case object ListFM extends AnyLaxMonoidalFunctor {
+
+  type SourceM = ScalaProduct.type
+  val sourceM = ScalaProduct
+  type TargetM = ScalaProduct.type
+  val targetM = ScalaProduct
+
+  import ScalaProduct._
+
+  type Functor = ListF.type
+  val functor = ListF
+
+
+  def zip[A,B]: List[A] × List[B] => List[A × B] =
+    { case (as, bs) => as zip bs }
+
+  def unit: Unit => List[Unit] =
+    _ => List( () )
+}
+
 case object ScalaProduct extends AnyMonoidalStructure {
 
   type On = Scala.type
