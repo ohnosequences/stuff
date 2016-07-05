@@ -30,3 +30,18 @@ trait AnyLaxMonoidalFunctor extends AnyFunctor {
   def zip[A <: Source#Objects, B <: Source#Objects]: Target#C[F[A] ⋄ F[B], F[A □ B]]
   def unit: Target#C[TargetM#I, F[SourceM#I]]
 }
+
+abstract class LaxMonoidalFunctor[
+  SM <: AnyMonoidalStructure,
+  Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
+  TM <: AnyMonoidalStructure
+]
+(
+  val sourceM: SM,
+  val functor: Functor0,
+  val targetM: TM
+)
+extends AnyLaxMonoidalFunctor {
+
+  type SourceM = SM; type Functor = Functor0; type TargetM = TM
+}
