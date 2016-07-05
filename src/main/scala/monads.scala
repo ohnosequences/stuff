@@ -3,7 +3,7 @@ package ohnosequences.stuff
 trait AnyMonad {
 
   type On <: AnyCategory
-  lazy val on: AnyCategory.is[On] = AnyCategory.is(functor.source)
+  lazy val on: On = functor.source
 
   type Source = On
   lazy val source: Source = on
@@ -11,7 +11,9 @@ trait AnyMonad {
   lazy val target: Target = on
 
   type Functor <: On ⟶ On
-  val functor: AnyFunctor.is[Functor]
+  val functor: Functor // AnyFunctor.is[Functor]
+
+  type F[X <: On#Objects] = Functor#F[X]
 
   type η <: AnyNaturalTransformation {
     type SourceF = AnyFunctor.is[IdentityFunctor[On]]; // type SourceCat = On;
@@ -22,6 +24,8 @@ trait AnyMonad {
 
   type μ <: (Functor >=> Functor) ~> Functor
   val μ: AnyNaturalTransformation.is[μ]
+
+  def apply[X <: On#Objects, Y <: On#Objects](f: On#C[X,Y]): On#C[F[X], F[Y]] = AnyFunctor.is(functor)(f)
 }
 
 case object AnyMonad {

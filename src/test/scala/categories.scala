@@ -18,6 +18,45 @@ case object Scala extends AnyCategory {
   val Id = IdentityFunctor(Scala)
 }
 
+case object ListF extends Functor(Scala, Scala) {
+
+  type F[X] = List[X]
+
+  def apply[X,Y](f: X => Y): List[X] => List[Y] = { xs: List[X] => xs map f }
+}
+
+case object ListM extends AnyMonad {
+
+  type On = Scala.type
+  type Functor = ListF.type
+  val functor = ListF
+
+  type μ = mu.type
+  val μ = mu
+  case object mu extends AnyNaturalTransformation {
+
+    type SourceF = (ListF.type >=> ListF.type)
+    lazy val sourceF = ListF >=> ListF
+    type TargetF = ListF.type
+    lazy val targetF = ListF
+
+    def at[X]: List[List[X]] => List[X] = _.flatten
+  }
+
+  type η = unit.type
+  val η = unit
+  case object unit extends AnyNaturalTransformation {
+
+    type SourceF = AnyFunctor.is[IdentityFunctor[Scala.type]]
+    val sourceF = AnyFunctor.is(Scala.Id)
+
+    type TargetF = ListF.type
+    val targetF = ListF
+    def at[X]: X => List[X] = List(_)
+  }
+
+}
+
 
 
 class ScalaCategoryTest extends FunSuite {
@@ -57,14 +96,22 @@ class ScalaCategoryTest extends FunSuite {
   test("monads and kleisli categories") {
 
     val idMonad = IdentityMonad(Scala.Id)
-
-    val klCat = KleisliCategory(idMonad)
-
-    val klF = kleisliFunctor(klCat)
+    val klCat   = KleisliCategory(idMonad)
+    val klF     = KleisliFunctor(klCat)
+    val uF      = KleisliForget(klCat)
 
     val f = { x: String => x.length }
 
-    // NOTE why the types?
-    assert { klF[String,Int](f)("hola") === 4 }
+    // NOTE why the types are needed here?
+    assert { klF[String,Int](f)("hola") === uF[String,Int](f)("hola") }
+
+    val ListKL = KleisliCategory(ListM)
+
+    val ListKLF = KleisliFunctor(ListKL)
+    val ListKLU = KleisliForget(ListKL)
+
+    val g = { xs: String => xs.toList }
+
+    println { ListKLU[String,Char](g)(List("hola", "scalac")) }
   }
 }

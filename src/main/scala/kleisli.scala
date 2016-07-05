@@ -6,7 +6,7 @@ trait AnyKleisliCategory extends AnyCategory {
   type Monad <: AnyMonad
   val monad: Monad
   type Cat = monad.On
-  val cat: AnyCategory.is[Cat] = monad.on
+  lazy val cat: Cat = monad.on
 
   type M[X <: Objects] = monad.Functor#F[X]
 
@@ -17,9 +17,9 @@ trait AnyKleisliCategory extends AnyCategory {
 
     // TODO proper syntax
     import AnyCategory._
-    implicit val c = cat
+    implicit val c = AnyCategory.is(monad.on)
 
-    (f:Cat#C[X,M[Y]]) >=> monad.functor(g) >=> monad.μ.at
+    (f:Cat#C[X,M[Y]]) >=> monad(g) >=> monad.μ.at
   }
 
   final def id[X <: Objects]: C[X,X] = monad.η[X]
@@ -43,13 +43,56 @@ trait AnyKleisliFunctor extends AnyFunctor {
 
     // TODO proper syntax
     import AnyCategory._
-    implicit val c = target.cat
+    implicit val c = AnyCategory.is(target.cat)
 
     f >=> target.monad.η[B]
   }
 }
 
-case class kleisliFunctor[KC <: AnyKleisliCategory](val target: KC) extends AnyKleisliFunctor {
+case class KleisliFunctor[KC <: AnyKleisliCategory](val target: KC) extends AnyKleisliFunctor {
 
   type Target = KC
+}
+
+trait AnyKleisliForget extends AnyFunctor { forget =>
+
+  type Monad <: AnyMonad
+  val monad: Monad
+
+  type Source <: AnyKleisliCategory {
+    type Monad = forget.Monad;
+    type Cat = forget.monad.On
+    type Objects = forget.monad.On#Objects
+    type C[X <: Objects, Y <: Objects] = Cat#C[X, forget.monad.Functor#F[Y]]
+  }
+  val source: Source // = KleisliCategory[Monad](monad).asInstanceOf[Source]
+
+  type Target = monad.On
+  lazy val target = monad.on
+
+  type F[X <: Source#Objects] = monad.F[X]
+
+  override def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] = {
+
+    import AnyCategory._
+    implicit val c = AnyCategory.is(monad.on)
+
+    monad(f: monad.On#C[X, monad.F[Y]]) >=> monad.μ[Y]
+  }
+}
+
+case class KleisliForget[M <: AnyMonad](val s: KleisliCategory[M]) extends AnyKleisliForget {
+
+  kf =>
+
+  type Monad = M
+  lazy val monad: Monad = source.monad
+
+  type Source = KleisliCategory[M] { type Monad = kf.Monad;
+  type Cat = kf.monad.On
+  type Objects = kf.monad.On#Objects
+  type C[X <: Objects, Y <: Objects] = Cat#C[X, kf.monad.Functor#F[Y]]
+  }
+
+  val source: Source = s.asInstanceOf[Source]
 }
