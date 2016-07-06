@@ -28,6 +28,7 @@ trait AnyLaxMonoidalFunctor extends AnyFunctor {
     AnyFunctor.is(functor)(f)
 
   def zip[A <: Source#Objects, B <: Source#Objects]: Target#C[F[A] ⋄ F[B], F[A □ B]]
+  
   def unit: Target#C[TargetM#I, F[SourceM#I]]
 }
 

@@ -1,9 +1,9 @@
 package ohnosequences.stuff
 
-trait AnyFunctor { functor =>
+trait AnyFunctor {
 
   type Source <: AnyCategory
-  val source: Source //AnyCategory.is[Source]
+  val source: Source
 
   type Target <: AnyCategory
   val target: Target
@@ -29,7 +29,8 @@ extends AnyFunctor {
 
 case object AnyFunctor {
 
-  def is[F <: AnyFunctor](f: F): AnyFunctor.is[F] = f.asInstanceOf[AnyFunctor.is[F]]
+  def is[F <: AnyFunctor](f: F): AnyFunctor.is[F] =
+    f.asInstanceOf[AnyFunctor.is[F]]
 
   type is[functor <: AnyFunctor] = functor with AnyFunctor {
 
@@ -38,22 +39,13 @@ case object AnyFunctor {
     type F[Z <: Source#Objects] = functor#F[Z]
   }
 
-  type ⟶[src <: AnyCategory, tgt <: AnyCategory] = AnyFunctor {
-
-    type Source <: src;
-    type Target <: tgt;
-  }
-
   implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
-
-    def id[F00 >: F0 <: F0 { type Source = F0#Source; type Target = F0#Target}](implicit
-      source: F0#Source,
-      target: F0#Target
-    )
-    : IdentityNaturalTransformation[F0#Source, F00, F0#Target] = IdentityNaturalTransformation(f: F00)
 
     def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 =
       new FunctorComposition[F0,G0](f,g)
+
+    def id: IdentityNaturalTransformation[F0#Source, is[F0], F0#Target] =
+      IdentityNaturalTransformation(is(f))
   }
 }
 
@@ -62,10 +54,10 @@ trait AnyIdentityFunctor extends AnyFunctor {
   type On <: AnyCategory
   val on: On
 
-  type Source >: On <: On
+  type Source = On
   lazy val source: Source = on
 
-  type Target >: On <: On
+  type Target = On
   lazy val target: Target = on
 
   type F[Z <: Source#Objects] = Z
@@ -76,8 +68,6 @@ trait AnyIdentityFunctor extends AnyFunctor {
 case class IdentityFunctor[On0 <: AnyCategory](val on: On0) extends AnyIdentityFunctor {
 
   type On = On0
-  type Source = On
-  type Target = On
 }
 
 trait AnyFunctorComposition extends AnyFunctor {
@@ -96,7 +86,7 @@ trait AnyFunctorComposition extends AnyFunctor {
   type F[Z <: Source#Objects] = SecondF#F[FirstF#F[Z]]
 }
 
-class FunctorComposition[
+case class FunctorComposition[
   F0 <: AnyFunctor,
   S0 <: AnyFunctor { type Source = F0#Target }
 ]
@@ -109,7 +99,6 @@ extends AnyFunctorComposition {
   type FirstF = F0
   type SecondF = S0
 
-  // NOTE I know this is dangerous. I want to check whether everything works as long as you use it safely
   final def apply[X <: Source#Objects, Y <: Source#Objects](f: Source#C[X,Y]): Target#C[F[X], F[Y]] =
     AnyFunctor.is(secondF)(AnyFunctor.is(firstF)(f))
 }

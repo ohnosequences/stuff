@@ -18,13 +18,19 @@ trait AnyMonad extends AnyFunctor {
   type η <: AnyNaturalTransformation {
     type SourceCat = On
     type TargetCat = On
-    type SourceF = IdentityFunctor[On] // AnyFunctor.is[IdentityFunctor[On]]; // type SourceCat = On;
-    type TargetF = Functor //<: Functor
+    type SourceF = IdentityFunctor[On]
+    type TargetF = Functor
   }
-    // AnyIdentityFunctor ~> Functor {  }
   val η: AnyNaturalTransformation.is[η]
 
-  type μ <: (Functor >=> Functor) ~> Functor
+  type μ <: AnyNaturalTransformation {
+
+    type SourceCat = On
+    type TargetCat = On
+
+    type SourceF = Functor >=> Functor
+    type TargetF = Functor
+  }
   val μ: AnyNaturalTransformation.is[μ]
 
   def apply[X <: On#Objects, Y <: On#Objects](f: On#C[X,Y]): On#C[F[X], F[Y]] = AnyFunctor.is(functor)(f)
@@ -60,9 +66,6 @@ case object AnyMonad {
 }
 
 case class IdentityMonad[C <: AnyCategory](c: C) extends MonadOn(c)(c.Id) {
-  //
-  // type On = C
-  // type Functor = IdentityFunctor[On]
 
   type η  = IdentityNaturalTransformation[On, IdentityFunctor[On], On]
   val η   = IdentityNaturalTransformation[On, IdentityFunctor[On], On](functor)

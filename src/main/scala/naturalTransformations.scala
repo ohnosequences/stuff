@@ -2,12 +2,12 @@ package ohnosequences.stuff
 
 import AnyFunctor._
 
-trait AnyNaturalTransformation { nat =>
+trait AnyNaturalTransformation {
 
-  type SourceCat <: AnyCategory // >: SourceF#Source <: SourceF#Source //  <: AnyCategory
-  val sourceCat: SourceCat // = sourceF.source
-  type TargetCat <: AnyCategory // >: SourceF#Target <: SourceF#Target // <: AnyCategory
-  val targetCat: TargetCat // = sourceF.target
+  type SourceCat <: AnyCategory
+  val sourceCat: SourceCat
+  type TargetCat <: AnyCategory
+  val targetCat: TargetCat
 
   type SourceF <: SourceCat ⟶ TargetCat
   val sourceF: SourceF
@@ -15,26 +15,9 @@ trait AnyNaturalTransformation { nat =>
   type TargetF <: SourceCat ⟶ TargetCat
   val targetF: TargetF
 
-  def at[X <: SourceF#Source#Objects]: TargetF#Target#C[SourceF#F[X], TargetF#F[X]]
+  def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]]
 
-  final def apply[X <: SourceF#Source#Objects]: TargetF#Target#C[SourceF#F[X], TargetF#F[X]] = at[X]
-
-  def >=>[
-    M <: AnyNaturalTransformation {
-      type SourceF    = nat.TargetF
-      type SourceCat  = nat.SourceCat
-      type TargetCat  = nat.TargetCat
-      type TargetF <: nat.SourceCat ⟶ nat.TargetCat
-    }
-  ]
-  (m: M): AnyVerticalComposition { type First = nat.type; type Second = M } =
-    new AnyVerticalComposition {
-
-      type First = nat.type
-      val first: First = nat
-      type Second = M
-      val second = m
-    }
+  final def apply[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = at[X]
 }
 
 abstract class NaturalTransformation[
@@ -58,8 +41,6 @@ extends AnyNaturalTransformation {
   type TargetF = TargetF0
 }
 
-
-
 case object AnyNaturalTransformation {
 
   def is[N <: AnyNaturalTransformation](n: N): AnyNaturalTransformation.is[N] =
@@ -74,7 +55,7 @@ case object AnyNaturalTransformation {
     type TargetF = N#TargetF;
   }
 
-  implicit final class Syntax[N <: AnyNaturalTransformation](val n: N) {
+  implicit final class Syntax[N <: AnyNaturalTransformation](val nat: N) {
 
     // def >=>[
     //   M <: AnyNaturalTransformation {
@@ -84,6 +65,38 @@ case object AnyNaturalTransformation {
     //     // type TargetF <: SourceCat ⟶ TargetCat
     //   }
     // ](m: M): AnyVerticalComposition { type First = N; type Second = M } = ???
+
+    def >=>[
+      M <: AnyNaturalTransformation {
+        type SourceF    = nat.TargetF
+        type SourceCat  = nat.SourceCat
+        type TargetCat  = nat.TargetCat
+        type TargetF <: nat.SourceCat ⟶ nat.TargetCat
+      }
+    ]
+    (m: M): AnyVerticalComposition {
+
+      type First = N;
+      type Second = M {
+        type SourceF    = first.TargetF
+        type SourceCat  = first.SourceCat
+        type TargetCat  = first.TargetCat
+        type TargetF <: first.SourceCat ⟶ first.TargetCat
+      }
+    } =
+      new AnyVerticalComposition {
+
+        val first: First = nat: nat.type
+        type First = N
+
+        type Second = M {
+          type SourceF    = first.TargetF
+          type SourceCat  = first.SourceCat
+          type TargetCat  = first.TargetCat
+          type TargetF <: first.SourceCat ⟶ first.TargetCat
+        }
+        val second = m.asInstanceOf[Second]
+      }
   }
 }
 
@@ -135,17 +148,17 @@ trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
   }
   val second: Second // AnyNaturalTransformation.is[Second]
 
-  type SourceCat = first.SourceF#Source
+  type SourceCat = first.SourceCat
   lazy val sourceCat: SourceCat = first.sourceCat // AnyCategory.is(first.sourceCat)
-  type TargetCat = Second#TargetF#Target
-  lazy val targetCat = targetF.target
+  type TargetCat = second.TargetCat
+  lazy val targetCat = second.targetCat
 
   // type TargetCat = Second#TargetF#Target
   // val targetCat: AnyCategory.is[TargetCat] = AnyCategory.is(second.targetCat)
 
   type SourceF = first.SourceF// AnyFunctor.is[First#SourceF]
   lazy val sourceF: SourceF = AnyFunctor.is[first.SourceF](first.sourceF)
-  type TargetF = Second#TargetF // AnyFunctor.is[Second#TargetF]
+  type TargetF = second.TargetF // AnyFunctor.is[Second#TargetF]
   lazy val targetF: TargetF = second.targetF
 
   // NOTE this can improved, I'm sure
@@ -156,7 +169,7 @@ trait AnyVerticalComposition extends AnyNaturalTransformation { composition =>
       first.TargetF#F[X]
     ] = first.at[X]
 
-    val www: first.TargetF#Target#C[first.TargetF#F[X], Second#TargetF#F[X]] = AnyNaturalTransformation.is(second).at[X]
+    val www: first.TargetF#Target#C[first.TargetF#F[X], second.TargetF#F[X]] = second.at[X]
 
     AnyCategory.is(first.targetF.target).compose(www, zzz)
   }

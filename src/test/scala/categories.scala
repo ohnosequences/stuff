@@ -14,15 +14,15 @@ case object Scala extends AnyCategory {
 
   final def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] =
     (g, f) => f andThen g
-
-  // val Id = IdentityFunctor(Scala)
 }
+
 
 case object ListF extends Functor(Scala, Scala) {
 
   type F[X] = List[X]
 
-  def apply[X,Y](f: X => Y): List[X] => List[Y] = { xs: List[X] => xs map f }
+  def apply[X,Y](f: X => Y): List[X] => List[Y] =
+    { xs: List[X] => xs map f }
 }
 
 case object ListM extends MonadOn(Scala)(ListF) {
@@ -31,14 +31,16 @@ case object ListM extends MonadOn(Scala)(ListF) {
   val μ = mu
   case object mu extends NaturalTransformation(Scala,  ListF >=> ListF, ListF, Scala) {
 
-    def at[X]: List[List[X]] => List[X] = _.flatten
+    def at[X]: List[List[X]] => List[X] =
+      _.flatten
   }
 
   type η = unit.type
   val η = unit
   case object unit extends NaturalTransformation(Scala, Scala.Id, ListF, Scala) {
 
-    def at[X]: X => List[X] = List(_)
+    def at[X]: X => List[X] =
+      List(_)
   }
 }
 
@@ -102,11 +104,13 @@ trait MealyCat extends AnyCategory {
 
   type C[A,B] = AnyMealy { type Input = A; type Output = B }
 
-  def id[A] =  mealy[A,Unit,A]{ case (a,u) => (u,a) }
+  def id[A] =
+    mealy[A,Unit,A]{ case (a,u) => (u,a) }
 
   def compose[X,Y,Z]: (C[Y,Z], C[X,Y]) => C[X,Z] = {
 
-    (m,n) => mealy[X, (n.State, m.State), Z]{
+    (m,n) => mealy[X, (n.State, m.State), Z] {
+
       case (x, (nu,mu)) => {
 
         val (nu1, y) = n(x, nu)
@@ -144,12 +148,9 @@ class ScalaCategoryTest extends FunSuite {
 
   test("Natural transformations on Scala") {
 
-    // assert { Scala.Id.id()("") === Scala.id()("") }
-
-    val zz = Scala.Id.id >=> Scala.Id.id
-
     // TODO fix vertical composition
-    // assert { (Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id)[Boolean](true) === Scala.id[Boolean](true) }
+    // val zz = Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id
+    // assert { zz.at[Boolean](true) === Scala.id[Boolean](true) }
   }
 
   test("monads and kleisli categories") {
@@ -184,6 +185,6 @@ class ScalaCategoryTest extends FunSuite {
 
     val fg = f ⊗ g
 
-    val (a,b) = fg("hola", 12)
+    val (a,b) = fg( ("hola", 12) )
   }
 }
