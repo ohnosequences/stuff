@@ -155,28 +155,23 @@ class ScalaCategoryTest extends FunSuite {
 
   test("monads and kleisli categories") {
 
-    val idMonad = IdentityMonad(Scala)
+    val idMonad     = IdentityMonad(Scala)
+    val IdKleisli   = idMonad.kleisliCategory
+    val IdKleisliF  = IdKleisli.freeF // from Scala to kleisli cat of Id
+    val f: Scala.C[String,Int] = { x: String => x.length } // NOTE why the types are needed here?
+    assert { IdKleisliF(f)("hola") === f("hola") }
 
-    val zz = idMonad.kleisliCategory
 
-    
-    // val klCat   = idMonad.functor kleisliCategory idMonad
-    // val klF     = KleisliFunctor(klCat)
-    // val uF      = KleisliForget(klCat)
-    //
-    // val f = { x: String => x.length }
-    //
-    // // NOTE why the types are needed here?
-    // assert { klF[String,Int](f)("hola") === uF[String,Int](f)("hola") }
-    //
-    // val ListKL = KleisliCategory(ListM)
-    //
-    // val ListKLF = KleisliFunctor(ListKL)
-    // val ListKLU = KleisliForget(ListKL)
-    //
-    // val g = { xs: String => xs.toList }
-    //
-    // println { ListKLU[String,Char](g)(List("hola", "scalac")) }
+    val ListKleisli   = ListM.kleisliCategory
+    val ListKleisliF  = ListKleisli.freeF
+    val ListKleisliU  = ListKleisli.forgetfulF
+
+    implicit def asC[X,Y](f: X => Y): Scala.C[X,Y] = f
+
+    val g: ListKleisli.C[String,Char] = { xs: String => xs.toList }
+
+    println { ListKleisliF(f)("hola scalac") }
+    println { ListKleisliU[String,Char](g)(List("hola", "scalac")) }
   }
 
   test("monoidal structures") {
