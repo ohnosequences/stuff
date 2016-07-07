@@ -14,7 +14,8 @@ trait AnyCategory {
 
 case object AnyCategory {
 
-  def is[Cat <: AnyCategory](cat: Cat): AnyCategory.is[Cat] = cat.asInstanceOf[AnyCategory.is[Cat]]
+  def is[Cat <: AnyCategory](cat: Cat): is[Cat] =
+    cat.asInstanceOf[is[Cat]]
 
   type is[Cat <: AnyCategory] = Cat {
 
@@ -31,19 +32,13 @@ case object AnyCategory {
   )
   extends AnyVal {
 
-    final def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: cat): cat#C[Y,W] =
+    def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: cat): cat#C[Y,W] =
       is(c).compose(h,g)
   }
 
   implicit class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
 
-    def Id: IdentityFunctor[Cat] = IdentityFunctor[Cat](cat)
-
-    def kleisliCategory[
-      Functor0 <: AnyFunctor { type Source = Cat; type Target = Cat },
-      Monad0 <: AnyMonad { type On = Cat; type Functor = Functor0 }
-    ]
-    (f: Functor0, m: Monad0): KleisliCategory[Cat,Functor0,Monad0] =
-      KleisliCategory(m)
+    def Id: IdentityFunctor[Cat] =
+      IdentityFunctor[Cat](cat)
   }
 }

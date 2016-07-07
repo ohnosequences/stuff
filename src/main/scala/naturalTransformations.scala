@@ -43,8 +43,8 @@ extends AnyNaturalTransformation {
 
 case object AnyNaturalTransformation {
 
-  def is[N <: AnyNaturalTransformation](n: N): AnyNaturalTransformation.is[N] =
-    n.asInstanceOf[AnyNaturalTransformation.is[N]]
+  def is[N <: AnyNaturalTransformation](n: N): is[N] =
+    n.asInstanceOf[is[N]]
 
   type is[N <: AnyNaturalTransformation] = N {
     //
