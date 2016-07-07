@@ -43,6 +43,14 @@ extends AnyVal {
   ]
   (f: Cat#C[C,D])(implicit mcat: MCat): Cat#C[ MCat# ⊗[Y,C], MCat# ⊗[Z,D]] =
     AnyMonoidalStructure.is(mcat).⊗(g,f)
+
+  def ×[
+  C <: Cat#Objects,
+  D <: Cat#Objects,
+  CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
+]
+(f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[ CMCat# ⊗[Y,C], CMCat# ⊗[Z,D]] =
+  AnyMonoidalStructure.is(cmcat).×(g,f)
 }
 
 case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
