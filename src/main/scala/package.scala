@@ -14,7 +14,7 @@ package object stuff {
 
   implicit def categorySyntax[Cat <: AnyCategory](cat: Cat): CategorySyntax[Cat] =
     CategorySyntax(cat)
-    
+
   /*
     ## Functors
   */
@@ -34,6 +34,8 @@ package object stuff {
       type Source = Cat
       type Target = Cat
     }
+
+  implicit def functorSyntax[F0 <: AnyFunctor](f0: F0): FunctorSyntax[F0] = FunctorSyntax(f0)
 
   type Monad[C <: AnyCategory, F0 <: EndoFunctorOn[C]] =
     AnyMonad {
