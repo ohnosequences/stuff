@@ -10,7 +10,6 @@ sealed trait AnyOption extends Any {
   import AnyOption._
 
   type Elem
-  // private def value: Elem
   type F[Z] = some[Z]
 
   protected def isEmpty: Boolean = value == null
@@ -35,7 +34,6 @@ case object AnyOption {
 }
 
 case class some[+E](val value: E) extends AnyVal with AnyOption {
-
 
   type Elem = E @annotation.unchecked.uncheckedVariance
 }
@@ -199,7 +197,6 @@ case object ScalaDistributiveCat extends AnyRigStructure {
         case Right((b,c)) => (Right(b), c)
       }
     }
-
 }
 
 trait AnyMealy {
@@ -247,12 +244,9 @@ trait MealyCat extends AnyCategory {
 
 class ScalaCategoryTest extends FunSuite {
 
-  import AnyCategory._
-  import Scala._
-
   test("Syntax for Scala category") {
 
-    val l = AnyCategory.MorphismsSyntax(Scala.id[String]) >=> { x: String => x.length }
+    val l = Scala.id[String] >=> { x: String => x.length }
 
     val f = { x: Int => x.toString }
 
@@ -284,7 +278,6 @@ class ScalaCategoryTest extends FunSuite {
     val IdKleisliF  = IdKleisli.freeF // from Scala to kleisli cat of Id
     val f: Scala.C[String,Int] = { x: String => x.length } // NOTE why the types are needed here?
     assert { IdKleisliF(f)("hola") === f("hola") }
-
 
     val ListKleisli   = ListM.kleisliCategory
     val ListKleisliF  = ListKleisli.freeF
@@ -319,8 +312,6 @@ class ScalaCategoryTest extends FunSuite {
 
     argh.buh(None)
   }
-
-
 
   test("Option memory usage") {
 

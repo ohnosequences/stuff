@@ -19,9 +19,8 @@ trait AnyKleisliCategory extends AnyCategory { kleisli =>
 
   final def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] = (g,f) => {
 
-    // TODO proper syntax
-    import AnyCategory._
     implicit val c = AnyCategory.is(monad.on)
+
     val m = AnyMonad.is(monad)
     val mu = AnyNaturalTransformation.is[Monad#μ](monad.μ)
 
@@ -89,9 +88,8 @@ trait AnyKleisliFunctor extends AnyFunctor { kleisliF =>
 
   override def apply[A <: Source#Objects, B <: Source#Objects](f: Source#C[A,B]): On#C[A,Functor#F[B]] = {
 
-    // TODO proper syntax
-    import AnyCategory._
     implicit val c = AnyCategory.is(target.cat)
+
     val eta = AnyNaturalTransformation.is[Monad#η](target.monad.η)
 
     f >=> eta.at[B]
@@ -108,7 +106,6 @@ case class KleisliFunctor[
   type On = On0
   type Functor = F0
   type Monad = M0
-  // override type Source = On0
   type Target = KC
 }
 
@@ -134,7 +131,6 @@ trait AnyKleisliForget extends AnyFunctor { forget =>
 
   override def apply[X <: Source#Objects, Y <: Source#Objects](f: C#C[X,F[Y]]): Target#C[F[X], F[Y]] = {
 
-    import AnyCategory._
     implicit val c = AnyCategory.is[Monad#On](monad.on)
 
     AnyMonad.is(monad)(f: Monad#On#C[X, Monad#Functor#F[Y]]) >=> AnyNaturalTransformation.is[Monad#μ](monad.μ)[Y]
