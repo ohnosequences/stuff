@@ -3,46 +3,27 @@ package ohnosequences.stuff
 trait AnyCategory {
 
   type Objects
-  type Morphisms <: AnyMorphism { type Bound = Objects }
-
-  implicit val me: this.type = this
-
-  type C[X <: Objects, Y <: Objects] <: Morphisms { type Source = X; type Target = Y }
+  type C[X <: Objects, Y <: Objects]
 
   def id[X <: Objects]: C[X,X]
 
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z]
-}
 
-trait AnyMorphism extends Any {
-
-  type Bound
-
-  type Source <: Bound
-  type Target <: Bound
-}
-
-case object AnyMorphism {
-
-  type is[G <: AnyMorphism] = G with AnyMorphism {
-
-    type Bound = G#Bound
-
-    type Source = G#Source
-    type Target = G#Target
-  }
+  implicit val me: this.type = this
 }
 
 case object AnyCategory {
 
-  type is[Cat <: AnyCategory] = Cat with AnyCategory {
+  def is[Cat <: AnyCategory](cat: Cat): is[Cat] =
+    cat.asInstanceOf[is[Cat]]
+
+  type is[Cat <: AnyCategory] = Cat {
 
     type Objects = Cat#Objects
-    type Morphisms = Cat#Morphisms;
     type C[X <: Cat#Objects, Y <: Cat#Objects] = Cat#C[X,Y]
   }
 
-  implicit final class MorphismsSyntax [
+  implicit class MorphismsSyntax [
     cat <: AnyCategory,
     Y <: cat#Objects,
     Z <: cat#Objects
@@ -51,10 +32,13 @@ case object AnyCategory {
   )
   extends AnyVal {
 
-    final def ∘[X <: cat#Objects](f: cat#C[X,Y])(implicit c: AnyCategory.is[cat]): cat#C[X,Z] =
-      c.compose(g,f)
+    def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: cat): cat#C[Y,W] =
+      is(c).compose(h,g)
+  }
 
-    final def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: AnyCategory.is[cat]): cat#C[Y,W] =
-      c.compose(h,g)
+  implicit class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
+
+    def Id: IdentityFunctor[Cat] =
+      IdentityFunctor[Cat](cat)
   }
 }
