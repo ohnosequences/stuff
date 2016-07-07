@@ -35,6 +35,14 @@ extends AnyVal {
 
   def >=>[W <: Cat#Objects](h: Cat#C[Z,W])(implicit cat: Cat): Cat#C[Y,W] =
     AnyCategory.is(cat).compose(h,g)
+
+  def ⊗[
+    C <: Cat#Objects,
+    D <: Cat#Objects,
+    MCat <: AnyMonoidalStructure { type On = Cat }
+  ]
+  (f: Cat#C[C,D])(implicit mcat: MCat): Cat#C[ MCat# ⊗[Y,C], MCat# ⊗[Z,D]] =
+    AnyMonoidalStructure.is(mcat).⊗(g,f)
 }
 
 case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {

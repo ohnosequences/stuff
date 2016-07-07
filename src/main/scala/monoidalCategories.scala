@@ -29,21 +29,6 @@ case object AnyMonoidalStructure {
 
     type ⊗[X <: On#Objects, Y <: On#Objects] = MCat# ⊗[X,Y]
   }
-
-  implicit final class MonoidalStructureSyntax[
-    Cat <: AnyCategory,
-    A <: Cat#Objects, B <: Cat#Objects
-  ]
-  (val f: Cat#C[A,B]) extends AnyVal {
-
-    def ⊗[
-      C <: Cat#Objects,
-      D <: Cat#Objects,
-      MCat <: AnyMonoidalStructure { type On = Cat }
-    ]
-    (g: Cat#C[C,D])(implicit mcat: MCat): Cat#C[ MCat# ⊗[A,C], MCat# ⊗[B,D]] =
-      is(mcat).⊗(f,g)
-  }
 }
 
 trait AnyCartesianMonoidalStructure extends AnyMonoidalStructure {
