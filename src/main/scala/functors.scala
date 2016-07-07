@@ -32,7 +32,7 @@ case object AnyFunctor {
   def is[F <: AnyFunctor](f: F): AnyFunctor.is[F] =
     f.asInstanceOf[AnyFunctor.is[F]]
 
-  type is[functor <: AnyFunctor] = functor with AnyFunctor {
+  type is[functor <: AnyFunctor] = functor {
 
     type Source = functor#Source;
     type Target = functor#Target;
@@ -42,13 +42,14 @@ case object AnyFunctor {
   implicit final class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
 
     def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 =
-      new FunctorComposition[F0,G0](f,g)
+      FunctorComposition[F0,G0](f,g)
 
     def id[
       F00 >: F0 <: F0 { type Source = C; type Target = D },
-      C   >: F0#Source <: AnyCategory,
-      D   >: F0#Target <: AnyCategory
-    ]: IdentityNaturalTransformation[C, F00, D] =
+      C   >: F0#Source <: F0#Source,
+      D   >: F0#Target <: F0#Target
+    ]
+    : IdentityNaturalTransformation[C, F00, D] =
       IdentityNaturalTransformation(f: F00)
   }
 }

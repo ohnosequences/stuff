@@ -57,15 +57,6 @@ case object AnyNaturalTransformation {
 
   implicit final class Syntax[N <: AnyNaturalTransformation](val nat: N) {
 
-    // def >=>[
-    //   M <: AnyNaturalTransformation {
-    //     type SourceF    = n.TargetF
-    //     type SourceCat  = n.SourceCat
-    //     type TargetCat  = n.TargetCat
-    //     // type TargetF <: SourceCat ⟶ TargetCat
-    //   }
-    // ](m: M): AnyVerticalComposition { type First = N; type Second = M } = ???
-
     def >=>[
       M <: AnyNaturalTransformation {
         type SourceF    = nat.TargetF
@@ -105,16 +96,14 @@ trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
   type OnF <: SourceCat ⟶ TargetCat
   val onF: OnF
 
-  // type SourceCat = OnF#Source
   lazy val sourceCat = sourceF.source
-  // type TargetCat = OnF#Target
   lazy val targetCat = targetF.target
 
-  type SourceF = OnF // AnyFunctor.is[OnF]
-  lazy val sourceF: SourceF = onF // AnyFunctor.is(onF)
+  type SourceF = OnF
+  lazy val sourceF: SourceF = onF
 
-  type TargetF = OnF // OnF { type Source = OnF#Source; type Target = OnF#Target; type F[X <: Source#Objects] = OnF#F[X] }
-  lazy val targetF: TargetF = onF // AnyFunctor.is(onF)
+  type TargetF = OnF
+  lazy val targetF: TargetF = onF
 
   final def at[X <: SourceCat#Objects]: OnF#Target#C[OnF#F[X], OnF#F[X]] = {
 

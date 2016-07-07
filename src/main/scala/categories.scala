@@ -16,7 +16,7 @@ case object AnyCategory {
 
   def is[Cat <: AnyCategory](cat: Cat): AnyCategory.is[Cat] = cat.asInstanceOf[AnyCategory.is[Cat]]
 
-  type is[Cat <: AnyCategory] = Cat with AnyCategory {
+  type is[Cat <: AnyCategory] = Cat {
 
     type Objects = Cat#Objects
     type C[X <: Cat#Objects, Y <: Cat#Objects] = Cat#C[X,Y]
@@ -43,7 +43,7 @@ case object AnyCategory {
       Functor0 <: AnyFunctor { type Source = Cat; type Target = Cat },
       Monad0 <: AnyMonad { type On = Cat; type Functor = Functor0 }
     ]
-    (f: Functor0, m: Monad0): KleisliCategory[Cat,Functor0,Monad0] = 
+    (f: Functor0, m: Monad0): KleisliCategory[Cat,Functor0,Monad0] =
       KleisliCategory(m)
   }
 }
