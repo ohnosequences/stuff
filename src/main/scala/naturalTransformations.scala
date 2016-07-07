@@ -46,7 +46,7 @@ case object AnyNaturalTransformation {
   def is[N <: AnyNaturalTransformation](n: N): AnyNaturalTransformation.is[N] =
     n.asInstanceOf[AnyNaturalTransformation.is[N]]
 
-  type is[N <: AnyNaturalTransformation] = N with AnyNaturalTransformation {
+  type is[N <: AnyNaturalTransformation] = N {
     //
     type SourceCat = N#SourceCat;
     type TargetCat = N#TargetCat;

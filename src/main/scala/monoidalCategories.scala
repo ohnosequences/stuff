@@ -22,7 +22,7 @@ case object AnyMonoidalStructure {
   def is[MCat <: AnyMonoidalStructure](mcat: MCat): is[MCat] =
     mcat.asInstanceOf[is[MCat]]
 
-  type is[MCat <: AnyMonoidalStructure] = MCat with AnyMonoidalStructure {
+  type is[MCat <: AnyMonoidalStructure] = MCat {
 
     type On = MCat#On
     type I = MCat#I

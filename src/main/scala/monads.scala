@@ -54,13 +54,11 @@ case object AnyMonad {
 
   def is[M <: AnyMonad](m: M): is[M] = m.asInstanceOf[is[M]]
 
-  type is[M <: AnyMonad] = M with AnyMonad {
+  type is[M <: AnyMonad] = M {
 
     type On = AnyCategory.is[M#On]
     type Source = M#Source
-    // type Target = M#Target
     type Functor = AnyFunctor.is[M#Functor]
-    // type F[X <: Source#Objects] = M#Functor#F[X]//#Functor#F[X]
     type η = M#η
     type μ = M#μ
   }
