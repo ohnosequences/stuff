@@ -13,7 +13,7 @@ trait AnyMonad extends AnyFunctor {
   type Functor <: On ⟶ On
   val functor: Functor
 
-  type F[X <: On#Objects] = Functor#F[X]
+  override type F[X <: Source#Objects] = Functor#F[X]
 
   type η <: AnyNaturalTransformation {
     type SourceCat = On
@@ -21,7 +21,7 @@ trait AnyMonad extends AnyFunctor {
     type SourceF = IdentityFunctor[On]
     type TargetF = Functor
   }
-  val η: AnyNaturalTransformation.is[η]
+  val η: η //AnyNaturalTransformation.is[η]
 
   type μ <: AnyNaturalTransformation {
 
@@ -31,7 +31,7 @@ trait AnyMonad extends AnyFunctor {
     type SourceF = Functor >=> Functor
     type TargetF = Functor
   }
-  val μ: AnyNaturalTransformation.is[μ]
+  val μ: μ //AnyNaturalTransformation.is[μ]
 
   def apply[X <: On#Objects, Y <: On#Objects](f: On#C[X,Y]): On#C[F[X], F[Y]] = AnyFunctor.is(functor)(f)
 }
@@ -56,12 +56,22 @@ case object AnyMonad {
 
   type is[M <: AnyMonad] = M with AnyMonad {
 
-    type On = M#On
-    type Source = M#Functor#Source
-    type Target = M#Functor#Target
-    type Functor = M#Functor
+    type On = AnyCategory.is[M#On]
+    type Source = M#Source
+    // type Target = M#Target
+    type Functor = AnyFunctor.is[M#Functor]
+    // type F[X <: Source#Objects] = M#Functor#F[X]//#Functor#F[X]
     type η = M#η
     type μ = M#μ
+  }
+
+  implicit final class MonadSyntax[M <: AnyMonad](val m: M) extends AnyVal {
+
+    def kleisliCategory[
+      M0 >: M <: M { type On = C; type Functor = F0 },
+      F0 >: M#Functor <: AnyFunctor { type Source = C; type Target = C },
+      C >: M#On <: AnyCategory
+    ]: KleisliCategory[C, F0, M0] = KleisliCategory(m: M0)
   }
 }
 

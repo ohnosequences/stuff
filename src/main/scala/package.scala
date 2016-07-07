@@ -7,10 +7,24 @@ package object stuff {
 
   type ⟶[src <: AnyCategory, tgt <: AnyCategory] =
     AnyFunctor {
-      
-       type Source = src
-       type Target = tgt
-     }
+
+      type Source = src
+      type Target = tgt
+    }
+
+  type EndoFunctorOn[Cat <: AnyCategory] =
+    AnyFunctor {
+
+      type Source = Cat
+      type Target = Cat
+    }
+
+  type Monad[C <: AnyCategory, F0 <: EndoFunctorOn[C]] =
+    AnyMonad {
+
+      type On = C
+      type Functor = F0
+    }
 
   type ~>[src <: AnyFunctor, tgt <: AnyFunctor] =
     AnyNaturalTransformation {

@@ -156,23 +156,27 @@ class ScalaCategoryTest extends FunSuite {
   test("monads and kleisli categories") {
 
     val idMonad = IdentityMonad(Scala)
-    val klCat   = KleisliCategory(idMonad)
-    val klF     = KleisliFunctor(klCat)
-    val uF      = KleisliForget(klCat)
 
-    val f = { x: String => x.length }
+    val zz = idMonad.kleisliCategory
 
-    // NOTE why the types are needed here?
-    assert { klF[String,Int](f)("hola") === uF[String,Int](f)("hola") }
-
-    val ListKL = KleisliCategory(ListM)
-
-    val ListKLF = KleisliFunctor(ListKL)
-    val ListKLU = KleisliForget(ListKL)
-
-    val g = { xs: String => xs.toList }
-
-    println { ListKLU[String,Char](g)(List("hola", "scalac")) }
+    
+    // val klCat   = idMonad.functor kleisliCategory idMonad
+    // val klF     = KleisliFunctor(klCat)
+    // val uF      = KleisliForget(klCat)
+    //
+    // val f = { x: String => x.length }
+    //
+    // // NOTE why the types are needed here?
+    // assert { klF[String,Int](f)("hola") === uF[String,Int](f)("hola") }
+    //
+    // val ListKL = KleisliCategory(ListM)
+    //
+    // val ListKLF = KleisliFunctor(ListKL)
+    // val ListKLU = KleisliForget(ListKL)
+    //
+    // val g = { xs: String => xs.toList }
+    //
+    // println { ListKLU[String,Char](g)(List("hola", "scalac")) }
   }
 
   test("monoidal structures") {

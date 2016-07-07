@@ -44,8 +44,12 @@ case object AnyFunctor {
     def >=>[G0 <: AnyFunctor { type Source = F0#Target }](g: G0): F0 >=> G0 =
       new FunctorComposition[F0,G0](f,g)
 
-    def id: IdentityNaturalTransformation[F0#Source, is[F0], F0#Target] =
-      IdentityNaturalTransformation(is(f))
+    def id[
+      F00 >: F0 <: F0 { type Source = C; type Target = D },
+      C   >: F0#Source <: AnyCategory,
+      D   >: F0#Target <: AnyCategory
+    ]: IdentityNaturalTransformation[C, F00, D] =
+      IdentityNaturalTransformation(f: F00)
   }
 }
 

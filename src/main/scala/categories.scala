@@ -38,5 +38,12 @@ case object AnyCategory {
   implicit class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
 
     def Id: IdentityFunctor[Cat] = IdentityFunctor[Cat](cat)
+
+    def kleisliCategory[
+      Functor0 <: AnyFunctor { type Source = Cat; type Target = Cat },
+      Monad0 <: AnyMonad { type On = Cat; type Functor = Functor0 }
+    ]
+    (f: Functor0, m: Monad0): KleisliCategory[Cat,Functor0,Monad0] = 
+      KleisliCategory(m)
   }
 }
