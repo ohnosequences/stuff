@@ -22,23 +22,23 @@ case object AnyCategory {
     type Objects = Cat#Objects
     type C[X <: Cat#Objects, Y <: Cat#Objects] = Cat#C[X,Y]
   }
+}
 
-  implicit class MorphismsSyntax [
-    cat <: AnyCategory,
-    Y <: cat#Objects,
-    Z <: cat#Objects
-  ](
-    val g: cat#C[Y,Z]
-  )
-  extends AnyVal {
+case class MorphismsSyntax [
+  Cat <: AnyCategory,
+  Y <: Cat#Objects,
+  Z <: Cat#Objects
+](
+  val g: Cat#C[Y,Z]
+)
+extends AnyVal {
 
-    def >=>[W <: cat#Objects](h: cat#C[Z,W])(implicit c: cat): cat#C[Y,W] =
-      is(c).compose(h,g)
-  }
+  def >=>[W <: Cat#Objects](h: Cat#C[Z,W])(implicit cat: Cat): Cat#C[Y,W] =
+    AnyCategory.is(cat).compose(h,g)
+}
 
-  implicit class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
+case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
 
-    def Id: IdentityFunctor[Cat] =
-      IdentityFunctor[Cat](cat)
-  }
+  def Id: IdentityFunctor[Cat] =
+    IdentityFunctor[Cat](cat)
 }

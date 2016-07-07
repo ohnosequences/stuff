@@ -1,7 +1,23 @@
 package ohnosequences
 
 package object stuff {
+  /*
+    ## Categories
+  */
+  implicit def morphismsSyntax[
+    Cat <: AnyCategory,
+    Y <: Cat#Objects,
+    Z <: Cat#Objects
+  ](g: Cat#C[Y,Z])
+  : MorphismsSyntax[Cat,Y,Z] =
+    MorphismsSyntax(g)
 
+  implicit def categorySyntax[Cat <: AnyCategory](cat: Cat): CategorySyntax[Cat] =
+    CategorySyntax(cat)
+    
+  /*
+    ## Functors
+  */
   type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
     FunctorComposition[f0,g0]
 
