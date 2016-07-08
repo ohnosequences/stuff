@@ -97,3 +97,32 @@ extends AnyColaxMonoidalFunctor {
   type Functor = Functor0
   type TargetM = TM
 }
+
+/*
+  A functor between cartesian monoidal categories is automatically colax monoidal. This construction only requires of the domain to be *affine* (a terminal unit), but we don't want to make this overly complex. See for example the [nLab](https://ncatlab.org/nlab/show/semicartesian+monoidal+category).
+*/
+case class ColaxCartesianMonoidalFunctor[
+  SM <: AnyCartesianMonoidalStructure,
+  Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
+  TM <: AnyCartesianMonoidalStructure
+](
+  val sourceM: SM,
+  val functor: Functor0,
+  val targetM: TM
+)
+extends AnyColaxMonoidalFunctor {
+
+  type SourceM = SM
+  type Functor = Functor0
+  type TargetM = TM
+
+  def unzip[A <: Source#Objects, B <: Source#Objects]: Target#C[F[A □ B], F[A] ⋄ F[B]] =
+    AnyMonoidalStructure.is(targetM).univ(
+      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).left[A,B]),
+      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).right[A,B])
+    )
+
+  def counit: Target#C[F[SourceM#I], TargetM#I] =
+    AnyMonoidalStructure.is(targetM).erase
+
+}
