@@ -12,6 +12,18 @@ trait AnyCategory {
   implicit val me: this.type = this
 }
 
+case class OppositeCategory[Cat <: AnyCategory](val cat: Cat) {
+
+  type Objects = Cat#Objects
+  type C[X <: Objects, Y <: Objects] = Cat#C[Y,X]
+
+  def id[X <: Objects]: C[X,X] =
+    AnyCategory.is(cat).id
+
+  def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] =
+    { (g,f) => AnyCategory.is(cat).compose(f,g) }
+}
+
 case object AnyCategory {
 
   def is[Cat <: AnyCategory](cat: Cat): is[Cat] =
@@ -57,4 +69,7 @@ case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
 
   def Id: IdentityFunctor[Cat] =
     IdentityFunctor[Cat](cat)
+
+  def op: OppositeCategory[Cat] =
+    OppositeCategory(cat)
 }
