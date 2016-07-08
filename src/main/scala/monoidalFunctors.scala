@@ -124,5 +124,33 @@ extends AnyColaxMonoidalFunctor {
 
   def counit: Target#C[F[SourceM#I], TargetM#I] =
     AnyMonoidalStructure.is(targetM).erase
+}
+
+/*
+  The co-dual of the above.
+*/
+case class LaxCocartesianMonoidalFunctor[
+  SM <: AnyCocartesianMonoidalStructure,
+  Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
+  TM <: AnyCocartesianMonoidalStructure
+](
+  val sourceM: SM,
+  val functor: Functor0,
+  val targetM: TM
+)
+extends AnyLaxMonoidalFunctor {
+
+  type SourceM = SM
+  type Functor = Functor0
+  type TargetM = TM
+
+  def zip[A <: Source#Objects, B <: Source#Objects]: Target#C[F[A] ⋄ F[B], F[A □ B]] =
+    AnyMonoidalStructure.is(targetM).univ(
+      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).left[A,B]),
+      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).right[A,B])
+    )
+
+  def unit: Target#C[TargetM#I, F[SourceM#I]] =
+    AnyMonoidalStructure.is(targetM).nothing
 
 }
