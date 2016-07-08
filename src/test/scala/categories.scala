@@ -264,13 +264,6 @@ class ScalaCategoryTest extends FunSuite {
     assert { IdTwice(f) === f }
   }
 
-  test("Natural transformations on Scala") {
-
-    // TODO fix vertical composition
-    // val zz = Scala.Id.id >=> Scala.Id.id >=> Scala.Id.id
-    // assert { zz.at[Boolean](true) === Scala.id[Boolean](true) }
-  }
-
   test("monads and kleisli categories") {
 
     val idMonad     = IdentityMonad(Scala)
