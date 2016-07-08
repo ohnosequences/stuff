@@ -69,4 +69,7 @@ case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
 
   def Id: IdentityFunctor[Cat] =
     IdentityFunctor[Cat](cat)
+
+  def op: OppositeCategory[Cat] =
+    OppositeCategory(cat)
 }
