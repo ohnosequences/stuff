@@ -57,12 +57,32 @@ extends AnyVal {
     AnyMonoidalStructure.is(mcat).⊗(g,f)
 
   def ×[
-  C <: Cat#Objects,
-  D <: Cat#Objects,
-  CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
-]
-(f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[ CMCat# ⊗[Y,C], CMCat# ⊗[Z,D]] =
-  AnyMonoidalStructure.is(cmcat).×(g,f)
+    C <: Cat#Objects,
+    D <: Cat#Objects,
+    CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
+  ]
+  (f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[ CMCat# ⊗[Y,C], CMCat# ⊗[Z,D]] =
+    AnyMonoidalStructure.is(cmcat).×(g,f)
+
+  def +[
+    C <: Cat#Objects,
+    D <: Cat#Objects,
+    CMCat <: AnyCocartesianMonoidalStructure { type On = Cat }
+  ]
+  (f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[ CMCat# +[Y,C], CMCat# +[Z,D]] =
+    AnyMonoidalStructure.is(cmcat).+(g,f)
+
+  def |[
+    X <: Cat#Objects,
+    CMCat <: AnyCocartesianMonoidalStructure { type On = Cat }
+  ](f: Cat#C[X,Z])(implicit cmcat: CMCat): Cat#C[CMCat# +[Y,X], Z] =
+    AnyMonoidalStructure.is(cmcat).univ(g,f)
+
+  def &[
+    W <: Cat#Objects,
+    CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
+  ](f: Cat#C[Y,W])(implicit cmcat: CMCat): Cat#C[Y, CMCat# ×[Z,W]] =
+    AnyMonoidalStructure.is(cmcat).univ(g,f)
 }
 
 case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
