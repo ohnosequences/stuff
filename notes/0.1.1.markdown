@@ -1,0 +1,5 @@
+
+- removed broken natural transformation composition
+- added colax monoidal functors, (co)lax structures for functors between (co)cartesian categories
+- added a opposite category type
+- more syntax for morphisms in monoidal categories
