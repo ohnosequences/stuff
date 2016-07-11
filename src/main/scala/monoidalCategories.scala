@@ -93,3 +93,9 @@ trait AnyRigStructure { rig =>
 
   def distribute[A <: On#Objects, B <: On#Objects, C <: On#Objects]: On#C[ (A ⊕ B) ⊗ C, (A ⊗ C) ⊕ (B ⊗ C) ]
 }
+
+
+trait AnySymmetricMonoidalStructure extends AnyMonoidalStructure {
+
+  def symmetry[A <: On#Objects, B <: On#Objects]: On#C[A ⊗ B, B ⊗ A]
+}
