@@ -12,7 +12,7 @@ trait AnyCategory {
   implicit val me: this.type = this
 }
 
-case class OppositeCategory[Cat <: AnyCategory](val cat: Cat) {
+case class OppositeCategory[Cat <: AnyCategory](val cat: Cat) extends AnyCategory {
 
   type Objects = Cat#Objects
   type C[X <: Objects, Y <: Objects] = Cat#C[Y,X]
@@ -92,4 +92,8 @@ case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
 
   def op: OppositeCategory[Cat] =
     OppositeCategory(cat)
+
+  def dagger[Fun <: Cat ⟶ OppositeCategory[Cat]](fun: Fun):
+    DaggerCategory[Cat, Fun] =
+    DaggerCategory[Cat, Fun](cat, fun)
 }
