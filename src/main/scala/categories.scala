@@ -90,10 +90,9 @@ case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
   def Id: IdentityFunctor[Cat] =
     IdentityFunctor[Cat](cat)
 
-  def op: OppositeCategory[Cat] =
-    OppositeCategory(cat)
+  def op: Op[Cat] = OppositeCategory(cat)
 
-  def dagger[Fun <: Cat ⟶ OppositeCategory[Cat]](fun: Fun):
+  def dagger[Fun <: AnyDaggerFunctor.On[Cat]](fun: Fun):
     DaggerCategory[Cat, Fun] =
     DaggerCategory[Cat, Fun](cat, fun)
 }
