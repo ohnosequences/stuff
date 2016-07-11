@@ -8,7 +8,7 @@ package object stuff {
     Cat <: AnyCategory,
     Y <: Cat#Objects,
     Z <: Cat#Objects
-  ](g: Cat#C[Y,Z])(implicit cat: Cat)
+  ](g: Cat#C[Y,Z])
   : MorphismsSyntax[Cat,Y,Z] =
     MorphismsSyntax(g)
 
