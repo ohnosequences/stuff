@@ -72,10 +72,11 @@ class MealyTests extends FunSuite {
     val f = { x: String => x.length } :<: Scala
     val g = { n: Int => if(n % 2 == 0) true else false } :<: Scala
 
-    val fg = f >=> g
+    val fg = imply(Scala){ f >=> g }
+    // val fg = in(Scala){ f >=> g }
 
     val kleisliId = IdentityMonad(Scala).kleisliCategory
-    val fg2: kleisliId.C[String,Boolean] = imply(kleisliId) { f >=> g }
+    val fg2 = imply(kleisliId) { f :<: kleisliId >=> g }
 
     val fg0 = imply(Scala) {
 

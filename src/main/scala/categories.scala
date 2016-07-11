@@ -9,8 +9,6 @@ trait AnyCategory {
 
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z]
 
-  implicit val me: this.type = this
-
   def :<:[A <: Objects, B <: Objects](f: C[A,B]): C[A,B] = f
 }
 

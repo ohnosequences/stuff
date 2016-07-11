@@ -15,6 +15,8 @@ package object stuff {
   implicit def categorySyntax[Cat <: AnyCategory](cat: Cat): CategorySyntax[Cat] =
     CategorySyntax(cat)
 
+  // NOT WORKING
+  def in[Cat <: AnyCategory, Z](cat: Cat)(expr: => Z): Z = imply(cat)(expr)
   /*
     ## Functors
   */
