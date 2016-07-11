@@ -83,6 +83,11 @@ extends AnyVal {
     CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
   ](f: Cat#C[Y,W])(implicit cmcat: CMCat): Cat#C[Y, CMCat# ×[Z,W]] =
     AnyMonoidalStructure.is(cmcat).univ(g,f)
+
+  def dagger[
+    DC <: AnyDaggerCategory { type On = Cat }
+  ](implicit dc: DC): Cat#C[Z,Y] =
+    AnyDaggerCategory.is(dc).dagger(g)
 }
 
 case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {

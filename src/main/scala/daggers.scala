@@ -3,8 +3,8 @@ package ohnosequences.stuff
 
 trait AnyDaggerCategory {
 
-  type Cat <: AnyCategory
-  val  cat: Cat
+  type On <: AnyCategory
+  val  on: On
 
   /*
     The dagger "†" should of course satisfy
@@ -13,12 +13,18 @@ trait AnyDaggerCategory {
     2. dagger(id) = id
     3. dagger(f >=> g) = dagger(g) >=> dagger(f)
   */
-  def dagger[X <: Cat#Objects, Y <: Cat#Objects]: Cat#C[X,Y] => Cat#C[Y,X]
+  def dagger[X <: On#Objects, Y <: On#Objects]: On#C[X,Y] => On#C[Y,X]
 }
 
-abstract class DaggerCategory[Cat_ <: AnyCategory](val cat: Cat_) extends AnyDaggerCategory {
+case object AnyDaggerCategory {
 
-  type Cat = Cat_
+  def is[DC <: AnyDaggerCategory](dc: DC): is[DC] = dc.asInstanceOf[is[DC]]
+  type is[DC <: AnyDaggerCategory] = DC { type On = DC#On }
+}
+
+abstract class DaggerCategory[Cat_ <: AnyCategory](val on: Cat_) extends AnyDaggerCategory {
+
+  type On = Cat_
 }
 
 /* Example of a dagger category; we first build a category, and then a dagger on it. */
@@ -44,7 +50,7 @@ case class CofreeDaggerCategory[On_ <: AnyCategory](val on: On_) extends AnyCofr
 /* I know, names are confusing. This is the dagger structure on that category */
 case class CofreeDaggerCategoryStructure[Cat0 <: AnyCategory](val c: Cat0) extends DaggerCategory(CofreeDaggerCategory(c)) {
 
-  def dagger[X <: Cat#Objects, Y <: Cat#Objects]: Cat#C[X,Y] => Cat#C[Y,X] =
+  def dagger[X <: On#Objects, Y <: On#Objects]: On#C[X,Y] => On#C[Y,X] =
     { case (f,df) => (df,f) }
 }
 
@@ -61,13 +67,13 @@ trait AnyDaggerFunctor {
   type Target <: AnyDaggerCategory
   val target: Target
 
-  type Functor <: Source#Cat ⟶ Target#Cat
+  type Functor <: Source#On ⟶ Target#On
   val functor: Functor
 }
 
 abstract class DaggerFunctor[
   Source_ <: AnyDaggerCategory,
-  Functor_ <: Source_ #Cat ⟶ Target_ #Cat,
+  Functor_ <: Source_ #On ⟶ Target_ #On,
   Target_ <: AnyDaggerCategory
 ]
 (
