@@ -78,7 +78,21 @@ trait AnyCocartesianMonoidalStructure extends AnyMonoidalStructure {
 
   def univ_inv[A <: On#Objects, B <: On#Objects, X <: On#Objects]: On#C[ A + B, X ] => (On#C[A,X], On#C[B,X]) =
     { f => (left >=> f, right >=> f) }
+}
 
+case object AnyCocartesianMonoidalStructure {
+
+  type is[S <: AnyCocartesianMonoidalStructure] = S {
+
+    type On = S#On
+    type I = S#I
+
+    type ⊗[X <: On#Objects, Y <: On#Objects] = S# ⊗[X,Y]
+    type ×[X <: On#Objects, Y <: On#Objects] = S# +[X,Y]
+  }
+
+  def is[MCat <: AnyCocartesianMonoidalStructure](mcat: MCat): is[MCat] =
+    mcat.asInstanceOf[is[MCat]]
 }
 
 trait AnyRigStructure { rig =>

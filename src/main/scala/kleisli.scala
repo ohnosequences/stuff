@@ -15,7 +15,7 @@ trait AnyKleisliCategory extends AnyCategory { kleisli =>
 
   type Objects = Cat#Objects
 
-  type C[X <: Objects, Y <: Objects] = Cat#C[X, Monad#F[Y]]
+  type C[X <: Objects, Y <: Objects] = Cat#C[X, Functor#F[Y]]
 
   final def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] = (g,f) => {
 
@@ -31,6 +31,14 @@ trait AnyKleisliCategory extends AnyCategory { kleisli =>
 }
 
 case object AnyKleisliCategory {
+
+  type is[KC <: AnyKleisliCategory] = KC {
+    type Cat = KC#Cat
+    type Functor = KC#Functor
+    type Monad = KC#Monad
+  }
+
+  def is[KC <: AnyKleisliCategory](kc: KC): is[KC] = kc.asInstanceOf[is[KC]]
 
   implicit final class KleisliCategorySyntax[KlC <: AnyKleisliCategory](val klC: KlC) extends AnyVal {
 
