@@ -9,6 +9,8 @@ trait AnyCategory {
 
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z]
 
+  def :<:[A <: Objects, B <: Objects](f: C[A,B]): C[A,B] = f
+
   implicit val me: this.type = this
 }
 
@@ -57,12 +59,13 @@ extends AnyVal {
     AnyMonoidalStructure.is(mcat).⊗(g,f)
 
   def ×[
-    C <: Cat#Objects,
-    D <: Cat#Objects,
-    CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
+    C <: CMCat#On#Objects,
+    D <: CMCat#On#Objects,
+    // NOTE why this? looks related to initialization of objects
+    CMCat <: Singleton with AnyCartesianMonoidalStructure { type On = Cat }
   ]
-  (f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[ CMCat# ⊗[Y,C], CMCat# ⊗[Z,D]] =
-    AnyMonoidalStructure.is(cmcat).×(g,f)
+  (f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[CMCat# ×[Y,C], CMCat# ×[Z,D]] =
+    AnyCartesianMonoidalStructure.is(cmcat).×(g,f)
 
   def +[
     C <: Cat#Objects,
@@ -79,7 +82,7 @@ extends AnyVal {
     AnyMonoidalStructure.is(cmcat).univ(g,f)
 
   def &[
-    W <: Cat#Objects,
+    W <: CMCat#On#Objects,
     CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
   ](f: Cat#C[Y,W])(implicit cmcat: CMCat): Cat#C[Y, CMCat# ×[Z,W]] =
     AnyMonoidalStructure.is(cmcat).univ(g,f)

@@ -75,7 +75,7 @@ case object AnyMonad {
   }
 }
 
-case class IdentityMonad[C <: AnyCategory](c: C) extends MonadOn(c)(c.Id) {
+case class IdentityMonad[C <: AnyCategory](c: C) extends MonadOn(c)(IdentityFunctor(c)) {
 
   type η  = IdentityNaturalTransformation[On, IdentityFunctor[On], On]
   val η   = IdentityNaturalTransformation[On, IdentityFunctor[On], On](functor)

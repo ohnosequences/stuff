@@ -54,7 +54,22 @@ trait AnyCartesianMonoidalStructure extends AnyMonoidalStructure {
       right >=> g
     )
 
-  def ×[A <: On#Objects, B <: On#Objects, C <: On#Objects, D <: On#Objects](f: On#C[A,B], g: On#C[C,D]) = ⊗(f,g)
+  def ×[A <: On#Objects, B <: On#Objects, C <: On#Objects, D <: On#Objects](f: On#C[A,B], g: On#C[C,D]): On#C[A × C, B × D] = ⊗(f,g)
+}
+
+case object AnyCartesianMonoidalStructure {
+
+  def is[MCat <: AnyCartesianMonoidalStructure](mcat: MCat): is[MCat] =
+    mcat.asInstanceOf[is[MCat]]
+
+  type is[MCat <: AnyCartesianMonoidalStructure] = MCat {
+
+    type On = MCat#On
+    type I = MCat#I
+
+    type ⊗[X <: On#Objects, Y <: On#Objects] = MCat# ⊗[X,Y]
+    type ×[X <: On#Objects, Y <: On#Objects] = MCat# ×[X,Y]
+  }
 }
 
 trait AnyCocartesianMonoidalStructure extends AnyMonoidalStructure {

@@ -8,13 +8,15 @@ package object stuff {
     Cat <: AnyCategory,
     Y <: Cat#Objects,
     Z <: Cat#Objects
-  ](g: Cat#C[Y,Z])(implicit cat: Cat)
+  ](g: Cat#C[Y,Z])
   : MorphismsSyntax[Cat,Y,Z] =
     MorphismsSyntax(g)
 
   implicit def categorySyntax[Cat <: AnyCategory](cat: Cat): CategorySyntax[Cat] =
     CategorySyntax(cat)
 
+  // NOT WORKING
+  def in[Cat <: AnyCategory, Z](cat: Cat)(expr: => Z): Z = imply(cat)(expr)
   /*
     ## Functors
   */
