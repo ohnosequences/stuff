@@ -12,7 +12,7 @@ trait AnyCategory {
   implicit val me: this.type = this
 }
 
-case class OppositeCategory[Cat <: AnyCategory](val cat: Cat) {
+case class OppositeCategory[Cat <: AnyCategory](val cat: Cat) extends AnyCategory {
 
   type Objects = Cat#Objects
   type C[X <: Objects, Y <: Objects] = Cat#C[Y,X]
@@ -83,6 +83,11 @@ extends AnyVal {
     CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
   ](f: Cat#C[Y,W])(implicit cmcat: CMCat): Cat#C[Y, CMCat# ×[Z,W]] =
     AnyMonoidalStructure.is(cmcat).univ(g,f)
+
+  def dagger[
+    DC <: AnyDaggerCategory { type On = Cat }
+  ](implicit dc: DC): Cat#C[Z,Y] =
+    AnyDaggerCategory.is(dc).dagger(g)
 }
 
 case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
@@ -90,6 +95,5 @@ case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
   def Id: IdentityFunctor[Cat] =
     IdentityFunctor[Cat](cat)
 
-  def op: OppositeCategory[Cat] =
-    OppositeCategory(cat)
+  def op: Op[Cat] = OppositeCategory(cat)
 }

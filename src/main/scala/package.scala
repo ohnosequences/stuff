@@ -15,6 +15,8 @@ package object stuff {
   implicit def categorySyntax[Cat <: AnyCategory](cat: Cat): CategorySyntax[Cat] =
     CategorySyntax(cat)
 
+  type Op[C <: AnyCategory] = OppositeCategory[C]
+
   /*
     ## Functors
   */
