@@ -2,9 +2,9 @@ package ohnosequences.stuff
 
 trait AnyLaxMonoidalFunctor extends AnyFunctor {
 
-  type TargetM <: AnyMonoidalStructure
+  type TargetM <: AnyMonoidalCategory
   val sourceM: SourceM
-  type SourceM <: AnyMonoidalStructure
+  type SourceM <: AnyMonoidalCategory
   val targetM: TargetM
 
   // NOTE notation
@@ -33,9 +33,9 @@ trait AnyLaxMonoidalFunctor extends AnyFunctor {
 }
 
 abstract class LaxMonoidalFunctor[
-  SM <: AnyMonoidalStructure,
+  SM <: AnyMonoidalCategory,
   Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
-  TM <: AnyMonoidalStructure
+  TM <: AnyMonoidalCategory
 ]
 (
   val sourceM: SM,
@@ -51,9 +51,9 @@ extends AnyLaxMonoidalFunctor {
 
 trait AnyColaxMonoidalFunctor extends AnyFunctor {
 
-  type TargetM <: AnyMonoidalStructure
+  type TargetM <: AnyMonoidalCategory
   val sourceM: SourceM
-  type SourceM <: AnyMonoidalStructure
+  type SourceM <: AnyMonoidalCategory
   val targetM: TargetM
 
   // NOTE notation
@@ -82,9 +82,9 @@ trait AnyColaxMonoidalFunctor extends AnyFunctor {
 }
 
 abstract class ColaxMonoidalFunctor[
-  SM <: AnyMonoidalStructure,
+  SM <: AnyMonoidalCategory,
   Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
-  TM <: AnyMonoidalStructure
+  TM <: AnyMonoidalCategory
 ]
 (
   val sourceM: SM,
@@ -102,9 +102,9 @@ extends AnyColaxMonoidalFunctor {
   A functor between cartesian monoidal categories is automatically colax monoidal. This construction only requires of the domain to be *affine* (a terminal unit), but we don't want to make this overly complex. See for example the [nLab](https://ncatlab.org/nlab/show/semicartesian+monoidal+category).
 */
 case class ColaxCartesianMonoidalFunctor[
-  SM <: AnyCartesianMonoidalStructure,
+  SM <: AnyProducts,
   Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
-  TM <: AnyCartesianMonoidalStructure
+  TM <: AnyProducts
 ](
   val sourceM: SM,
   val functor: Functor0,
@@ -117,22 +117,22 @@ extends AnyColaxMonoidalFunctor {
   type TargetM = TM
 
   def unzip[A <: Source#Objects, B <: Source#Objects]: Target#C[F[A □ B], F[A] ⋄ F[B]] =
-    AnyMonoidalStructure.is(targetM).univ(
-      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).left[A,B]),
-      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).right[A,B])
+    AnyMonoidalCategory.is(targetM).univ(
+      AnyFunctor.is(functor)(AnyMonoidalCategory.is(sourceM).left[A,B]),
+      AnyFunctor.is(functor)(AnyMonoidalCategory.is(sourceM).right[A,B])
     )
 
   def counit: Target#C[F[SourceM#I], TargetM#I] =
-    AnyMonoidalStructure.is(targetM).erase
+    AnyMonoidalCategory.is(targetM).erase
 }
 
 /*
   The co-dual of the above.
 */
 case class LaxCocartesianMonoidalFunctor[
-  SM <: AnyCocartesianMonoidalStructure,
+  SM <: AnyCoproducts,
   Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
-  TM <: AnyCocartesianMonoidalStructure
+  TM <: AnyCoproducts
 ](
   val sourceM: SM,
   val functor: Functor0,
@@ -145,12 +145,12 @@ extends AnyLaxMonoidalFunctor {
   type TargetM = TM
 
   def zip[A <: Source#Objects, B <: Source#Objects]: Target#C[F[A] ⋄ F[B], F[A □ B]] =
-    AnyMonoidalStructure.is(targetM).univ(
-      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).left[A,B]),
-      AnyFunctor.is(functor)(AnyMonoidalStructure.is(sourceM).right[A,B])
+    AnyMonoidalCategory.is(targetM).univ(
+      AnyFunctor.is(functor)(AnyMonoidalCategory.is(sourceM).left[A,B]),
+      AnyFunctor.is(functor)(AnyMonoidalCategory.is(sourceM).right[A,B])
     )
 
   def unit: Target#C[TargetM#I, F[SourceM#I]] =
-    AnyMonoidalStructure.is(targetM).nothing
+    AnyMonoidalCategory.is(targetM).nothing
 
 }

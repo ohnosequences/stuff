@@ -58,7 +58,7 @@ case object Scala extends AnyCategory {
 }
 
 
-case object ScalaSums extends AnyCocartesianMonoidalStructure {
+case object ScalaSums extends AnyCoproducts {
 
   type On     = Scala.type
   val on: On  = Scala

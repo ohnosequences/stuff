@@ -1,8 +1,8 @@
 package ohnosequences.stuff
 
-trait AnyKleisliCoproductStructure extends AnyCocartesianMonoidalStructure { kleisliSums =>
+trait AnyKleisliCoproductStructure extends AnyCoproducts { kleisliSums =>
 
-  type BaseCocartesian <: AnyCocartesianMonoidalStructure
+  type BaseCocartesian <: AnyCoproducts
   val baseCocartesian: BaseCocartesian
 
   type On <: AnyKleisliCategory {
@@ -19,7 +19,7 @@ trait AnyKleisliCoproductStructure extends AnyCocartesianMonoidalStructure { kle
   }
 
   lazy val Free = on.freeF
-  lazy val trueBase = AnyCocartesianMonoidalStructure.is(baseCocartesian)
+  lazy val trueBase = AnyCoproducts.is(baseCocartesian)
 
   type ⊗[A <: On#Objects, B <: On#Objects] = BaseCocartesian# ⊗[A,B]
   type I = BaseCocartesian#I
@@ -47,7 +47,7 @@ trait AnyKleisliCoproductStructure extends AnyCocartesianMonoidalStructure { kle
 
 case class KleisliCoproductStructure[
   On0 <: AnyCategory,
-  BaseCocartesian0 <: AnyCocartesianMonoidalStructure { type On = On0 },
+  BaseCocartesian0 <: AnyCoproducts { type On = On0 },
   Functor0 <: AnyFunctor { type Source = On0; type Target = On0 },
   Monad0 <: AnyMonad { type On = On0; type Functor = Functor0 },
   KlC0 <: AnyKleisliCategory { type Cat = On0; type Functor = Functor0; type Monad = Monad0 }

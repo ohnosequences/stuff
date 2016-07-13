@@ -49,38 +49,38 @@ case class MorphismsSyntax[
   def ⊗[
     C <: Category#Objects,
     D <: Category#Objects,
-    MCat <: AnyMonoidalStructure { type On = Category }
+    MCat <: AnyMonoidalCategory { type On = Category }
   ]
   (f: Category#C[C,D])(implicit mcat: MCat): Category#C[ MCat# ⊗[Y,C], MCat# ⊗[Z,D]] =
-    AnyMonoidalStructure.is(mcat).⊗(g,f)
+    AnyMonoidalCategory.is(mcat).⊗(g,f)
 
   def ×[
     C <: Category#Objects,
     D <: Category#Objects,
-    CMCat <: AnyCartesianMonoidalStructure { type On = Category }
+    CMCat <: AnyProducts { type On = Category }
   ]
   (f: Category#C[C,D])(implicit cmcat: CMCat): Category#C[ CMCat# ⊗[Y,C], CMCat# ⊗[Z,D]] =
-    AnyMonoidalStructure.is(cmcat).×(g,f)
+    AnyMonoidalCategory.is(cmcat).×(g,f)
 
   def +[
     C <: Category#Objects,
     D <: Category#Objects,
-    CMCat <: AnyCocartesianMonoidalStructure { type On = Category }
+    CMCat <: AnyCoproducts { type On = Category }
   ]
   (f: Category#C[C,D])(implicit cmcat: CMCat): Category#C[ CMCat# +[Y,C], CMCat# +[Z,D]] =
-    AnyMonoidalStructure.is(cmcat).+(g,f)
+    AnyMonoidalCategory.is(cmcat).+(g,f)
 
   def |[
     X <: Category#Objects,
-    CMCat <: AnyCocartesianMonoidalStructure { type On = Category }
+    CMCat <: AnyCoproducts { type On = Category }
   ](f: Category#C[X,Z])(implicit cmcat: CMCat): Category#C[CMCat# +[Y,X], Z] =
-    AnyMonoidalStructure.is(cmcat).univ(g,f)
+    AnyMonoidalCategory.is(cmcat).univ(g,f)
 
   def &[
     W <: Category#Objects,
-    CMCat <: AnyCartesianMonoidalStructure { type On = Category }
+    CMCat <: AnyProducts { type On = Category }
   ](f: Category#C[Y,W])(implicit cmcat: CMCat): Category#C[Y, CMCat# ×[Z,W]] =
-    AnyMonoidalStructure.is(cmcat).univ(g,f)
+    AnyMonoidalCategory.is(cmcat).univ(g,f)
 }
 
 case class CategorySyntax[Category <: AnyCategory](val category: Category) extends AnyVal {
