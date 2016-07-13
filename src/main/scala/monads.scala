@@ -71,16 +71,9 @@ case object AnyMonad {
       M0 >: M         <: M { type On = C; type Functor = F0 },
       F0 >: M#Functor <: M#Functor { type Source = C; type Target = C },
       C  >: M#On      <: M#On
-    ]: KleisliCategory[C, F0, M0] = KleisliCategory(m: M0)
-
-    def coproductsFrom[
-      M0 >: M         <: M { type On = C; type Functor = F0 },
-      F0 >: M#Functor <: M#Functor { type Source = C; type Target = C },
-      C  >: M#On      <: M#On,
-      Coprd <: AnyCocartesianMonoidalStructure { type On = C }
     ]
-    (coprd: Coprd): KleisliCoproductStructure[C,Coprd,F0,M0] =
-      KleisliCoproductStructure(m: M0, coprd)
+    : KleisliCategory[C, F0, M0] = 
+      KleisliCategory(m: M0)
   }
 }
 
