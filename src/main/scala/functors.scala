@@ -46,9 +46,9 @@ final case class FunctorSyntax[F0 <: AnyFunctor](val f: F0) extends AnyVal {
     FunctorComposition[F0,G0](f,g)
 
   def id[
-    F00 >: F0 <: F0 { type Source = C; type Target = D },
-    C   >: F0#Source <: F0#Source,
-    D   >: F0#Target <: F0#Target
+    F00 >: F0         <: F0 { type Source = C; type Target = D },
+    C   >: F0#Source  <: F0#Source,
+    D   >: F0#Target  <: F0#Target
   ]
   : IdentityNaturalTransformation[C, F00, D] =
     IdentityNaturalTransformation(f: F00)

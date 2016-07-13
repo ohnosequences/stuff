@@ -15,7 +15,7 @@ trait AnyKleisliCategory extends AnyCategory { kleisli =>
 
   type Objects = Cat#Objects
 
-  type C[X <: Objects, Y <: Objects] = Cat#C[X, Monad#F[Y]]
+  type C[X <: Objects, Y <: Objects] = Cat#C[X, Functor#F[Y]]
 
   final def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] = (g,f) => {
 
@@ -32,33 +32,50 @@ trait AnyKleisliCategory extends AnyCategory { kleisli =>
 
 case object AnyKleisliCategory {
 
+  type is[KC <: AnyKleisliCategory] = KC {
+    type Cat = KC#Cat
+    type Functor = KC#Functor
+    type Monad = KC#Monad
+  }
+
+  def is[KC <: AnyKleisliCategory](kc: KC): is[KC] = kc.asInstanceOf[is[KC]]
+
   implicit final class KleisliCategorySyntax[KlC <: AnyKleisliCategory](val klC: KlC) extends AnyVal {
 
     def freeF[
-      KlC0 >: KlC           <: KlC { type Cat = C0; type Functor = F0; type Monad = M0 },
-      C0    >: KlC#Cat      <: AnyCategory,
-      F0    >: KlC#Functor  <: AnyFunctor { type Source = C0; type Target = C0 },
-      M0    >: KlC#Monad    <: AnyMonad { type On = C0; type Functor = F0 }
-
+      KlC0  >: KlC          <: KlC          { type Cat = C0; type Functor = F0; type Monad = M0 },
+      C0    >: KlC#Cat      <: KlC#Cat,
+      F0    >: KlC#Functor  <: KlC#Functor  { type Source = C0; type Target = C0 },
+      M0    >: KlC#Monad    <: KlC#Monad    { type On = C0; type Functor = F0 }
     ]
     : KleisliFunctor[C0,F0,M0,KlC0] =
       KleisliFunctor(klC: KlC0)
 
     def forgetfulF[
-      KlC0 >: KlC           <: KlC { type Cat = C0; type Functor = F0; type Monad = M0 },
-      C0    >: KlC#Cat      <: AnyCategory,
-      F0    >: KlC#Functor  <: AnyFunctor { type Source = C0; type Target = C0 },
-      M0    >: KlC#Monad    <: AnyMonad { type On = C0; type Functor = F0 }
+      KlC0  >: KlC          <: KlC          { type Cat = C0; type Functor = F0; type Monad = M0 },
+      C0    >: KlC#Cat      <: KlC#Cat,
+      F0    >: KlC#Functor  <: KlC#Functor  { type Source = C0; type Target = C0 },
+      M0    >: KlC#Monad    <: KlC#Monad    { type On = C0; type Functor = F0 }
     ]
     : KleisliForget[C0,F0,M0,KlC0] =
       KleisliForget(klC: KlC0)
+
+    def coproductsFrom[
+      KlC0  >: KlC          <: KlC          { type Cat = C0; type Functor = F0; type Monad = M0 },
+      C0    >: KlC#Cat      <: KlC#Cat,
+      F0    >: KlC#Functor  <: KlC#Functor  { type Source = C0; type Target = C0 },
+      M0    >: KlC#Monad    <: KlC#Monad    { type On = C0; type Functor = F0 },
+      Coprd                 <: AnyCocartesianMonoidalStructure { type On = C0 }
+    ](coprd: Coprd)
+    : KleisliCoproductStructure[C0,Coprd,F0,M0,KlC0] =
+      KleisliCoproductStructure(klC: KlC0, coprd)
   }
 }
 
 case class KleisliCategory[
-  On0 <: AnyCategory,
-  Functor0 <: AnyFunctor { type Source = On0; type Target = On0 },
-  Monad0 <: AnyMonad { type On = On0; type Functor = Functor0 }
+  On0       <: AnyCategory,
+  Functor0  <: AnyFunctor { type Source = On0; type Target = On0 },
+  Monad0    <: AnyMonad   { type On = On0; type Functor = Functor0 }
 ]
 (val monad: Monad0) extends AnyKleisliCategory {
 
@@ -98,9 +115,9 @@ trait AnyKleisliFunctor extends AnyFunctor { kleisliF =>
 
 case class KleisliFunctor[
   On0 <: AnyCategory,
-  F0 <: AnyFunctor { type Source = On0; type Target = On0 },
-  M0 <: AnyMonad { type On = On0; type Functor = F0 },
-  KC <: AnyKleisliCategory { type Cat = On0; type Monad = M0; type Functor = F0 }
+  F0 <: AnyFunctor          { type Source = On0; type Target = On0 },
+  M0 <: AnyMonad            { type On = On0; type Functor = F0 },
+  KC <: AnyKleisliCategory  { type Cat = On0; type Monad = M0; type Functor = F0 }
 ](val target: KC) extends AnyKleisliFunctor {
 
   type On = On0

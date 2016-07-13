@@ -71,7 +71,9 @@ case object AnyMonad {
       M0 >: M         <: M { type On = C; type Functor = F0 },
       F0 >: M#Functor <: M#Functor { type Source = C; type Target = C },
       C  >: M#On      <: M#On
-    ]: KleisliCategory[C, F0, M0] = KleisliCategory(m: M0)
+    ]
+    : KleisliCategory[C, F0, M0] = 
+      KleisliCategory(m: M0)
   }
 }
 
