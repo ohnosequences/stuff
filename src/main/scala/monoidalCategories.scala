@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-trait AnyMonoidalStructure {
+trait AnyMonoidalCategory {
 
   type On <: AnyCategory
   implicit val on: On
@@ -17,12 +17,12 @@ trait AnyMonoidalStructure {
   implicit val me: this.type = this
 }
 
-case object AnyMonoidalStructure {
+case object AnyMonoidalCategory {
 
-  def is[MCat <: AnyMonoidalStructure](mcat: MCat): is[MCat] =
+  def is[MCat <: AnyMonoidalCategory](mcat: MCat): is[MCat] =
     mcat.asInstanceOf[is[MCat]]
 
-  type is[MCat <: AnyMonoidalStructure] = MCat {
+  type is[MCat <: AnyMonoidalCategory] = MCat {
 
     type On = MCat#On
     type I = MCat#I
@@ -31,7 +31,7 @@ case object AnyMonoidalStructure {
   }
 }
 
-trait AnyCartesianMonoidalStructure extends AnyMonoidalStructure {
+trait AnyProducts extends AnyMonoidalCategory {
 
   type × [A <: On#Objects, B <: On#Objects] = A ⊗ B
 
@@ -57,7 +57,7 @@ trait AnyCartesianMonoidalStructure extends AnyMonoidalStructure {
   def ×[A <: On#Objects, B <: On#Objects, C <: On#Objects, D <: On#Objects](f: On#C[A,B], g: On#C[C,D]) = ⊗(f,g)
 }
 
-trait AnyCocartesianMonoidalStructure extends AnyMonoidalStructure {
+trait AnyCoproducts extends AnyMonoidalCategory {
 
   type + [A <: On#Objects, B <: On#Objects] = A ⊗ B
 
@@ -80,9 +80,9 @@ trait AnyCocartesianMonoidalStructure extends AnyMonoidalStructure {
     { f => (left >=> f, right >=> f) }
 }
 
-case object AnyCocartesianMonoidalStructure {
+case object AnyCoproducts {
 
-  type is[S <: AnyCocartesianMonoidalStructure] = S {
+  type is[S <: AnyCoproducts] = S {
 
     type On = S#On
     type I = S#I
@@ -91,7 +91,7 @@ case object AnyCocartesianMonoidalStructure {
     type ×[X <: On#Objects, Y <: On#Objects] = S# +[X,Y]
   }
 
-  def is[MCat <: AnyCocartesianMonoidalStructure](mcat: MCat): is[MCat] =
+  def is[MCat <: AnyCoproducts](mcat: MCat): is[MCat] =
     mcat.asInstanceOf[is[MCat]]
 }
 
@@ -99,8 +99,8 @@ trait AnyRigStructure { rig =>
 
   type On <: AnyCategory
 
-  type Plus <: AnyMonoidalStructure { type On = rig.On }
-  type Mult <: AnyMonoidalStructure { type On = rig.On }
+  type Plus <: AnyMonoidalCategory { type On = rig.On }
+  type Mult <: AnyMonoidalCategory { type On = rig.On }
 
   type ⊕[X <: On#Objects, Y <: On#Objects] = Plus# ⊗[X,Y]
   type ⊗[X <: On#Objects, Y <: On#Objects] = Mult# ⊗[X,Y]

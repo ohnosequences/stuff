@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-trait AnyMonad extends AnyFunctor {
+trait AnyMonad {
 
   type On <: AnyCategory
   lazy val on: On = functor.source
@@ -16,20 +16,20 @@ trait AnyMonad extends AnyFunctor {
   type F[X <: Source#Objects] = Functor#F[X]
 
   type η <: AnyNaturalTransformation {
-    type SourceCat = On
-    type TargetCat = On
-    type SourceF = IdentityFunctor[On]
-    type TargetF = Functor
+    type SourceCategory = On
+    type TargetCategory = On
+    type SourceFunctor = IdentityFunctor[On]
+    type TargetFunctor = Functor
   }
   val η: η
 
   type μ <: AnyNaturalTransformation {
 
-    type SourceCat = On
-    type TargetCat = On
+    type SourceCategory = On
+    type TargetCategory = On
 
-    type SourceF = Functor >=> Functor
-    type TargetF = Functor
+    type SourceFunctor = Functor >=> Functor
+    type TargetFunctor = Functor
   }
   val μ: μ
 
@@ -60,31 +60,32 @@ case object AnyMonad {
 
     type On = AnyCategory.is[M#On]
     type Source = M#Source
+    type Target = M#Target
     type Functor = AnyFunctor.is[M#Functor]
     type η = M#η
     type μ = M#μ
   }
 
-  implicit class MonadSyntax[M <: AnyMonad](val m: M) extends AnyVal {
+  implicit class MonadSyntax[monad <: AnyMonad](val monad: monad) extends AnyVal {
 
     def kleisliCategory[
-      M0 >: M         <: M { type On = C; type Functor = F0 },
-      F0 >: M#Functor <: M#Functor { type Source = C; type Target = C },
-      C  >: M#On      <: M#On
+      M0 >: monad         <: monad { type On = C; type Functor = F0 },
+      F0 >: monad#Functor <: monad#Functor { type Source = C; type Target = C },
+      C  >: monad#On      <: monad#On
     ]
-    : KleisliCategory[C, F0, M0] = 
-      KleisliCategory(m: M0)
+    : KleisliCategory[C, F0, M0] =
+      KleisliCategory(monad: M0)
   }
 }
 
-case class IdentityMonad[C <: AnyCategory](c: C) extends MonadOn(c)(c.Id) {
+case class IdentityMonad[Category <: AnyCategory](category: Category) extends MonadOn(category)(category.Id) {
 
   type η  = IdentityNaturalTransformation[On, IdentityFunctor[On], On]
   val η   = IdentityNaturalTransformation[On, IdentityFunctor[On], On](functor)
 
   case object Mu extends NaturalTransformation(on, functor >=> functor, functor, on) {
 
-    def at[X <: On#Objects]: On#C[SourceF#F[X], TargetF#F[X]] =
+    def at[X <: On#Objects]: On#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
       AnyCategory.is(on).id[X]
   }
 

@@ -12,84 +12,82 @@ trait AnyCategory {
   implicit val me: this.type = this
 }
 
-case class OppositeCategory[Cat <: AnyCategory](val cat: Cat) {
+case class OppositeCategory[Category <: AnyCategory](val category: Category) {
 
-  type Objects = Cat#Objects
-  type C[X <: Objects, Y <: Objects] = Cat#C[Y,X]
+  type Objects = Category#Objects
+  type C[X <: Objects, Y <: Objects] = Category#C[Y,X]
 
   def id[X <: Objects]: C[X,X] =
-    AnyCategory.is(cat).id
+    AnyCategory.is(category).id
 
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] =
-    { (g,f) => AnyCategory.is(cat).compose(f,g) }
+    { (g,f) => AnyCategory.is(category).compose(f,g) }
 }
 
 case object AnyCategory {
 
-  def is[Cat <: AnyCategory](cat: Cat): is[Cat] =
-    cat.asInstanceOf[is[Cat]]
+  def is[Category <: AnyCategory](category: Category): is[Category] =
+    category.asInstanceOf[is[Category]]
 
-  type is[Cat <: AnyCategory] = Cat {
+  type is[Category <: AnyCategory] = Category {
 
-    type Objects = Cat#Objects
-    type C[X <: Cat#Objects, Y <: Cat#Objects] = Cat#C[X,Y]
+    type Objects = Category#Objects
+    type C[X <: Category#Objects, Y <: Category#Objects] = Category#C[X,Y]
   }
 }
 
-case class MorphismsSyntax [
-  Cat <: AnyCategory,
-  Y <: Cat#Objects,
-  Z <: Cat#Objects
-](
-  val g: Cat#C[Y,Z]
-)
-extends AnyVal {
+case class MorphismsSyntax[
+  Category <: AnyCategory,
+  Y <: Category#Objects,
+  Z <: Category#Objects
+]
+(val g: Category#C[Y,Z]) extends AnyVal {
 
-  def >=>[W <: Cat#Objects](h: Cat#C[Z,W])(implicit cat: Cat): Cat#C[Y,W] =
-    AnyCategory.is(cat).compose(h,g)
+  def >=>[W <: Category#Objects](h: Category#C[Z,W])(implicit category: Category): Category#C[Y,W] =
+    AnyCategory.is(category).compose(h,g)
 
   def ⊗[
-    C <: Cat#Objects,
-    D <: Cat#Objects,
-    MCat <: AnyMonoidalStructure { type On = Cat }
+    C <: Category#Objects,
+    D <: Category#Objects,
+    MCat <: AnyMonoidalCategory { type On = Category }
   ]
-  (f: Cat#C[C,D])(implicit mcat: MCat): Cat#C[ MCat# ⊗[Y,C], MCat# ⊗[Z,D]] =
-    AnyMonoidalStructure.is(mcat).⊗(g,f)
+  (f: Category#C[C,D])(implicit mcat: MCat): Category#C[ MCat# ⊗[Y,C], MCat# ⊗[Z,D]] =
+    AnyMonoidalCategory.is(mcat).⊗(g,f)
 
   def ×[
-    C <: Cat#Objects,
-    D <: Cat#Objects,
-    CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
+    C <: Category#Objects,
+    D <: Category#Objects,
+    CMCat <: AnyProducts { type On = Category }
   ]
-  (f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[ CMCat# ⊗[Y,C], CMCat# ⊗[Z,D]] =
-    AnyMonoidalStructure.is(cmcat).×(g,f)
+  (f: Category#C[C,D])(implicit cmcat: CMCat): Category#C[ CMCat# ⊗[Y,C], CMCat# ⊗[Z,D]] =
+    AnyMonoidalCategory.is(cmcat).×(g,f)
 
   def +[
-    C <: Cat#Objects,
-    D <: Cat#Objects,
-    CMCat <: AnyCocartesianMonoidalStructure { type On = Cat }
+    C <: Category#Objects,
+    D <: Category#Objects,
+    CMCat <: AnyCoproducts { type On = Category }
   ]
-  (f: Cat#C[C,D])(implicit cmcat: CMCat): Cat#C[ CMCat# +[Y,C], CMCat# +[Z,D]] =
-    AnyMonoidalStructure.is(cmcat).+(g,f)
+  (f: Category#C[C,D])(implicit cmcat: CMCat): Category#C[ CMCat# +[Y,C], CMCat# +[Z,D]] =
+    AnyMonoidalCategory.is(cmcat).+(g,f)
 
   def |[
-    X <: Cat#Objects,
-    CMCat <: AnyCocartesianMonoidalStructure { type On = Cat }
-  ](f: Cat#C[X,Z])(implicit cmcat: CMCat): Cat#C[CMCat# +[Y,X], Z] =
-    AnyMonoidalStructure.is(cmcat).univ(g,f)
+    X <: Category#Objects,
+    CMCat <: AnyCoproducts { type On = Category }
+  ](f: Category#C[X,Z])(implicit cmcat: CMCat): Category#C[CMCat# +[Y,X], Z] =
+    AnyMonoidalCategory.is(cmcat).univ(g,f)
 
   def &[
-    W <: Cat#Objects,
-    CMCat <: AnyCartesianMonoidalStructure { type On = Cat }
-  ](f: Cat#C[Y,W])(implicit cmcat: CMCat): Cat#C[Y, CMCat# ×[Z,W]] =
-    AnyMonoidalStructure.is(cmcat).univ(g,f)
+    W <: Category#Objects,
+    CMCat <: AnyProducts { type On = Category }
+  ](f: Category#C[Y,W])(implicit cmcat: CMCat): Category#C[Y, CMCat# ×[Z,W]] =
+    AnyMonoidalCategory.is(cmcat).univ(g,f)
 }
 
-case class CategorySyntax[Cat <: AnyCategory](val cat: Cat) extends AnyVal {
+case class CategorySyntax[Category <: AnyCategory](val category: Category) extends AnyVal {
 
-  def Id: IdentityFunctor[Cat] =
-    IdentityFunctor[Cat](cat)
+  def Id: IdentityFunctor[Category] =
+    IdentityFunctor(category)
 
-  def op: OppositeCategory[Cat] =
-    OppositeCategory(cat)
+  def op: OppositeCategory[Category] =
+    OppositeCategory(category)
 }

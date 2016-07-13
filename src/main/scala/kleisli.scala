@@ -65,10 +65,10 @@ case object AnyKleisliCategory {
       C0    >: KlC#Cat      <: KlC#Cat,
       F0    >: KlC#Functor  <: KlC#Functor  { type Source = C0; type Target = C0 },
       M0    >: KlC#Monad    <: KlC#Monad    { type On = C0; type Functor = F0 },
-      Coprd                 <: AnyCocartesianMonoidalStructure { type On = C0 }
+      Coprd                 <: AnyCoproducts { type On = C0 }
     ](coprd: Coprd)
-    : KleisliCoproductStructure[C0,Coprd,F0,M0,KlC0] =
-      KleisliCoproductStructure(klC: KlC0, coprd)
+    : KleisliCoproducts[C0,Coprd,F0,M0,KlC0] =
+      KleisliCoproducts(klC: KlC0, coprd)
   }
 }
 
