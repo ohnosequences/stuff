@@ -67,8 +67,8 @@ case object AnyKleisliCategory {
       M0    >: KlC#Monad    <: KlC#Monad    { type On = C0; type Functor = F0 },
       Coprd                 <: AnyCoproducts { type On = C0 }
     ](coprd: Coprd)
-    : KleisliCoproductStructure[C0,Coprd,F0,M0,KlC0] =
-      KleisliCoproductStructure(klC: KlC0, coprd)
+    : KleisliCoproducts[C0,Coprd,F0,M0,KlC0] =
+      KleisliCoproducts(klC: KlC0, coprd)
   }
 }
 
