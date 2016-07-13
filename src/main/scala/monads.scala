@@ -16,20 +16,20 @@ trait AnyMonad extends AnyFunctor {
   type F[X <: Source#Objects] = Functor#F[X]
 
   type η <: AnyNaturalTransformation {
-    type SourceCat = On
-    type TargetCat = On
-    type SourceF = IdentityFunctor[On]
-    type TargetF = Functor
+    type SourceCategory = On
+    type TargetCategory = On
+    type SourceFunctor = IdentityFunctor[On]
+    type TargetFunctor = Functor
   }
   val η: η
 
   type μ <: AnyNaturalTransformation {
 
-    type SourceCat = On
-    type TargetCat = On
+    type SourceCategory = On
+    type TargetCategory = On
 
-    type SourceF = Functor >=> Functor
-    type TargetF = Functor
+    type SourceFunctor = Functor >=> Functor
+    type TargetFunctor = Functor
   }
   val μ: μ
 
@@ -72,7 +72,7 @@ case object AnyMonad {
       F0 >: M#Functor <: M#Functor { type Source = C; type Target = C },
       C  >: M#On      <: M#On
     ]
-    : KleisliCategory[C, F0, M0] = 
+    : KleisliCategory[C, F0, M0] =
       KleisliCategory(m: M0)
   }
 }
@@ -84,7 +84,7 @@ case class IdentityMonad[C <: AnyCategory](c: C) extends MonadOn(c)(c.Id) {
 
   case object Mu extends NaturalTransformation(on, functor >=> functor, functor, on) {
 
-    def at[X <: On#Objects]: On#C[SourceF#F[X], TargetF#F[X]] =
+    def at[X <: On#Objects]: On#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
       AnyCategory.is(on).id[X]
   }
 

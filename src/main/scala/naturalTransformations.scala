@@ -4,41 +4,41 @@ import AnyFunctor._
 
 trait AnyNaturalTransformation {
 
-  type SourceCat <: AnyCategory
-  val sourceCat: SourceCat
-  type TargetCat <: AnyCategory
-  val targetCat: TargetCat
+  type SourceCategory <: AnyCategory
+  val sourceCategory: SourceCategory
+  type TargetCategory <: AnyCategory
+  val targetCategory: TargetCategory
 
-  type SourceF <: SourceCat ⟶ TargetCat
-  val sourceF: SourceF
+  type SourceFunctor <: SourceCategory ⟶ TargetCategory
+  val sourceFunctor: SourceFunctor
 
-  type TargetF <: SourceCat ⟶ TargetCat
-  val targetF: TargetF
+  type TargetFunctor <: SourceCategory ⟶ TargetCategory
+  val targetFunctor: TargetFunctor
 
-  def at[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]]
+  def at[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]]
 
-  final def apply[X <: SourceCat#Objects]: TargetCat#C[SourceF#F[X], TargetF#F[X]] = at[X]
+  final def apply[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] = at[X]
 }
 
 abstract class NaturalTransformation[
-  SourceCat0 <: AnyCategory,
-  TargetCat0 <: AnyCategory,
-  SourceF0 <: SourceCat0 ⟶ TargetCat0,
-  TargetF0 <: SourceCat0 ⟶ TargetCat0
+  SourceCategory0 <: AnyCategory,
+  TargetCategory0 <: AnyCategory,
+  SourceFunctor0 <: SourceCategory0 ⟶ TargetCategory0,
+  TargetFunctor0 <: SourceCategory0 ⟶ TargetCategory0
 ]
 (
-  val sourceCat: SourceCat0,
-  val sourceF: SourceF0,
-  val targetF: TargetF0,
-  val targetCat: TargetCat0
+  val sourceCategory: SourceCategory0,
+  val sourceFunctor: SourceFunctor0,
+  val targetFunctor: TargetFunctor0,
+  val targetCategory: TargetCategory0
 )
 extends AnyNaturalTransformation {
 
-  type SourceCat = SourceCat0
-  type TargetCat = TargetCat0
+  type SourceCategory = SourceCategory0
+  type TargetCategory = TargetCategory0
 
-  type SourceF = SourceF0
-  type TargetF = TargetF0
+  type SourceFunctor = SourceFunctor0
+  type TargetFunctor = TargetFunctor0
 }
 
 case object AnyNaturalTransformation {
@@ -47,43 +47,43 @@ case object AnyNaturalTransformation {
     n.asInstanceOf[is[N]]
 
   type is[N <: AnyNaturalTransformation] = N {
-    //
-    type SourceCat = N#SourceCat;
-    type TargetCat = N#TargetCat;
 
-    type SourceF = N#SourceF;
-    type TargetF = N#TargetF;
+    type SourceCategory = N#SourceCategory;
+    type TargetCategory = N#TargetCategory;
+
+    type SourceFunctor = N#SourceFunctor;
+    type TargetFunctor = N#TargetFunctor;
   }
 }
 
 trait AnyIdentityNaturalTransformation extends AnyNaturalTransformation {
 
-  type OnF <: SourceCat ⟶ TargetCat
-  val onF: OnF
+  type On <: SourceCategory ⟶ TargetCategory
+  val on: On
 
-  lazy val sourceCat = sourceF.source
-  lazy val targetCat = targetF.target
+  lazy val sourceCategory = sourceFunctor.source
+  lazy val targetCategory = targetFunctor.target
 
-  type SourceF = OnF
-  lazy val sourceF: SourceF = onF
+  type SourceFunctor = On
+  lazy val sourceFunctor: SourceFunctor = on
 
-  type TargetF = OnF
-  lazy val targetF: TargetF = onF
+  type TargetFunctor = On
+  lazy val targetFunctor: TargetFunctor = on
 
-  final def at[X <: SourceCat#Objects]: OnF#Target#C[OnF#F[X], OnF#F[X]] = {
+  final def at[X <: SourceCategory#Objects]: On#Target#C[On#F[X], On#F[X]] = {
 
-    AnyCategory.is(targetCat).id[OnF#F[X]]
+    AnyCategory.is(targetCategory).id[On#F[X]]
   }
 }
 
 case class IdentityNaturalTransformation[
-  SourceCat0 <: AnyCategory,
-  OnF0 <: SourceCat0 ⟶ TargetCat0,
-  TargetCat0 <: AnyCategory
+  SourceCategory0 <: AnyCategory,
+  On0 <: SourceCategory0 ⟶ TargetCategory0,
+  TargetCategory0 <: AnyCategory
 ]
-(val onF: OnF0) extends AnyIdentityNaturalTransformation {
+(val on: On0) extends AnyIdentityNaturalTransformation {
 
-  type SourceCat = SourceCat0
-  type TargetCat = TargetCat0
-  type OnF = OnF0
+  type SourceCategory = SourceCategory0
+  type TargetCategory = TargetCategory0
+  type On = On0
 }
