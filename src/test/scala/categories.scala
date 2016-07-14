@@ -21,7 +21,7 @@ abstract class Mealy[A,U,B] extends AnyMealy with ( (A,U) => (U,B) ) {
 
 case object Mealy {
 
-  def apply [A,U,B](next: (A,U) => (U,B)): Mealy[A,U,B] =
+  def apply[A,U,B](next: (A,U) => (U,B)): Mealy[A,U,B] =
     new Mealy[A,U,B] {
 
       def apply(i: Input, s: State): (State, Output) = next(i,s)
@@ -70,14 +70,10 @@ case object ScalaSums extends AnyCoproducts {
   type ⊗[X, Y] = X Either Y
   type I = Nothing
 
-  def left  [A <: On#Objects, B <: On#Objects]: A => A + B =
-    a => Left(a)
+  def  left[A <: On#Objects, B <: On#Objects]: A => A + B = { a =>  Left(a) }
+  def right[A <: On#Objects, B <: On#Objects]: B => A + B = { b => Right(b) }
 
-  def right [A <: On#Objects, B <: On#Objects]: B => A + B =
-    b => Right(b)
-
-  def nothing [A <: On#Objects]: Nothing => A =
-    Predef.identity[Nothing]
+  def nothing[A <: On#Objects]: Nothing => A = Predef.identity[Nothing]
 
   def univ[A <: On#Objects, B <: On#Objects, X <: On#Objects]: (A => X, B => X) => (A + B => X) =
     (f,g) => { ab => ab.fold(f,g) }
