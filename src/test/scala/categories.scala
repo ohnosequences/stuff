@@ -29,7 +29,7 @@ trait MealyCat extends AnyCategory {
 
   type C[A,B] = AnyMealy { type Input = A; type Output = B }
 
-  def id[A] =
+  def id[A]: C[A,A] =
     mealy[A,Unit,A]{ case (a,u) => (u,a) }
 
   def compose[X,Y,Z]: (C[Y,Z], C[X,Y]) => C[X,Z] = {
@@ -73,7 +73,7 @@ case object ScalaSums extends AnyCoproducts {
     b => Right(b)
 
   def nothing [A <: On#Objects]: Nothing => A =
-    { _ => ??? }
+    Predef.identity[Nothing]
 
   def univ[A <: On#Objects, B <: On#Objects, X <: On#Objects]: (A => X, B => X) => (A + B => X) =
     (f,g) => { ab => ab.fold(f,g) }
