@@ -11,30 +11,35 @@ trait AnyMealy {
 
   def apply(i: Input, s: State): (State, Output)
 }
-trait Mealy[A,U,B] extends AnyMealy with ( (A,U) => (U,B) ) {
+
+abstract class Mealy[A,U,B] extends AnyMealy with ( (A,U) => (U,B) ) {
 
   type Input = A
   type State = U
   type Output = B
 }
 
-case class mealy[A,U,B](next: (A,U) => (U,B)) extends Mealy[A,U,B] {
+case object Mealy {
 
-  def apply(i: Input, s: State): (State, Output) = next(i,s)
+  def apply[A,U,B](next: (A,U) => (U,B)): Mealy[A,U,B] =
+    new Mealy[A,U,B] {
+
+      def apply(i: Input, s: State): (State, Output) = next(i,s)
+    }
 }
 
-trait MealyCat extends AnyCategory {
+case object MealyCat extends AnyCategory {
 
   type Objects = Any
 
   type C[A,B] = AnyMealy { type Input = A; type Output = B }
 
-  def id[A] =
-    mealy[A,Unit,A]{ case (a,u) => (u,a) }
+  def id[A]: C[A,A] =
+    Mealy[A,Unit,A]{ case (a,u) => (u,a) }
 
   def compose[X,Y,Z]: (C[Y,Z], C[X,Y]) => C[X,Z] = {
 
-    (m,n) => mealy[X, (n.State, m.State), Z] {
+    (m,n) => Mealy[X, (n.State, m.State), Z] {
 
       case (x, (nu,mu)) => {
 
@@ -46,7 +51,6 @@ trait MealyCat extends AnyCategory {
   }
 }
 
-case object Mealy extends MealyCat
 
 case object Scala extends AnyCategory {
 
@@ -66,14 +70,10 @@ case object ScalaSums extends AnyCoproducts {
   type ⊗[X, Y] = X Either Y
   type I = Nothing
 
-  def left  [A <: On#Objects, B <: On#Objects]: A => A + B =
-    a => Left(a)
+  def  left[A <: On#Objects, B <: On#Objects]: A => A + B = { a =>  Left(a) }
+  def right[A <: On#Objects, B <: On#Objects]: B => A + B = { b => Right(b) }
 
-  def right [A <: On#Objects, B <: On#Objects]: B => A + B =
-    b => Right(b)
-
-  def nothing [A <: On#Objects]: Nothing => A =
-    { _ => ??? }
+  def nothing[A <: On#Objects]: Nothing => A = Predef.identity[Nothing]
 
   def univ[A <: On#Objects, B <: On#Objects, X <: On#Objects]: (A => X, B => X) => (A + B => X) =
     (f,g) => { ab => ab.fold(f,g) }
