@@ -2,36 +2,39 @@ package ohnosequences.stuff
 
 trait AnyLaxMonoidalFunctor {
 
-  type SourceMonoidalCategory <: AnyMonoidalCategory
-  val targetMonoidalCategory: TargetMonoidalCategory
+  type SourceCategory <: AnyCategory
+  lazy val sourceCategory: SourceCategory = sourceMonoidalCategory.on
 
-  type TargetMonoidalCategory <: AnyMonoidalCategory
+  type SourceMonoidalCategory <: AnyMonoidalCategory { type On = SourceCategory }
   val sourceMonoidalCategory: SourceMonoidalCategory
 
-  // NOTE notation
-  type □[X <: Source#Objects, Y <: Source#Objects] = SourceMonoidalCategory# ⊗[X,Y]
-  type ⋄[X <: Target#Objects, Y <: Target#Objects] = TargetMonoidalCategory# ⊗[X,Y]
+  type TargetCategory <: AnyCategory
+  lazy val targetCategory: TargetCategory = targetMonoidalCategory.on
 
-  type Source = SourceMonoidalCategory#On
-  lazy val source = sourceMonoidalCategory.on
-  type Target = TargetMonoidalCategory#On
-  lazy val target = targetMonoidalCategory.on
+  type TargetMonoidalCategory <: AnyMonoidalCategory { type On = TargetCategory }
+  val targetMonoidalCategory: TargetMonoidalCategory
+
+  // NOTE notation
+  type □[X <: SourceCategory#Objects, Y <: SourceCategory#Objects] = SourceMonoidalCategory# ⊗[X,Y]
+  type ⋄[X <: TargetCategory#Objects, Y <: TargetCategory#Objects] = TargetMonoidalCategory# ⊗[X,Y]
 
   type Functor <: AnyFunctor {
-    type Source = SourceMonoidalCategory#On
-    type Target = TargetMonoidalCategory#On
+    type Source = SourceCategory
+    type Target = TargetCategory
   }
   val functor: Functor
 
-  def zip[A <: Source#Objects, B <: Source#Objects]: Target#C[Functor#F[A] ⋄ Functor#F[B], Functor#F[A □ B]]
+  def zip[A <: SourceCategory#Objects, B <: SourceCategory#Objects]: TargetCategory#C[Functor#F[A] ⋄ Functor#F[B], Functor#F[A □ B]]
 
-  def unit: Target#C[TargetMonoidalCategory#I, Functor#F[SourceMonoidalCategory#I]]
+  def unit: TargetCategory#C[TargetMonoidalCategory#I, Functor#F[SourceMonoidalCategory#I]]
 }
 
 abstract class LaxMonoidalFunctor[
-  SM <: AnyMonoidalCategory,
-  Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
-  TM <: AnyMonoidalCategory
+  SCat <: AnyCategory,
+  SM <: AnyCoproducts { type On = SCat },
+  Functor0 <: AnyFunctor { type Source = SCat; type Target = TCat },
+  TM <: AnyCoproducts { type On = TCat },
+  TCat <: AnyCategory
 ]
 (
   val sourceMonoidalCategory: SM,
@@ -40,9 +43,11 @@ abstract class LaxMonoidalFunctor[
 )
 extends AnyLaxMonoidalFunctor {
 
+  type SourceCategory         = SCat
   type SourceMonoidalCategory = SM
-  type Functor = Functor0
+  type Functor                = Functor0
   type TargetMonoidalCategory = TM
+  type TargetCategory         = TCat
 }
 
 trait AnyColaxMonoidalFunctor {
@@ -121,27 +126,25 @@ extends AnyColaxMonoidalFunctor {
   The co-dual of the above.
 */
 case class LaxCocartesianMonoidalFunctor[
-  SM <: AnyCoproducts,
-  Functor0 <: AnyFunctor { type Source = SM#On; type Target = TM#On },
-  TM <: AnyCoproducts
+  SCat <: AnyCategory,
+  SM <: AnyCoproducts { type On = SCat },
+  Functor0 <: AnyFunctor { type Source = SCat; type Target = TCat },
+  TM <: AnyCoproducts { type On = TCat },
+  TCat <: AnyCategory
 ](
-  val sourceMonoidalCategory: SM,
-  val functor: Functor0,
-  val targetMonoidalCategory: TM
+  val sourceMonoidalCategory0: SM,
+  val functor0: Functor0,
+  val targetMonoidalCategory0: TM
 )
-extends AnyLaxMonoidalFunctor {
+extends LaxMonoidalFunctor[SCat,SM,Functor0,TM,TCat](sourceMonoidalCategory0, functor0, targetMonoidalCategory0) {
 
-  type SourceMonoidalCategory = SM
-  type Functor = Functor0
-  type TargetMonoidalCategory = TM
-
-  def zip[A <: Source#Objects, B <: Source#Objects]: Target#C[Functor#F[A] ⋄ Functor#F[B], Functor#F[A □ B]] =
+  def zip[A <: SourceCategory#Objects, B <: SourceCategory#Objects]: TargetCategory#C[Functor#F[A] ⋄ Functor#F[B], Functor#F[A □ B]] =
     AnyMonoidalCategory.is(targetMonoidalCategory).univ(
       AnyFunctor.is(functor)(AnyMonoidalCategory.is(sourceMonoidalCategory).left[A,B]),
       AnyFunctor.is(functor)(AnyMonoidalCategory.is(sourceMonoidalCategory).right[A,B])
     )
 
-  def unit: Target#C[TargetMonoidalCategory#I, Functor#F[SourceMonoidalCategory#I]] =
+  def unit: TargetCategory#C[TargetMonoidalCategory#I, Functor#F[SourceMonoidalCategory#I]] =
     AnyMonoidalCategory.is(targetMonoidalCategory).nothing
 
 }
