@@ -1,7 +1,7 @@
 package ohnosequences.stuff.test
 
 import org.scalatest.FunSuite
-import ohnosequences.stuff._
+import ohnosequences.stuff._, syntax._
 
 trait AnyMealy {
 
