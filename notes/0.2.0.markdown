@@ -1,0 +1,8 @@
+
+- add coproducts for kleisli categories given coproducts in the base
+- add syntax for coproducts in a kleisli category
+- Added travis config and badge
+- Added codacy/coverage plugins
+- Better names for type members (#22)
+- add source and target cats for lax and colax monoidal functors
+- separate categories and functors syntax
