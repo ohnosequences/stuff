@@ -6,23 +6,6 @@ package object stuff {
 ```
 
 
-## Categories
-
-
-```scala
-  implicit def morphismsSyntax[
-    Cat <: AnyCategory,
-    Y <: Cat#Objects,
-    Z <: Cat#Objects
-  ](g: Cat#C[Y,Z])(implicit cat: Cat)
-  : MorphismsSyntax[Cat,Y,Z] =
-    MorphismsSyntax(g)
-
-  implicit def categorySyntax[Cat <: AnyCategory](cat: Cat): CategorySyntax[Cat] =
-    CategorySyntax(cat)
-```
-
-
 ## Functors
 
 
@@ -43,8 +26,6 @@ package object stuff {
       type Source = Cat
       type Target = Cat
     }
-
-  implicit def functorSyntax[F0 <: AnyFunctor](f0: F0): FunctorSyntax[F0] = FunctorSyntax(f0)
 
   type Monad[C <: AnyCategory, F0 <: EndoFunctorOn[C]] =
     AnyMonad {
@@ -74,7 +55,11 @@ package object stuff {
 [main/scala/distributiveLaws.scala]: distributiveLaws.scala.md
 [main/scala/package.scala]: package.scala.md
 [main/scala/monads.scala]: monads.scala.md
+[main/scala/syntax/package.scala]: syntax/package.scala.md
+[main/scala/syntax/functors.scala]: syntax/functors.scala.md
+[main/scala/syntax/categories.scala]: syntax/categories.scala.md
 [main/scala/monoidalFunctors.scala]: monoidalFunctors.scala.md
+[main/scala/kleisliCoproducts.scala]: kleisliCoproducts.scala.md
 [main/scala/functors.scala]: functors.scala.md
 [main/scala/naturalTransformations.scala]: naturalTransformations.scala.md
 [main/scala/kleisli.scala]: kleisli.scala.md
