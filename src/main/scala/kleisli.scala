@@ -1,5 +1,6 @@
 package ohnosequences.stuff
 
+import ohnosequences.stuff.syntax._
 
 trait AnyKleisliCategory extends AnyCategory { kleisli =>
 

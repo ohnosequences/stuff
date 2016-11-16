@@ -1,10 +1,11 @@
-Nice.scalaProject
 
 name          := "stuff"
 organization  := "ohnosequences"
-description   := "stuff project"
+description   := "some stuff"
 
 bucketSuffix  := "era7.com"
+
+scalaVersion := "2.11.8"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 

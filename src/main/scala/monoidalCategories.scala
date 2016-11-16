@@ -1,5 +1,7 @@
 package ohnosequences.stuff
 
+import ohnosequences.stuff.syntax._
+
 trait AnyMonoidalCategory {
 
   type On <: AnyCategory
