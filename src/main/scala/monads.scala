@@ -1,5 +1,7 @@
 package ohnosequences.stuff
 
+import ohnosequences.stuff.syntax._
+
 trait AnyMonad {
 
   type On <: AnyCategory
