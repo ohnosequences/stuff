@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-trait AnyLaxMonoidalFunctor {
+trait AnyLaxMonoidalFunctor { laxMonoidalFunctor =>
 
   type SourceCategory <: AnyCategory
   lazy val sourceCategory: SourceCategory = sourceMonoidalCategory.on
@@ -19,14 +19,28 @@ trait AnyLaxMonoidalFunctor {
   type ⋄[X <: TargetCategory#Objects, Y <: TargetCategory#Objects] = TargetMonoidalCategory# ⊗[X,Y]
 
   type Functor <: AnyFunctor {
-    type Source = SourceCategory
-    type Target = TargetCategory
+    type Source = laxMonoidalFunctor.SourceCategory
+    type Target = laxMonoidalFunctor.TargetCategory
   }
   val functor: Functor
 
   def zip[A <: SourceCategory#Objects, B <: SourceCategory#Objects]: TargetCategory#C[Functor#F[A] ⋄ Functor#F[B], Functor#F[A □ B]]
 
   def unit: TargetCategory#C[TargetMonoidalCategory#I, Functor#F[SourceMonoidalCategory#I]]
+}
+
+case object AnyLaxMonoidalFunctor {
+
+  type is[LMF <: AnyLaxMonoidalFunctor] = LMF {
+
+    type SourceCategory         = LMF#SourceCategory
+    type SourceMonoidalCategory = LMF#SourceMonoidalCategory
+    type Functor                = LMF#Functor
+    type TargetMonoidalCategory = LMF#TargetMonoidalCategory
+    type TargetCategory         = LMF#TargetCategory
+  }
+
+  def is[LMF0 <: AnyLaxMonoidalFunctor](lmf:LMF0): is[LMF0] =  lmf.asInstanceOf[is[LMF0]]
 }
 
 abstract class LaxMonoidalFunctor[
@@ -49,6 +63,56 @@ extends AnyLaxMonoidalFunctor {
   type TargetMonoidalCategory = TM
   type TargetCategory         = TCat
 }
+
+trait AnyLaxMonoidalFunctorComposition extends AnyLaxMonoidalFunctor { composition =>
+
+  type SourceCategory <: AnyCategory
+  type First <: AnyLaxMonoidalFunctor {
+    type SourceCategory = composition.SourceCategory
+    type Functor <: AnyFunctor {
+      type Source = composition.SourceCategory
+      type Target = composition.MiddleCategory
+    }
+    type TargetCategory = composition.MiddleCategory
+  }
+  val first: First
+
+  type MiddleCategory <: AnyCategory
+
+  type TargetCategory <: AnyCategory
+  type Second <: AnyLaxMonoidalFunctor {
+    type SourceCategory = composition.MiddleCategory
+    type TargetCategory = composition.TargetCategory
+    type SourceMonoidalCategory = First#TargetMonoidalCategory
+    type Functor <: AnyFunctor {
+      type Source = composition.MiddleCategory
+      type Target = composition.TargetCategory
+    }
+  }
+  val second: Second
+
+  type SourceMonoidalCategory = First#SourceMonoidalCategory
+  lazy val SourceMonoidalCategory: SourceMonoidalCategory = first.sourceMonoidalCategory
+
+  type TargetMonoidalCategory = Second#TargetMonoidalCategory
+  lazy val TargetMonoidalCategory: TargetMonoidalCategory = second.targetMonoidalCategory
+
+  type Functor = FunctorComposition[First#Functor, Second#Functor]
+  lazy val functor: Functor = (first: First).functor >=> (second: Second).functor
+
+  def zip[A <: SourceCategory#Objects, B <: SourceCategory#Objects]: TargetCategory#C[Functor#F[A] ⋄ Functor#F[B], Functor#F[A □ B]] =
+    AnyCategory.is(targetCategory).compose(
+      AnyFunctor.is(AnyLaxMonoidalFunctor.is(second).functor)(AnyLaxMonoidalFunctor.is(first).zip[A,B]),
+      AnyLaxMonoidalFunctor.is(second).zip[First#Functor#F[A],First#Functor#F[B]]
+    )
+
+  def unit: TargetCategory#C[TargetMonoidalCategory#I, Functor#F[SourceMonoidalCategory#I]] =
+    AnyCategory.is(targetCategory).compose(
+      AnyFunctor.is(AnyLaxMonoidalFunctor.is(second).functor)(AnyLaxMonoidalFunctor.is(first).unit),
+      AnyLaxMonoidalFunctor.is(second).unit
+    )
+}
+
 
 trait AnyColaxMonoidalFunctor {
 

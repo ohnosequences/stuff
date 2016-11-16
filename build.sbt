@@ -13,6 +13,7 @@ wartremoverExcluded ++= Seq(
   baseDirectory.value/"src"/"main"/"scala"/"functors.scala",
   baseDirectory.value/"src"/"main"/"scala"/"categories.scala",
   baseDirectory.value/"src"/"main"/"scala"/"monoidalCategories.scala",
+  baseDirectory.value/"src"/"main"/"scala"/"monoidalFunctors.scala",
   baseDirectory.value/"src"/"main"/"scala"/"monads.scala",
   baseDirectory.value/"src"/"main"/"scala"/"kleisli.scala",
   baseDirectory.value/"src"/"main"/"scala"/"naturalTransformations.scala"
