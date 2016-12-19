@@ -5,9 +5,9 @@ description   := "some stuff"
 
 bucketSuffix  := "era7.com"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.0"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
 wartremoverExcluded ++= Seq(
   baseDirectory.value/"src"/"main"/"scala"/"functors.scala",
