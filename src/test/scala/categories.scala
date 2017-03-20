@@ -50,16 +50,16 @@ case object MealyCat extends AnyCategory {
     }
   }
 }
-
-
-case object Scala extends AnyCategory {
-
-  type Objects = scala.Any
-  type C[A,B] = A => B
-
-  def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] = (g,f) => f andThen g
-  def id[X <: Objects]: C[X,X] = { x: X => x }
-}
+//
+//
+// case object Scala extends AnyCategory {
+//
+//   type Objects = scala.Any
+//   type C[A,B] = A => B
+//
+//   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] = (g,f) => f andThen g
+//   def id[X <: Objects]: C[X,X] = { x: X => x }
+// }
 
 
 // case object ScalaSums extends AnyCoproducts {
@@ -112,23 +112,23 @@ class MealyTests extends FunSuite {
 
   type Scala = Scala.type
 
-  test("identity monad") {
+  ignore("identity monad") {
 
-    val idMonad     = IdentityMonad(Scala)
-    val idMonadKl   = idMonad kleisliCategory
-    // val kleisliSums = idMonadKl coproductsFrom ScalaSums
-
-    val Scala2: AnyCategory.Product[Scala,Scala] = Scala × Scala
-
-    import scala.Int
-    import scala.Predef.String
-    import ohnosequences.stuff.Scala._, Product._
-
-    val f: Scala.C[Int,String] = _.toString
-    val g: Scala.C[String,Int] = _.length
-
-    val fg: Scala2.C[Int × String, String × Int] =
-      Product(f,g)
-      // f × g // TODO make products a cartesian monoidal category
+    // val idMonad     = IdentityMonad(Scala)
+    // val idMonadKl   = idMonad kleisliCategory
+    // // val kleisliSums = idMonadKl coproductsFrom ScalaSums
+    //
+    // val Scala2: AnyCategory.Product[Scala,Scala] = Scala × Scala
+    //
+    // import scala.Int
+    // import scala.Predef.String
+    // import ohnosequences.stuff.Scala._, Product._
+    //
+    // val f: Scala.C[Int,String] = _.toString
+    // val g: Scala.C[String,Int] = _.length
+    //
+    // val fg: Scala2.C[Int × String, String × Int] =
+    //   Product(f,g)
+    //   // f × g // TODO make products a cartesian monoidal category
   }
 }

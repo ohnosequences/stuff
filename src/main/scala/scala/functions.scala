@@ -13,7 +13,7 @@ sealed trait AnyFunction extends Any {
   def apply(d: Domain): Codomain
 }
 
-case class function[A,B](val f: A => B) extends AnyVal with AnyFunction {
+private case class Function[A,B] private[stuff] (val f: A => B) extends AnyVal with AnyFunction {
 
   type Domain   = A
   type Codomain = B
@@ -24,6 +24,9 @@ case class function[A,B](val f: A => B) extends AnyVal with AnyFunction {
 }
 
 case object AnyFunction {
+
+  def function[A,B](f: A => B): A --> B =
+    new Function(f)
 
   type -->[A,B] =
     AnyFunction { type Domain = A; type Codomain = B }
