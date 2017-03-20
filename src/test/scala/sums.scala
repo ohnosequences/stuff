@@ -1,6 +1,7 @@
 package ohnosequences.stuff.test
 
-import ohnosequences.stuff._, AnyFunction._, Sums._, Product._
+import ohnosequences.stuff._, AnyFunction._, Product._, Scala._
+import ohnosequences.stuff.{Sums => sums}, sums._
 import scala.{ Int, Boolean }
 import scala.Predef.String
 import org.scalatest.FunSuite
@@ -17,6 +18,20 @@ class Sums extends FunSuite {
     assert {
       either(isZero × isEmpty)(inL(0)) == isZero(0)     &&
       either(isZero × isEmpty)(inR("")) == isEmpty("")
+    }
+  }
+
+  test("any nothing commutative monoid") {
+
+    val l: String + String =
+      inL("hola")
+
+    val r: String + String =
+      inR("scalac")
+
+    assert {
+      any(l) == (sums.swap >=> any[String])(l) &&
+      any(r) == (sums.swap >=> any[String])(r)
     }
   }
 }
