@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import scala.{ Any, AnyVal }
+import scala.{ Any, AnyVal, inline }
 import AnyFunction._
 import Product._
 /*
@@ -14,12 +14,16 @@ sealed trait Or extends Any {
 
   def value: Value
 }
+
 private case class Left[L,R](val value: L) extends AnyVal with Or {
+
   type Left   = L
   type Right  = R
   type Value  = Left
 }
+
 private case class Right[L,R](val value: R) extends AnyVal with Or {
+
   type Left   = L
   type Right  = R
   type Value  = Right
@@ -27,20 +31,26 @@ private case class Right[L,R](val value: R) extends AnyVal with Or {
 
 case object Sums {
 
-  type +[A, B] = Or { type Left = A; type Right = B }
+  type +[A, B] =
+    Or { type Left = A; type Right = B }
+
   type ∅
 
+  @inline final
   def inL[A,B]: A --> (A + B) =
     function { Left(_) }
 
+  @inline final
   def inR[A,B]: B --> (A + B) =
     function { Right(_) }
 
+  @inline final
   def nothing[X]: ∅ --> X =
     function { n: ∅ => scala.sys.error("∅"): X }
 
   // TODO try to get rid of the erasure issue
-  def univ[A,B,X]: ((A --> X) × (B --> X)) --> ((A + B) --> X) =
+  @inline final
+  def either[A,B,X]: ((A --> X) × (B --> X)) --> ((A + B) --> X) =
     function {
       fg: (A --> X) × (B --> X) => function {
         aorb: A + B => aorb match {
@@ -49,7 +59,21 @@ case object Sums {
         }
       }
     }
-  
+
+  @inline final
+  def any[A]: (A + A) --> A =
+    either(identity × identity)
+
+  @inline final
+  def swap[A,B]: (A + B) --> (B + A) =
+    either(inR × inL)
+
+  @inline final
+  def map[A,B,C,D]: ((A --> B) × (C --> D)) --> ((A + C) --> (B + D)) =
+    function { fg =>
+      either { (fg.left >=> inL[B,D]) × (fg.right >=> inR[B,D]) }
+    }
+
   // simpler, no scala stuff
   // def univAlt[A,B,X]: ((A --> X) × (B --> X)) --> ((A + B) --> X) =
   //   function {

@@ -18,29 +18,41 @@ case class function[A,B](val f: A => B) extends AnyVal with AnyFunction {
   type Domain   = A
   type Codomain = B
 
-  @inline final def apply(a: A): B =
+  @inline final
+  def apply(a: A): B =
     f.apply(a)
 }
 
 case object AnyFunction {
 
-  type -->[A,B] = AnyFunction { type Domain = A; type Codomain = B }
+  type -->[A,B] =
+    AnyFunction { type Domain = A; type Codomain = B }
 
-  implicit final class FunctionOps[A,B](val f: A --> B) extends AnyVal {
+  implicit final
+  class FunctionOps[A,B](val f: A --> B) extends AnyVal {
 
+    @inline final
     def >=>[C](g: B --> C): A --> C =
       new AnyFunction {
-        type Domain = A; type Codomain = C
-        @inline final def apply(a: Domain): Codomain = g.apply(f.apply(a))
+
+        type Domain   = A
+        type Codomain = C
+
+        @inline final
+        def apply(a: Domain): Codomain =
+          g.apply(f.apply(a))
       }
   }
 
-  @inline final def identity[A]: A --> A =
+  @inline final
+  def identity[A]: A --> A =
     new AnyFunction {
-      type Domain = A; type Codomain = A;
-      @inline final def apply(a: Domain): Codomain = a
-    }
 
-  // final def coerce[A0 <: A, A]: A0 --> A =
-  //   function { a0: A0 => a0: A }
+      type Domain   = A
+      type Codomain = A
+
+      @inline final
+      def apply(a: Domain): Codomain =
+        a
+    }
 }
