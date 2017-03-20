@@ -1,5 +1,7 @@
 package ohnosequences.stuff
 
+import scala.AnyVal
+
 case class MorphismsSyntax[
   Category <: AnyCategory,
   Y <: Category#Objects,
@@ -49,9 +51,14 @@ case class MorphismsSyntax[
 
 case class CategorySyntax[Category <: AnyCategory](val category: Category) extends AnyVal {
 
+  import AnyCategory._
+
   def Id: IdentityFunctor[Category] =
     IdentityFunctor(category)
 
-  def op: OppositeCategory[Category] =
-    OppositeCategory(category)
+  def op: Opposite[Category] =
+    opposite(category)
+
+  def ×[Other <: AnyCategory](other: Other): Product[Category, Other] =
+    product(category,other)
 }

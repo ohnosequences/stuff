@@ -1,0 +1,63 @@
+package ohnosequences.stuff
+
+import scala.{ Any, AnyVal }
+import AnyFunction._
+import Product._
+/*
+  `Or` is a more reasonable sum type. Right now it is implemented using value classes for constructors; sadly, these will box (I think) in a lot of cases. A totally unboxed representation using type lists and unboxed denotations could be considered at some point.
+*/
+sealed trait Or extends Any {
+
+  type Left
+  type Right
+  type Value
+
+  def value: Value
+}
+private case class Left[L,R](val value: L) extends AnyVal with Or {
+  type Left   = L
+  type Right  = R
+  type Value  = Left
+}
+private case class Right[L,R](val value: R) extends AnyVal with Or {
+  type Left   = L
+  type Right  = R
+  type Value  = Right
+}
+
+case object Sums {
+
+  type +[A, B] = Or { type Left = A; type Right = B }
+  type ∅
+
+  def inL[A,B]: A --> (A + B) =
+    function { Left(_) }
+
+  def inR[A,B]: B --> (A + B) =
+    function { Right(_) }
+
+  def nothing[X]: ∅ --> X =
+    function { n: ∅ => scala.sys.error("∅"): X }
+
+  // TODO try to get rid of the erasure issue
+  def univ[A,B,X]: ((A --> X) × (B --> X)) --> ((A + B) --> X) =
+    function {
+      fg: (A --> X) × (B --> X) => function {
+        aorb: A + B => aorb match {
+          case Left(a:A)  => fg.left(a)
+          case Right(b:B) => fg.right(b)
+        }
+      }
+    }
+  
+  // simpler, no scala stuff
+  // def univAlt[A,B,X]: ((A --> X) × (B --> X)) --> ((A + B) --> X) =
+  //   function {
+  //     fg: (A --> X) × (B --> X) => function { aorb =>
+  //       if(aorb.isInstanceOf[Left[A,B]])
+  //         fg.left(aorb.value.asInstanceOf[A])
+  //       else
+  //         fg.right(aorb.value.asInstanceOf[B])
+  //     }
+  //   }
+}

@@ -41,7 +41,7 @@ case object AnyKleisliCategory {
 
   def is[KC <: AnyKleisliCategory](kc: KC): is[KC] = kc.asInstanceOf[is[KC]]
 
-  implicit final class KleisliCategorySyntax[KlC <: AnyKleisliCategory](val klC: KlC) extends AnyVal {
+  implicit final class KleisliCategorySyntax[KlC <: AnyKleisliCategory](val klC: KlC) extends scala.AnyVal {
 
     def freeF[
       KlC0  >: KlC          <: KlC          { type Cat = C0; type Functor = F0; type Monad = M0 },

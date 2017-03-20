@@ -68,7 +68,7 @@ case object AnyMonad {
     type μ = M#μ
   }
 
-  implicit class MonadSyntax[monad <: AnyMonad](val monad: monad) extends AnyVal {
+  implicit class MonadSyntax[monad <: AnyMonad](val monad: monad) extends scala.AnyVal {
 
     def kleisliCategory[
       M0 >: monad         <: monad { type On = C; type Functor = F0 },

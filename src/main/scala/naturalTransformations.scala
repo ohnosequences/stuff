@@ -1,7 +1,5 @@
 package ohnosequences.stuff
 
-import AnyFunctor._
-
 trait AnyNaturalTransformation {
 
   type SourceCategory <: AnyCategory
