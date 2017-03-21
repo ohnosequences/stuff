@@ -1,6 +1,6 @@
 package ohnosequences.stuff.test
 
-import ohnosequences.stuff._, AnyFunction._, Product._, Scala._
+import ohnosequences.stuff._, Function._, Product._, Scala._
 import ohnosequences.stuff.{Sums => sums}, sums._
 import scala.{ Int, Boolean }
 import scala.Predef.String
@@ -10,10 +10,10 @@ class Sums extends FunSuite {
 
   test("either") {
 
-    val l       = function { x: String => x.length }
-    val toStr   = function { x: Int => x.toString }
-    val isZero  = function { x: Int => x == 0 }
-    val isEmpty = function { x: String => x.isEmpty }
+    val l       = Function { x: String => x.length }
+    val toStr   = Function { x: Int => x.toString }
+    val isZero  = Function { x: Int => x == 0 }
+    val isEmpty = Function { x: String => x.isEmpty }
 
     assert {
       either(isZero × isEmpty)(inL(0)) == isZero(0)     &&

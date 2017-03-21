@@ -7,7 +7,7 @@ abstract class AnyCategory {
 
   def id[X <: Objects]: C[X,X]
 
-  // TODO change this: => should be -->
+  // TODO change this: => should be ->
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z]
 
   implicit val me: this.type = this
