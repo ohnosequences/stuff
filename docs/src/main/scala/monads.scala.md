@@ -32,7 +32,7 @@ trait AnyMonad {
     type SourceCategory = On
     type TargetCategory = On
 
-    type SourceFunctor = Functor >=> Functor
+    type SourceFunctor = Functor >-> Functor
     type TargetFunctor = Functor
   }
   val μ: μ
@@ -87,7 +87,7 @@ case class IdentityMonad[Category <: AnyCategory](category: Category) extends Mo
   type η  = IdentityNaturalTransformation[On, IdentityFunctor[On], On]
   val η   = IdentityNaturalTransformation[On, IdentityFunctor[On], On](functor)
 
-  case object Mu extends NaturalTransformation(on, functor >=> functor, functor, on) {
+  case object Mu extends NaturalTransformation(on, functor >-> functor, functor, on) {
 
     def at[X <: On#Objects]: On#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
       AnyCategory.is(on).id[X]

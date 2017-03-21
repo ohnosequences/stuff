@@ -9,7 +9,7 @@ case class MorphismsSyntax[
 ]
 (val g: Category#C[Y,Z]) extends AnyVal {
 
-  def >=>[W <: Category#Objects](h: Category#C[Z,W])(implicit category: Category): Category#C[Y,W] =
+  def >->[W <: Category#Objects](h: Category#C[Z,W])(implicit category: Category): Category#C[Y,W] =
     AnyCategory.is(category).compose(h,g)
 
   def ⊗[

@@ -19,5 +19,5 @@ case object Scala { // extends AnyCategory { // TODO needs updating AnyCategory
 
   @inline final
   def compose[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
-    Function { fg => fg.left >=> fg.right }
+    Function { fg => fg.left >-> fg.right }
 }

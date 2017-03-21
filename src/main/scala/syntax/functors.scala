@@ -2,7 +2,7 @@ package ohnosequences.stuff
 
 final case class FunctorSyntax[functor <: AnyFunctor](val functor: functor) extends scala.AnyVal {
 
-  def >=>[G0 <: AnyFunctor { type Source = functor#Target }](g: G0): functor >=> G0 =
+  def >->[G0 <: AnyFunctor { type Source = functor#Target }](g: G0): functor >-> G0 =
     FunctorComposition(functor,g)
 
   def id[

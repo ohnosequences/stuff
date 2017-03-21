@@ -30,8 +30,8 @@ class Sums extends FunSuite {
       inR("scalac")
 
     assert {
-      any(l) == (sums.swap >=> any[String])(l) &&
-      any(r) == (sums.swap >=> any[String])(r)
+      any(l) == (sums.swap >-> any[String])(l) &&
+      any(r) == (sums.swap >-> any[String])(r)
     }
   }
 }

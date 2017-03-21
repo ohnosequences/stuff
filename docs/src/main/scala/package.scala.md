@@ -10,7 +10,7 @@ package object stuff {
 
 
 ```scala
-  type >=>[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
+  type >->[f0 <: AnyFunctor, g0 <: AnyFunctor { type Source = f0#Target }] =
     FunctorComposition[f0,g0]
 
   type ⟶[src <: AnyCategory, tgt <: AnyCategory] =

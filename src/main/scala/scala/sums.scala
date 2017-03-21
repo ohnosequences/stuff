@@ -71,7 +71,7 @@ case object Sums {
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A + C) -> (B + D)) =
     Function { fg =>
-      either { (fg.left >=> inL[B,D]) × (fg.right >=> inR[B,D]) }
+      either { (fg.left >-> inL[B,D]) × (fg.right >-> inR[B,D]) }
     }
 
   // simpler, no scala stuff

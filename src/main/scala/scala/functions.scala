@@ -14,7 +14,7 @@ sealed abstract class Function { fn =>
   def apply(d: Domain): Codomain
 
   @inline final
-  def >=>[C](g: Codomain -> C): Domain -> C =
+  def >->[C](g: Codomain -> C): Domain -> C =
     new Function {
 
       type Domain   = fn.Domain
@@ -45,7 +45,7 @@ object Function {
       def apply(a: Domain): Codomain =
         a
     }
-    
+
   @inline final
   def apply[A,B](f: A => B): A -> B =
     new Function {

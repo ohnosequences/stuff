@@ -27,7 +27,7 @@ trait AnyKleisliCategory extends AnyCategory { kleisli =>
     val m = AnyMonad.is(monad)
     val mu = AnyNaturalTransformation.is[Monad#μ](monad.μ)
 
-    (f:Cat#C[X,Monad#F[Y]]) >=> m(g) >=> mu.at
+    (f:Cat#C[X,Monad#F[Y]]) >-> m(g) >-> mu.at
   }
 
   final def id[X <: Objects]: C[X,X] = AnyMonad.is(monad).η[X]
@@ -112,7 +112,7 @@ trait AnyKleisliFunctor extends AnyFunctor { kleisliF =>
 
     val eta = AnyNaturalTransformation.is[Monad#η](target.monad.η)
 
-    f >=> eta.at[B]
+    f >-> eta.at[B]
   }
 }
 
@@ -153,7 +153,7 @@ trait AnyKleisliForget extends AnyFunctor { forget =>
 
     implicit val c = AnyCategory.is[Monad#On](monad.on)
 
-    AnyMonad.is(monad)(f: Monad#On#C[X, Monad#Functor#F[Y]]) >=> AnyNaturalTransformation.is[Monad#μ](monad.μ)[Y]
+    AnyMonad.is(monad)(f: Monad#On#C[X, Monad#Functor#F[Y]]) >-> AnyNaturalTransformation.is[Monad#μ](monad.μ)[Y]
   }
 }
 

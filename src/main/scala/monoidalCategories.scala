@@ -46,7 +46,7 @@ trait AnyProducts extends AnyMonoidalCategory {
   : (On#C[X,A], On#C[X,B]) => On#C[ X, A × B ]
 
   def univ_inv[A <: On#Objects, B <: On#Objects, X <: On#Objects]: On#C[ X, A × B ] => (On#C[X,A], On#C[X,B]) =
-    { f => (f >=> left, f >=> right) }
+    { f => (f >-> left, f >-> right) }
 
   def duplicate[A <: On#Objects]: On#C[ A, A × A ] = univ(AnyCategory.is(on).id, AnyCategory.is(on).id)
 
@@ -57,8 +57,8 @@ trait AnyProducts extends AnyMonoidalCategory {
     g: On#C[C,D]
   ): On#C[A × C, B × D] =
     univ(
-      left  >=> f,
-      right >=> g
+      left  >-> f,
+      right >-> g
     )
 
   def ×[
@@ -81,7 +81,7 @@ trait AnyCoproducts extends AnyMonoidalCategory {
   def univ[A <: On#Objects, B <: On#Objects, X <: On#Objects]: (On#C[A,X], On#C[B,X]) => On#C[ A + B, X ]
 
   def univ_inv[A <: On#Objects, B <: On#Objects, X <: On#Objects]: On#C[ A + B, X ] => (On#C[A,X], On#C[B,X]) =
-    { f => (left >=> f, right >=> f) }
+    { f => (left >-> f, right >-> f) }
 
   def ⊗[
     A <: On#Objects, B <: On#Objects,
@@ -90,8 +90,8 @@ trait AnyCoproducts extends AnyMonoidalCategory {
     g: On#C[C,D]
   ): On#C[A + C, B + D] =
     univ(
-      f >=> left,
-      g >=> right
+      f >-> left,
+      g >-> right
     )
 
   def +[

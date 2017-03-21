@@ -66,7 +66,7 @@ case object Product {
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
     Function { fg =>
-      both { (left >=> fg.left) × (right >=> fg.right) }
+      both { (left >-> fg.left) × (right >-> fg.right) }
     }
 
   implicit final
