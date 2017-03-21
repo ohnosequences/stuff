@@ -19,6 +19,8 @@ wartremoverExcluded ++= Seq(
   baseDirectory.value/"src"/"main"/"scala"/"naturalTransformations.scala"
 )
 
+incOptions := incOptions.value.withNameHashing(false)
+
 scalacOptions ++= Seq(
   "-unchecked",
   // "-Xfatal-warnings",
@@ -29,5 +31,10 @@ scalacOptions ++= Seq(
   // "-Ydebug", "-uniqid",
   "-Ywarn-unused-import",
   "-Yno-predef",
-  "-Yno-imports"
+  "-Yno-imports",
+  // "-Ylog:inliner",
+  "-opt:inline-project",
+  "-opt-warnings:_",
+  "-opt:l:project",
+  "-opt:l:method"
 )
