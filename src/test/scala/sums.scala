@@ -8,16 +8,25 @@ import org.scalatest.FunSuite
 
 class Sums extends FunSuite {
 
+  val l       = Function { x: String => x.length }
+  val toStr   = Function { x: Int => x.toString }
+  val isZero  = Function { x: Int => x == 0 }
+  val isEmpty = Function { x: String => x.isEmpty }
+
   test("either") {
 
-    val l       = Function { x: String => x.length }
-    val toStr   = Function { x: Int => x.toString }
-    val isZero  = Function { x: Int => x == 0 }
-    val isEmpty = Function { x: String => x.isEmpty }
 
     assert {
-      either(isZero × isEmpty)(inL(0)) == isZero(0)     &&
-      either(isZero × isEmpty)(inR("")) == isEmpty("")
+      either(isZero x isEmpty)(inL(0)) == isZero(0)     &&
+      either(isZero x isEmpty)(inR("")) == isEmpty("")
+    }
+  }
+
+  test("+") {
+
+    assert {
+      (l + toStr)(inR(2))                   === inR("2")  &&
+      (l + toStr >-> toStr + l)(inR(2)) === inR(1)
     }
   }
 

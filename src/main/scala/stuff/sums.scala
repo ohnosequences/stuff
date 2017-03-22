@@ -41,7 +41,15 @@ case object Sums {
     Function { Left(_) }
 
   @inline final
+  def ιL[O <: Or]: O#Left -> (O#Left + O#Right) =
+    Function { Left(_) }
+
+  @inline final
   def inR[A,B]: B -> (A + B) =
+    Function { Right(_) }
+
+  @inline final
+  def ιR[O <: Or]: O#Right -> (O#Left + O#Right) =
     Function { Right(_) }
 
   @inline final
@@ -62,16 +70,16 @@ case object Sums {
 
   @inline final
   def any[A]: (A + A) -> A =
-    either(identity × identity)
+    either(identity x identity)
 
   @inline final
   def swap[A,B]: (A + B) -> (B + A) =
-    either(inR × inL)
+    either(inR x inL)
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A + C) -> (B + D)) =
     Function { fg =>
-      either { (fg.left >-> inL[B,D]) × (fg.right >-> inR[B,D]) }
+      either { (fg.left >-> inL[B,D]) x (fg.right >-> inR[B,D]) }
     }
 
   // simpler, no scala stuff
@@ -84,4 +92,12 @@ case object Sums {
   //         fg.right(aorb.value.asInstanceOf[B])
   //     }
   //   }
+
+  implicit final
+  class FunctionSumSyntax[A,B](val f: A -> B) extends scala.AnyVal {
+
+    @inline final
+    def +[C,D](g: C -> D): (A + C) -> (B + D) =
+      map(f x g)
+  }
 }

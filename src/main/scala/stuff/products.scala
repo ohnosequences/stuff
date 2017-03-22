@@ -28,26 +28,26 @@ case object Product {
   type I = scala.Unit
 
   @inline final
-  def left[A,B]: A × B -> A =
+  def πL[AB <: AnyProduct]: AB -> AB#Left =
     Function { _.left }
 
   @inline final
-  def πL[A,B]: A × B -> A =
-    left[A,B]
+  def πR[AB <: AnyProduct]: AB -> AB#Right =
+    Function { _.right }
+
+  @inline final
+  def left[A,B]: A × B -> A =
+    Function { _.left }
 
   @inline final
   def right[A,B]: A × B -> B =
     Function { _.right }
 
   @inline final
-  def πR[A,B]: A × B -> B =
-    right[A,B]
-
-  @inline final
   def both[A,B,X]: ((X -> A) × (X -> B)) -> (X -> (A × B)) =
     Function { fg =>
       Function {
-        x => fg.left(x) × fg.right(x)
+        x => fg.left(x) x fg.right(x)
       }
     }
 
@@ -57,24 +57,33 @@ case object Product {
 
   @inline final
   def duplicate[Z]: Z -> (Z × Z) =
-    both(identity × identity)
+    both(identity x identity)
 
   @inline final
   def swap[A,B]: (A × B) -> (B × A) =
-    both(right × left)
+    both(right x left)
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
     Function { fg =>
-      both { (left >-> fg.left) × (right >-> fg.right) }
+      both { (left >-> fg.left) x (right >-> fg.right) }
     }
 
   implicit final
   class ProductOps[A](val a: A) extends scala.AnyVal {
 
+    // TODO find a better, less confusing syntax for building tuples
     @inline final
-    def ×[B](b: B): A × B =
+    def x[B](b: B): A × B =
       Product(a,b)
+  }
+
+  implicit final
+  class FunctionProductSyntax[A,B](val f: A -> B) extends scala.AnyVal {
+
+    @inline final
+    def ×[C,D](g: C -> D): (A × C) -> (B × D) =
+      Product.map(Product(f,g))
   }
 
 }

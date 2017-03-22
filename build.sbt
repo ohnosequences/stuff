@@ -9,32 +9,33 @@ scalaVersion := "2.12.1"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
-wartremoverExcluded ++= Seq(
-  baseDirectory.value/"src"/"main"/"scala"/"scala"/"products.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"functors.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"categories.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"monoidalCategories.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"monads.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"kleisli.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"naturalTransformations.scala"
-)
-
 incOptions := incOptions.value.withNameHashing(false)
 
 scalacOptions ++= Seq(
-  "-unchecked",
   // "-Xfatal-warnings",
+  // "-Ydebug", "-uniqid",
+  "-unchecked",
   "-Xlint",
   "-Xstrict-inference",
   "-Ywarn-unused-import",
   "-Xfuture",
-  // "-Ydebug", "-uniqid",
   "-Ywarn-unused-import",
   "-Yno-predef",
   "-Yno-imports",
-  // "-Ylog:inliner",
   "-opt:inline-project",
   "-opt-warnings:_",
   "-opt:l:project",
   "-opt:l:method"
 )
+
+wartremoverExcluded ++= Seq(
+  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"categories.scala"
+)
+
+// removed will be
+excludeFilter in unmanagedSources :=
+  (excludeFilter in unmanagedSources).value ||
+  new SimpleFileFilter(_.getCanonicalPath startsWith s"${baseDirectory.value}/src/main/scala/old")
+
+// shows time for each test:
+testOptions in Test += Tests.Argument("-oD")

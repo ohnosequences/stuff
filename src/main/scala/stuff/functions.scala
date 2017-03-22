@@ -28,7 +28,6 @@ sealed abstract class Function { fn =>
 
 object Function {
 
-
   // TODO what is this supposed to do?
   @inline final
   type ->[A,B] =
