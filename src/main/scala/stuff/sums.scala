@@ -31,7 +31,7 @@ case class Right[L,R](val value: R) extends AnyVal with Or {
   type Value  = Right
 }
 
-case object Sums {
+case object sums {
 
   type +[A, B] =
     Or { type Left = A; type Right = B }

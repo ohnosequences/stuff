@@ -1,7 +1,7 @@
 package ohnosequences.stuff.test
 
-import ohnosequences.stuff._, Function._, products._, Scala._
-import ohnosequences.stuff.{Sums => sums}, sums._
+import ohnosequences.stuff._, Function._, sums._, products._, Scala._
+
 import scala.{ Int, Boolean }
 import scala.Predef.String
 import org.scalatest.FunSuite
