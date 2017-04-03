@@ -5,6 +5,7 @@ package ohnosequences.stuff
 */
 import scala.inline
 import Function._
+import products._
 
 sealed abstract class Function { fn =>
 
@@ -56,4 +57,12 @@ object Function {
       def apply(a: A): B =
         f.apply(a)
       }
+
+  implicit final
+  class FunctionProductSyntax[A,B](val f: A -> B) extends scala.AnyVal {
+
+    @inline final
+    def ×[C,D](g: C -> D): (A × C) -> (B × D) =
+      map(tuple(f,g))
+  }
 }

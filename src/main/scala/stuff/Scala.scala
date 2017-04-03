@@ -1,7 +1,7 @@
 package ohnosequences.stuff
 
 import Function._
-import Product._
+import products._
 import scala.inline
 
 object Scala extends Category {

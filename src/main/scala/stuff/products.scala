@@ -2,16 +2,19 @@ package ohnosequences.stuff
 
 import scala.inline
 
-sealed trait AnyProduct {
+sealed abstract class Tuple {
 
   type Left
-  def left: Left
+  val left: Left
 
   type Right
-  def right: Right
+  val right: Right
 }
 
-private[stuff] case class Product[A,B](val left: A, val right: B) extends AnyProduct {
+case object ∗
+
+private[stuff] final
+case class tuple[A,B](val left: A, val right: B) extends Tuple {
 
   type Left = A
   type Right = B
@@ -20,20 +23,14 @@ private[stuff] case class Product[A,B](val left: A, val right: B) extends AnyPro
 /*
   This has all methods needed for a Product structure.
 */
-case object Product {
+case object products {
 
   import Function._
 
-  type ×[A,B] = AnyProduct { type Left = A; type Right = B }
-  type I = scala.Unit
+  type ×[A,B] = Tuple { type Left = A; type Right = B }
 
-  @inline final
-  def πL[AB <: AnyProduct]: AB -> AB#Left =
-    Function { _.left }
-
-  @inline final
-  def πR[AB <: AnyProduct]: AB -> AB#Right =
-    Function { _.right }
+  type ∗    = ohnosequences.stuff.∗.type
+  val ∗ : ∗ = ohnosequences.stuff.∗
 
   @inline final
   def left[A,B]: A × B -> A =
@@ -44,29 +41,64 @@ case object Product {
     Function { _.right }
 
   @inline final
-  def both[A,B,X]: ((X -> A) × (X -> B)) -> (X -> (A × B)) =
-    Function { fg =>
-      Function {
-        x => fg.left(x) x fg.right(x)
-      }
-    }
-
-  @inline final
-  def erase[A]: A -> I =
-    Function { a => () }
+  def erase[A]: A -> ∗ =
+    Function { a => ∗ }
 
   @inline final
   def duplicate[Z]: Z -> (Z × Z) =
-    both(identity x identity)
+    both(identity & identity)
 
   @inline final
   def swap[A,B]: (A × B) -> (B × A) =
-    both(right x left)
+    both(right & left)
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
     Function { fg =>
-      both { (left >-> fg.left) x (right >-> fg.right) }
+      both { (left >-> fg.left) & (right >-> fg.right) }
+    }
+
+  // all these functions can be generated. Yes, I mean that: code generation.
+  // see http://yefremov.net/blog/scala-code-generation/ probably using Twirl
+  // the key advantage here is that we generated *methods*, not classes.
+  @inline final
+  def πL[AB <: Tuple]: AB -> AB#Left =
+    Function { _.left }
+
+  @inline final
+  def πR[AB <: Tuple]: AB -> AB#Right =
+    Function { _.right }
+
+  @inline final
+  def π_1_2[A,B]: A × B -> A =
+    Function { _.left }
+
+  @inline final
+  def π_1_3[A,B,C]: A × B × C -> A =
+    Function { _.left.left }
+
+  @inline final
+  def π_2_3[A,B,C]: A × B × C -> B =
+    Function { _.left.right }
+
+  @inline final
+  def π_3_3[A,B,C]: A × B × C -> C =
+    Function { _.right }
+
+  @inline final
+  def both[A,B,X]: ((X -> A) × (X -> B)) -> (X -> (A × B)) =
+    Function { fg =>
+      Function {
+        x => fg.left(x) & fg.right(x)
+      }
+    }
+
+  @inline final
+  def both3[A,B,C,X]: ((X -> A) × (X -> B) × (X -> C)) -> (X -> (A × B × C)) =
+    Function { fgh =>
+      Function {
+        x => π_1_3(fgh)(x) & π_2_3(fgh)(x) & π_3_3(fgh)(x)
+      }
     }
 
   implicit final
@@ -74,16 +106,7 @@ case object Product {
 
     // TODO find a better, less confusing syntax for building tuples
     @inline final
-    def x[B](b: B): A × B =
-      Product(a,b)
+    def &[B](b: B): A × B =
+      tuple(a,b)
   }
-
-  implicit final
-  class FunctionProductSyntax[A,B](val f: A -> B) extends scala.AnyVal {
-
-    @inline final
-    def ×[C,D](g: C -> D): (A × C) -> (B × D) =
-      Product.map(Product(f,g))
-  }
-
 }

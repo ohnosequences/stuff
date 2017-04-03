@@ -2,7 +2,7 @@ package ohnosequences.stuff
 
 import scala.{ Any, AnyVal, inline }
 import Function._
-import Product._
+import products._
 /*
   `Or` is a more reasonable sum type. Right now it is implemented using value classes for constructors; sadly, these will box (I think) in a lot of cases. A totally unboxed representation using type lists and unboxed denotations could be considered at some point.
 */
@@ -15,14 +15,16 @@ sealed trait Or extends Any {
   def value: Value
 }
 
-private case class Left[L,R](val value: L) extends AnyVal with Or {
+private final
+case class Left[L,R](val value: L) extends AnyVal with Or {
 
   type Left   = L
   type Right  = R
   type Value  = Left
 }
 
-private case class Right[L,R](val value: R) extends AnyVal with Or {
+private final
+case class Right[L,R](val value: R) extends AnyVal with Or {
 
   type Left   = L
   type Right  = R
@@ -56,48 +58,37 @@ case object Sums {
   def nothing[X]: ∅ -> X =
     Function { n: ∅ => scala.sys.error("∅"): X }
 
-  // TODO try to get rid of the erasure issue
   @inline final
   def either[A,B,X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) =
     Function {
       fg: (A -> X) × (B -> X) => Function {
-        aorb: A + B => aorb match {
-          case Left(a:A)  => fg.left(a)
-          case Right(b:B) => fg.right(b)
-        }
+        aorb: A + B =>
+          if(aorb.isInstanceOf[Left[_,_]])
+            fg.left(aorb.value.asInstanceOf[A])
+          else
+            fg.right(aorb.value.asInstanceOf[B])
       }
     }
 
   @inline final
   def any[A]: (A + A) -> A =
-    either(identity x identity)
+    either(identity & identity)
 
   @inline final
   def swap[A,B]: (A + B) -> (B + A) =
-    either(inR x inL)
+    either(inR & inL)
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A + C) -> (B + D)) =
     Function { fg =>
-      either { (fg.left >-> inL[B,D]) x (fg.right >-> inR[B,D]) }
+      either { (fg.left >-> inL[B,D]) & (fg.right >-> inR[B,D]) }
     }
-
-  // simpler, no scala stuff
-  // def univAlt[A,B,X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) =
-  //   Function {
-  //     fg: (A -> X) × (B -> X) => Function { aorb =>
-  //       if(aorb.isInstanceOf[Left[A,B]])
-  //         fg.left(aorb.value.asInstanceOf[A])
-  //       else
-  //         fg.right(aorb.value.asInstanceOf[B])
-  //     }
-  //   }
 
   implicit final
   class FunctionSumSyntax[A,B](val f: A -> B) extends scala.AnyVal {
 
     @inline final
     def +[C,D](g: C -> D): (A + C) -> (B + D) =
-      map(f x g)
+      map(f & g)
   }
 }

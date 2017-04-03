@@ -1,6 +1,6 @@
 package ohnosequences.stuff.test
 
-import ohnosequences.stuff._, Function._, Product._, Scala._
+import ohnosequences.stuff._, Function._, products._, Scala._
 import ohnosequences.stuff.{Sums => sums}, sums._
 import scala.{ Int, Boolean }
 import scala.Predef.String
@@ -17,15 +17,15 @@ class Sums extends FunSuite {
 
 
     assert {
-      either(isZero x isEmpty)(inL(0)) == isZero(0)     &&
-      either(isZero x isEmpty)(inR("")) == isEmpty("")
+      either(isZero & isEmpty)(inL(0))  == isZero(0)     &&
+      either(isZero & isEmpty)(inR("")) == isEmpty("")
     }
   }
 
   test("+") {
 
     assert {
-      (l + toStr)(inR(2))                   === inR("2")  &&
+      (l + toStr)(inR(2))               === inR("2")  &&
       (l + toStr >-> toStr + l)(inR(2)) === inR(1)
     }
   }

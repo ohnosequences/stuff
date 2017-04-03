@@ -1,7 +1,7 @@
 package ohnosequences.stuff
 
 import Function._
-import Product._
+import products._
 import scala.inline
 
 abstract class Category {
@@ -37,9 +37,11 @@ object Category {
   def opposite[category <: Category](c: category): Opposite[category] =
     new Category {
 
-      type Objects = category#Objects
+      type Objects =
+        category#Objects
 
-      type C[X <: Objects, Y <: Objects] = category#C[Y,X]
+      type C[X <: Objects, Y <: Objects] =
+        category#C[Y,X]
 
       @inline final
       def identity[X <: Objects]: C[X,X] =
@@ -54,7 +56,7 @@ object Category {
     Category {
 
       type Objects =
-        AnyProduct {
+        Tuple {
           type Left   <: leftCategory#Objects
           type Right  <: rightCategory#Objects
         }
@@ -68,7 +70,7 @@ object Category {
     new Category {
 
       type Objects =
-        AnyProduct {
+        Tuple {
           type Left   <: leftCategory#Objects
           type Right  <: rightCategory#Objects
         }
@@ -78,12 +80,12 @@ object Category {
 
       @inline final
       def identity[X <: Objects]: C[X,X] =
-        is(l).identity x is(r).identity
+        is(l).identity & is(r).identity
 
       @inline final
       def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
         both(
-          πL[C[X,Y]] × πL[C[Y,Z]] >-> is(l).composition x
+          πL[C[X,Y]] × πL[C[Y,Z]] >-> is(l).composition &
           πR[C[X,Y]] × πR[C[Y,Z]] >-> is(r).composition
         )
     }
