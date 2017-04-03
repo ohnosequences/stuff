@@ -94,7 +94,11 @@ case object products {
     }
 
   @inline final
-  def both3[A,B,C,X]: ((X -> A) × (X -> B) × (X -> C)) -> (X -> (A × B × C)) =
+  def all2[A,B,X]: ((X -> A) × (X -> B)) -> (X -> (A × B)) =
+    both
+
+  @inline final
+  def all3[A,B,C,X]: ((X -> A) × (X -> B) × (X -> C)) -> (X -> (A × B × C)) =
     Function { fgh =>
       Function {
         x => π_1_3(fgh)(x) & π_2_3(fgh)(x) & π_3_3(fgh)(x)

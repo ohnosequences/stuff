@@ -7,10 +7,12 @@ import org.scalatest.FunSuite
 
 class TuplesSyntax extends FunSuite {
 
-  val l       = Function { x: String => x.length }
-  val toStr   = Function { x: Int => x.toString }
-  val isZero  = Function { x: Int => x == 0 }
-  val isEmpty = Function { x: String => x.isEmpty }
+  val l           = Function { x: String => x.length }
+  val toStr       = Function { x: Int => x.toString }
+  val isZero      = Function { x: Int => x == 0 }
+  val isPositive  = Function { x: Int => x > -1 }
+  val plusOne     = Function { x: Int => x + 1 }
+  val isEmpty     = Function { x: String => x.isEmpty }
 
   test("build tuple values") {
 
@@ -30,10 +32,19 @@ class TuplesSyntax extends FunSuite {
 
   test("product universal") {
 
-    val x = both(toStr & isZero)
-    val y = both(both(toStr & isZero) & isZero)
-    val yAgain = both3(toStr & isZero & isZero)
+    val x =
+      both(toStr & isZero)
 
-    assert { y(12) === yAgain(12) }
+    val y =
+      both(both(toStr & isZero) & isZero)
+
+    val yAgain =
+      all3(toStr & isZero & isZero)
+
+    assert {
+      all3(toStr & isZero & isZero)(1) === ("1" & false & false)    &&
+      // all3(isPositive & isZero & plusOne)(1) === (true & false & 2) && // awful; & is a method on Boolean
+      y(12) === yAgain(12)
+    }
   }
 }
