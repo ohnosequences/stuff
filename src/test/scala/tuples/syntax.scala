@@ -47,4 +47,40 @@ class TuplesSyntax extends FunSuite {
       y(12) === yAgain(12)
     }
   }
+
+  val iterations =
+    10000000
+
+  test("std evaluation") {
+
+    import scala.Predef._
+
+    val f = { x: Int => x.toString }
+    val g = { x: Int => (x == 0) }
+    val h = { x: Int => (x == 0) }
+
+    for(i <- 1 to iterations) {
+      val zzz = (f(i), g(i), h(i))
+    }
+  }
+
+  test("std inline evaluation") {
+
+    import scala.Predef._
+
+    for(i <- 1 to iterations) {
+      val zzz = (({ x: Int => x.toString })(i), ({ x: Int => (x == 0) })(i), ({ x: Int => (x == 0) })(i))
+    }
+  }
+
+  test("allX evaluation") {
+
+    val f = all3(toStr & isZero & isZero)
+
+    import scala.Predef._
+
+    for(i <- 1 to iterations) {
+      val zzz = f(i)
+    }
+  }
 }
