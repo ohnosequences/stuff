@@ -1,6 +1,7 @@
 package ohnosequences.stuff
 
 import Function._
+import scala.inline
 
 abstract class Functor {
 
@@ -30,12 +31,16 @@ object functors {
       cat: Cat => new Functor {
 
         type Source = Cat
+        @inline final
         val source: Source = cat
+
         type Target = Cat
+        @inline final
         val target: Target = cat
 
         type F[Z <: Cat#Objects] = Z
 
+        @inline final
         def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
           Scala.identity
       }

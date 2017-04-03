@@ -59,9 +59,7 @@ class TuplesSyntax extends FunSuite {
     val g = { x: Int => (x == 0) }
     val h = { x: Int => (x == 0) }
 
-    for(i <- 1 to iterations) {
-      val zzz = (f(i), g(i), h(i))
-    }
+    for(i <- 1 to iterations) { val zzz = (f(i), g(i), h(i)) }
   }
 
   test("std inline evaluation") {
@@ -69,7 +67,8 @@ class TuplesSyntax extends FunSuite {
     import scala.Predef._
 
     for(i <- 1 to iterations) {
-      val zzz = (({ x: Int => x.toString })(i), ({ x: Int => (x == 0) })(i), ({ x: Int => (x == 0) })(i))
+      val zzz =
+        (({ x: Int => x.toString })(i), ({ x: Int => (x == 0) })(i), ({ x: Int => (x == 0) })(i))
     }
   }
 
@@ -79,8 +78,6 @@ class TuplesSyntax extends FunSuite {
 
     import scala.Predef._
 
-    for(i <- 1 to iterations) {
-      val zzz = f(i)
-    }
+    for(i <- 1 to iterations) { val zzz = f(i) }
   }
 }
