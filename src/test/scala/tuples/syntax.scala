@@ -7,11 +7,11 @@ import org.scalatest.FunSuite
 
 class TuplesSyntax extends FunSuite {
 
-  val l           = Function { x: String => x.length }
-  val toStr       = Function { x: Int => x.toString }
-  val isZero      = Function { x: Int => x == 0 }
-  val isPositive  = Function { x: Int => x > -1 }
-  val plusOne     = Function { x: Int => x + 1 }
+  val l           = Function { x: String => x.length  }
+  val toStr       = Function { x: Int => x.toString   }
+  val isZero      = Function { x: Int => x == 0       }
+  val isPositive  = Function { x: Int => x > -1       }
+  val plusOne     = Function { x: Int => x + 1        }
   val isEmpty     = Function { x: String => x.isEmpty }
 
   test("build tuple values") {

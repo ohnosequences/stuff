@@ -30,14 +30,17 @@ object functors {
     Function {
       cat: Cat => new Functor {
 
+        @inline final
         type Source = Cat
         @inline final
         val source: Source = cat
 
+        @inline final
         type Target = Cat
         @inline final
         val target: Target = cat
 
+        @inline final
         type F[Z <: Cat#Objects] = Z
 
         @inline final
