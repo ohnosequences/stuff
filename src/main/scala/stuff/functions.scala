@@ -15,6 +15,10 @@ sealed abstract class Function { fn =>
   def apply(d: Domain): Codomain
 
   @inline final
+  def at(d: Domain): Codomain =
+    apply(d)
+
+  @inline final
   def >->[C](g: Codomain -> C): Domain -> C =
     new Function {
 
@@ -28,6 +32,30 @@ sealed abstract class Function { fn =>
 }
 
 object Function {
+
+  @inline final implicit
+  def fromScalaFunction[A,B](f: A => B): A -> B =
+    new Function {
+      type Domain = A
+      type Codomain = B
+      @inline final
+      def apply(a: Domain): Codomain =
+        f.apply(a)
+    }
+
+  @inline final
+  def λ[A,B](f: A => B): A -> B =
+    f
+
+  @inline final
+  def const[Y,X]: X -> (Y -> X) =
+    λ { x: X =>
+      new Function {
+        type Domain = Y; type Codomain = X
+        @inline final
+        def apply(y: Y) = x
+      }
+    }
 
   // TODO what is this supposed to do?
   @inline final
@@ -63,6 +91,6 @@ object Function {
 
     @inline final
     def ×[C,D](g: C -> D): (A × C) -> (B × D) =
-      map(tuple(f,g))
+      map(Tuple.×(f,g))
   }
 }

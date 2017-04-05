@@ -13,11 +13,14 @@ sealed abstract class Tuple {
 
 case object ∗
 
-private[stuff] final
-case class tuple[A,B](val left: A, val right: B) extends Tuple {
+case object Tuple {
 
-  type Left = A
-  type Right = B
+  final
+  case class ×[A,B](val left: A, val right: B) extends Tuple {
+
+    type Left = A
+    type Right = B
+  }
 }
 
 /*
@@ -30,7 +33,6 @@ case object products {
   type ×[A,B] = Tuple { type Left = A; type Right = B }
 
   type ∗    = ohnosequences.stuff.∗.type
-  val ∗ : ∗ = ohnosequences.stuff.∗
 
   @inline final
   def left[A,B]: A × B -> A =
@@ -47,6 +49,10 @@ case object products {
   @inline final
   def duplicate[Z]: Z -> (Z × Z) =
     both(identity & identity)
+
+  @inline final
+  def Δ[Z]: Z -> (Z × Z) =
+    duplicate
 
   @inline final
   def swap[A,B]: (A × B) -> (B × A) =
@@ -108,9 +114,13 @@ case object products {
   implicit final
   class ProductOps[A](val a: A) extends scala.AnyVal {
 
-    // TODO find a better, less confusing syntax for building tuples
+    @inline final
+    def and[B](b: B): A × B =
+      new Tuple.×(a,b)
+
+    // TODO find a better, less confusing symbolic syntax for building tuples
     @inline final
     def &[B](b: B): A × B =
-      tuple(a,b)
+      new Tuple.×[A,B](a,b)
   }
 }

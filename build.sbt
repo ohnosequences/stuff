@@ -30,7 +30,8 @@ scalacOptions ++= Seq(
 
 wartremoverExcluded ++= Seq(
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"categories.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala" // isInstanceOf
+  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala", // isInstanceOf
+  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"tailrec.scala"
 )
 
 

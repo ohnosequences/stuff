@@ -23,27 +23,26 @@ class TuplesSyntax extends FunSuite {
       l & toStr & isEmpty
 
     assert {
-      πL(l & toStr & isEmpty)    === (l & toStr)  &&
-      left(l & toStr & isEmpty)  === (l & toStr)  &&
-      πR(l & toStr & isEmpty)    === isEmpty      &&
-      right(l & toStr & isEmpty) === isEmpty
+      πL(l and toStr and isEmpty)    === (l and toStr)  &&
+      left(l and toStr and isEmpty)  === (l and toStr)  &&
+      πR(l and toStr and isEmpty)    === isEmpty      &&
+      right(l and toStr and isEmpty) === isEmpty
     }
   }
 
   test("product universal") {
 
     val x =
-      both(toStr & isZero)
+      both(toStr and isZero)
 
     val y =
-      both(both(toStr & isZero) & isZero)
+      both(both(toStr and isZero) and isZero)
 
     val yAgain =
-      all3(toStr & isZero & isZero)
+      all3(toStr and isZero and isZero)
 
     assert {
-      all3(toStr & isZero & isZero)(1) === ("1" & false & false)    &&
-      // all3(isPositive & isZero & plusOne)(1) === (true & false & 2) && // awful; & is a method on Boolean
+      all3(toStr and isZero and isZero)(1) === ("1" and false and false)  &&
       y(12) === yAgain(12)
     }
   }
@@ -51,13 +50,14 @@ class TuplesSyntax extends FunSuite {
   val iterations =
     10000000
 
+  val f = { x: Int => x.toString }
+  val g = { x: Int => (x == 0) }
+  val h = { x: Int => (x == 0) }
+  val f0 = all3(toStr and isZero and isZero)
+
   test("std evaluation") {
 
     import scala.Predef._
-
-    val f = { x: Int => x.toString }
-    val g = { x: Int => (x == 0) }
-    val h = { x: Int => (x == 0) }
 
     for(i <- 1 to iterations) { val zzz = (f(i), g(i), h(i)) }
   }
@@ -74,10 +74,8 @@ class TuplesSyntax extends FunSuite {
 
   test("allX evaluation") {
 
-    val f = all3(toStr & isZero & isZero)
-
     import scala.Predef._
 
-    for(i <- 1 to iterations) { val zzz = f(i) }
+    for(i <- 1 to iterations) { val zzz = f0(i) }
   }
 }

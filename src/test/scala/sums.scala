@@ -8,10 +8,10 @@ import org.scalatest.FunSuite
 
 class Sums extends FunSuite {
 
-  val l       = Function { x: String => x.length }
-  val toStr   = Function { x: Int => x.toString }
-  val isZero  = Function { x: Int => x == 0 }
-  val isEmpty = Function { x: String => x.isEmpty }
+  val l       = λ { x: String => x.length }
+  val toStr   = λ { x: Int => x.toString }
+  val isZero  = λ { x: Int => x == 0 }
+  val isEmpty = λ { x: String => x.isEmpty }
 
   test("either") {
 
