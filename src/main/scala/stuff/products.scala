@@ -61,7 +61,7 @@ case object products {
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
     Function { fg =>
-      both { (left >-> fg.left) & (right >-> fg.right) }
+      both { (left >-> fg.left) and (right >-> fg.right) }
     }
 
   // all these functions can be generated. Yes, I mean that: code generation.
@@ -110,6 +110,25 @@ case object products {
         x => π_1_3(fgh)(x) & π_2_3(fgh)(x) & π_3_3(fgh)(x)
       }
     }
+
+  case object ProductFunctor extends Functor {
+
+    type S = Scala.type
+    val S: S = Scala
+
+    type Source = Category.Product[S,S]
+    val source: Source = Category.product(S,S)
+
+    type Target = S
+    val target = S
+
+    type F[Z <: Source#Objects] = Z#Left × Z#Right
+
+    def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+      products.map
+  }
+
+
 
   implicit final
   class ProductOps[A](val a: A) extends scala.AnyVal {
