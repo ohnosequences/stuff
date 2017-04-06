@@ -1,7 +1,7 @@
 package ohnosequences.stuff
 
 import scala.{ Any, AnyVal, inline }
-import Function._
+import functions._
 import products._
 /*
   `Or` is a more reasonable sum type. Right now it is implemented using value classes for constructors; sadly, these will box (I think) in a lot of cases. A totally unboxed representation using type lists and unboxed denotations could be considered at some point.
@@ -40,28 +40,28 @@ case object sums {
 
   @inline final
   def inL[A,B]: A -> (A + B) =
-    Function { Left(_) }
+    λ { Left(_) }
 
   @inline final
   def ιL[O <: Or]: O#Left -> (O#Left + O#Right) =
-    Function { Left(_) }
+    λ { Left(_) }
 
   @inline final
   def inR[A,B]: B -> (A + B) =
-    Function { Right(_) }
+    λ { Right(_) }
 
   @inline final
   def ιR[O <: Or]: O#Right -> (O#Left + O#Right) =
-    Function { Right(_) }
+    λ { Right(_) }
 
   @inline final
   def nothing[X]: ∅ -> X =
-    Function { n: ∅ => scala.sys.error("∅"): X }
+    λ { n: ∅ => scala.sys.error("∅"): X }
 
   @inline final
   def either[A,B,X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) =
-    Function {
-      fg: (A -> X) × (B -> X) => Function {
+    λ {
+      fg: (A -> X) × (B -> X) => λ {
         aorb: A + B =>
           if(aorb.isInstanceOf[Left[_,_]])
             fg.left(aorb.value.asInstanceOf[A])
@@ -80,9 +80,26 @@ case object sums {
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A + C) -> (B + D)) =
-    Function { fg =>
+    λ { fg =>
       either { (fg.left >-> inL[B,D]) & (fg.right >-> inR[B,D]) }
     }
+
+  case object SumFunctor extends Functor {
+
+    type S = Scala.type
+    val S: S = Scala
+
+    type Source = Category.Product[S,S]
+    val source: Source = Category.product(S,S)
+
+    type Target = S
+    val target = S
+
+    type F[Z <: Source#Objects] = Z#Left + Z#Right
+
+    def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+      sums.map
+  }
 
   implicit final
   class FunctionSumSyntax[A,B](val f: A -> B) extends scala.AnyVal {

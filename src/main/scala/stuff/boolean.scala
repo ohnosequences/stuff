@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import products._, sums._, Function._
+import products._, sums._, functions._
 
 case object booleans {
 

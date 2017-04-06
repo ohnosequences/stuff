@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import Function._
+import functions._
 import products._
 import scala.inline
 

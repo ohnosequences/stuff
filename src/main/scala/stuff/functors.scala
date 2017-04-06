@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import Function._
+import functions._
 import scala.inline
 
 abstract class Functor {
@@ -27,8 +27,8 @@ object functors {
   }
 
   def identity[Cat <: Category]: Cat -> Identity[Cat] =
-    Function {
-      cat: Cat => new Functor {
+    λ { cat: Cat =>
+      new Functor {
 
         @inline final
         type Source = Cat

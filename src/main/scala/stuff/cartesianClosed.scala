@@ -2,7 +2,7 @@ package ohnosequences.stuff
 
 import scala.inline
 
-import products._, Function._
+import products._, functions._
 
 case object cartesianClosed {
 

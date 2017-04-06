@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import Function._
+import functions._
 import products._
 import scala.inline
 
@@ -20,5 +20,5 @@ object Scala extends Category {
 
   @inline final
   def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
-    Function { fg => fg.left >-> fg.right }
+    λ { fg => fg.left >-> fg.right }
 }

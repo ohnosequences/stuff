@@ -28,7 +28,7 @@ case object Tuple {
 */
 case object products {
 
-  import Function._
+  import functions._
 
   type ×[A,B] = Tuple { type Left = A; type Right = B }
 
@@ -36,15 +36,15 @@ case object products {
 
   @inline final
   def left[A,B]: A × B -> A =
-    Function { _.left }
+    λ { _.left }
 
   @inline final
   def right[A,B]: A × B -> B =
-    Function { _.right }
+    λ { _.right }
 
   @inline final
   def erase[A]: A -> ∗ =
-    Function { a => ∗ }
+    λ { a => ∗ }
 
   @inline final
   def duplicate[Z]: Z -> (Z × Z) =
@@ -60,7 +60,7 @@ case object products {
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
-    Function { fg =>
+    λ { fg =>
       both { (left >-> fg.left) and (right >-> fg.right) }
     }
 
@@ -69,32 +69,32 @@ case object products {
   // the key advantage here is that we generated *methods*, not classes.
   @inline final
   def πL[AB <: Tuple]: AB -> AB#Left =
-    Function { _.left }
+    λ { _.left }
 
   @inline final
   def πR[AB <: Tuple]: AB -> AB#Right =
-    Function { _.right }
+    λ { _.right }
 
   @inline final
   def π_1_2[A,B]: A × B -> A =
-    Function { _.left }
+    λ { _.left }
 
   @inline final
   def π_1_3[A,B,C]: A × B × C -> A =
-    Function { _.left.left }
+    λ { _.left.left }
 
   @inline final
   def π_2_3[A,B,C]: A × B × C -> B =
-    Function { _.left.right }
+    λ { _.left.right }
 
   @inline final
   def π_3_3[A,B,C]: A × B × C -> C =
-    Function { _.right }
+    λ { _.right }
 
   @inline final
   def both[A,B,X]: ((X -> A) × (X -> B)) -> (X -> (A × B)) =
-    Function { fg =>
-      Function {
+    λ { fg =>
+      λ {
         x => fg.left(x) & fg.right(x)
       }
     }
@@ -105,8 +105,8 @@ case object products {
 
   @inline final
   def all3[A,B,C,X]: ((X -> A) × (X -> B) × (X -> C)) -> (X -> (A × B × C)) =
-    Function { fgh =>
-      Function {
+    λ { fgh =>
+      λ {
         x => π_1_3(fgh)(x) & π_2_3(fgh)(x) & π_3_3(fgh)(x)
       }
     }
@@ -127,8 +127,6 @@ case object products {
     def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
       products.map
   }
-
-
 
   implicit final
   class ProductOps[A](val a: A) extends scala.AnyVal {

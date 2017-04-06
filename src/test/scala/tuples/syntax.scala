@@ -1,18 +1,18 @@
 package ohnosequences.stuff.test.tuples
 
-import ohnosequences.stuff._, Function._, products._
+import ohnosequences.stuff._, functions._, products._
 import scala.{ Int, Boolean }
 import scala.Predef.String
 import org.scalatest.FunSuite
 
 class TuplesSyntax extends FunSuite {
 
-  val l           = Function { x: String => x.length  }
-  val toStr       = Function { x: Int => x.toString   }
-  val isZero      = Function { x: Int => x == 0       }
-  val isPositive  = Function { x: Int => x > -1       }
-  val plusOne     = Function { x: Int => x + 1        }
-  val isEmpty     = Function { x: String => x.isEmpty }
+  val l           = λ { x: String => x.length  }
+  val toStr       = λ { x: Int => x.toString   }
+  val isZero      = λ { x: Int => x == 0       }
+  val isPositive  = λ { x: Int => x > -1       }
+  val plusOne     = λ { x: Int => x + 1        }
+  val isEmpty     = λ { x: String => x.isEmpty }
 
   test("build tuple values") {
 

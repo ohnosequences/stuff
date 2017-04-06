@@ -1,6 +1,6 @@
 package ohnosequences.stuff.test
 
-import ohnosequences.stuff._, Function._, products._, sums._
+import ohnosequences.stuff._, functions._, products._, sums._
 
 case object tailrec {
 
@@ -32,7 +32,7 @@ case object tailrec {
   // if we could have a non-nested sum type this could be incredibly fast.
 
   def foldLeftS[A,Z]: (∗ -> Z) × (A × Z -> Z) -> (List[A] + (List[A] × Z) -> ((List[A] × Z) + Z)) =
-    Function { zops: (∗ -> Z) × (A × Z -> Z) =>
+    λ { zops: (∗ -> Z) × (A × Z -> Z) =>
 
       val z: Z = left(zops)(∗); val op: (A × Z -> Z) = right(zops)
 
@@ -47,7 +47,7 @@ case object tailrec {
         }
 
       val next =
-        Function { asz: List[A] × Z =>
+        λ { asz: List[A] × Z =>
           val as = left(asz); val z = right(asz)
 
           val out: (List[A] × Z) + Z =
