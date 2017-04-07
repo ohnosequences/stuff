@@ -80,17 +80,31 @@ object functions {
         a
     }
 
+  /* Cartesian-closed structure */
   @inline final
-  def apply[A,B](f: A => B): A -> B =
-    new Function {
+  def point[X]: X -> (∗ -> X) =
+    λ { x => λ { _ => x } }
 
-      type Domain   = A
-      type Codomain = B
+  @inline final
+  def force[X]: (∗ -> X) -> X =
+    λ { _ at ∗ }
 
-      @inline final
-      def apply(a: A): B =
-        f.apply(a)
-      }
+  @inline final
+  def η[A,X,Y]: ((A × X) -> Y) -> (A -> (X -> Y)) =
+    λ { f => λ { a => λ { x => f at (a and x) } } }
+
+  @inline final
+  def ϵ[A,X,Y]: (A -> (X -> Y)) -> ((A × X) -> Y) =
+    λ { f => λ { ax => f at left(ax) at right(ax) } }
+
+  @inline final
+  def ev[A,B]: (A × (A -> B)) -> B =
+    // (point[A] × identity[A -> B]) >-> composition >-> force // it's nice that this works too
+    λ { af => right(af) at left(af) }
+
+  @inline final
+  def coev[A,B]: B -> (A -> (A × B)) =
+    λ { b => both(identity and const(b)) }
 
   implicit final
   class FunctionProductSyntax[A,B](val f: A -> B) extends scala.AnyVal {

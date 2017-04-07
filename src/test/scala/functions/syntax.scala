@@ -21,6 +21,7 @@ class FunctionSyntax extends FunSuite {
   test("function composition") {
 
     // needs a type annotation at the beginning
+    // note how the expression associates: (λ { ... }) >-> (λ { ... })
     val strLenIs2 =
       λ { x: String => x.length } >-> λ { _ == 2 }
 
@@ -60,8 +61,6 @@ class FunctionSyntax extends FunSuite {
   }
 
   test("ccc") {
-
-    import cartesianClosed._
 
     val strLen: String -> Int =
       λ { _.length }
