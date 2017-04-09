@@ -80,12 +80,12 @@ object Category {
 
       @inline final
       def identity[X <: Objects]: C[X,X] =
-        is(l).identity & is(r).identity
+        is(l).identity and is(r).identity
 
       @inline final
       def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
         both(
-          πL[C[X,Y]] × πL[C[Y,Z]] >-> is(l).composition &
+          πL[C[X,Y]] × πL[C[Y,Z]] >-> is(l).composition and
           πR[C[X,Y]] × πR[C[Y,Z]] >-> is(r).composition
         )
     }

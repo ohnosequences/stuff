@@ -1,7 +1,12 @@
 package ohnosequences.stuff
 
 /*
-  Is there something in https://adriaanm.github.io/reveal.js/scala-2.12.html or http://downloads.typesafe.com/website/presentations/ScalaDaysSF2015/T2_Rytz_Backend_Optimizer.pdf justifying a different approach?
+  Is there something in
+
+  - https://adriaanm.github.io/reveal.js/scala-2.12.html
+  - http://downloads.typesafe.com/website/presentations/ScalaDaysSF2015/T2_Rytz_Backend_Optimizer.pdf
+
+  justifying a different approach?
 */
 import scala.inline
 import functions._
