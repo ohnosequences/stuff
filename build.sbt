@@ -29,6 +29,7 @@ scalacOptions ++= Seq(
 )
 
 wartremoverExcluded ++= Seq(
+  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"naturalTransformations.scala",
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"categories.scala",
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"functors.scala",
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala", // isInstanceOf

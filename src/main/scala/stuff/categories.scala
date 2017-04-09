@@ -18,7 +18,7 @@ abstract class Category {
 object Category {
 
   type is[category <: Category] =
-    Category {
+    category {
       type Objects = category#Objects
       type C[X <: category#Objects, Y <: category#Objects] = category#C[X,Y]
     }
