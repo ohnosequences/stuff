@@ -89,4 +89,35 @@ object Category {
           πR[C[X,Y]] × πR[C[Y,Z]] >-> is(r).composition
         )
     }
+
+  final
+  type Hom[Cat <: Category] =
+    Functor {
+      type Source = Product[Opposite[Cat], Cat]
+      type Target = Scala.type
+      type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
+    }
+
+  @inline final
+  def hom[Cat <: Category]: Cat -> Hom[Cat] =
+    λ { cat: Cat =>
+
+      new Functor {
+
+        type Source = Product[Opposite[Cat], Cat]
+        val source = product(opposite(cat), cat)
+
+        type Target = Scala.type
+        val target = Scala
+
+        type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
+
+        def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> (F[X] -> F[Y]) =
+          λ { fg =>
+            λ { q =>
+              is(cat).composition( is(cat).composition(left(fg) and q) and right(fg))
+            }
+          }
+      }
+    }
 }

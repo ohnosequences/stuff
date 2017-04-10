@@ -18,8 +18,6 @@ abstract class NaturalTransformation {
   def targetFunctor: TargetFunctor
 
   def apply[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]]
-
-  // def andThen[]
 }
 
 case object naturalTransformations {
