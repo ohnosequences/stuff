@@ -64,6 +64,21 @@ case object products {
       both { (left >-> fg.left) and (right >-> fg.right) }
     }
 
+  @inline final
+  def assoc_right[X,Y,Z]: ((X × Y) × Z) -> (X × (Y × Z)) =
+    both(π_1_3 and both(π_2_3 and π_3_3))
+
+  @inline final
+  def assoc_left[X,Y,Z]: (X × (Y × Z)) -> ((X × Y) × Z) = {
+
+    val pickX = left[X,(Y × Z)]
+    val pickY = right[X,(Y × Z)] >-> left[Y,Z]
+    val pickZ = right[X,(Y × Z)] >-> right[Y,Z]
+
+    both(both(pickX and pickY) and pickZ)
+  }
+
+
   // all these functions can be generated. Yes, I mean that: code generation.
   // see http://yefremov.net/blog/scala-code-generation/ probably using Twirl
   // the key advantage here is that we generated *methods*, not classes.
@@ -107,7 +122,7 @@ case object products {
   def all3[A,B,C,X]: ((X -> A) × (X -> B) × (X -> C)) -> (X -> (A × B × C)) =
     λ { fgh =>
       λ {
-        x => π_1_3(fgh)(x) & π_2_3(fgh)(x) & π_3_3(fgh)(x)
+        x => π_1_3(fgh)(x) and π_2_3(fgh)(x) and π_3_3(fgh)(x)
       }
     }
 

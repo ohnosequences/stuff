@@ -10,9 +10,6 @@ import org.scalatest.FunSuite
 
 class ScalaCategoryTests extends FunSuite {
 
-  // val H: Category.Hom[Scala.type] =
-  //   Category hom Scala
-
   val l     : String -> Int = λ { x: String => x.length }
   val toStr : Int -> String = λ { x: Int => x.toString  }
   // val idInt : Int -> Int = Scala.identity

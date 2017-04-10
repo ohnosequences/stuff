@@ -25,7 +25,7 @@ class TuplesSyntax extends FunSuite {
     assert {
       πL(l and toStr and isEmpty)    === (l and toStr)  &&
       left(l and toStr and isEmpty)  === (l and toStr)  &&
-      πR(l and toStr and isEmpty)    === isEmpty      &&
+      πR(l and toStr and isEmpty)    === isEmpty        &&
       right(l and toStr and isEmpty) === isEmpty
     }
   }
