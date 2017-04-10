@@ -52,6 +52,39 @@ object Category {
         swap >-> is(c).composition
     }
 
+  type UnitCategory = UnitCategory.type
+  case object UnitCategory extends Category {
+
+    type Objects = ∗
+    type C[X <: Objects, Y <: Objects] = ∗
+
+    @inline final
+    def identity[X <: Objects]: C[X,X] =
+      ∗
+
+    @inline final
+    def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
+      λ { _ => ∗ }
+  }
+
+  // etc etc
+  def lunit[Cat <: Category]: Cat -> Functor =
+    λ { cat =>
+      new Functor {
+
+        type Source = Product[UnitCategory, Cat]
+        val source: Source = product(UnitCategory, cat)
+
+        type Target = Cat
+        val target: Target = cat
+
+        type F[Z <: Source#Objects] = Z#Right
+
+        def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+          right
+      }
+    }
+
   type Product[leftCategory <: Category, rightCategory <: Category] =
     Category {
 
