@@ -101,11 +101,15 @@ case object sums {
       sums.map
   }
 
-  implicit final
-  class FunctionSumSyntax[A,B](val f: A -> B) extends scala.AnyVal {
+  @inline final implicit
+  def functionSumSyntax[A,B](asdf: A -> B): FunctionSumSyntax[A,B] =
+    new FunctionSumSyntax(asdf.f)
+
+  final
+  class FunctionSumSyntax[A,B](val f: A => B) extends scala.AnyVal {
 
     @inline final
     def +[C,D](g: C -> D): (A + C) -> (B + D) =
-      map(f and g)
+      map(λ(f) and g)
   }
 }

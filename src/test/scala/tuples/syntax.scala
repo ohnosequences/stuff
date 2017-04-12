@@ -59,6 +59,10 @@ class TuplesSyntax extends FunSuite {
   val f = { x: Int => x.toString }
   val g = { x: Int => (x == 0) }
   val h = { x: Int => (x == 0) }
+
+  def checkMe =
+    all3(toStr and isZero and isZero)
+
   val f0 = all3(toStr and isZero and isZero)
 
   test("std evaluation") {

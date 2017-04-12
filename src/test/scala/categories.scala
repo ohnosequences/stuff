@@ -6,7 +6,7 @@ import ohnosequences.stuff.functions._
 
 // import org.scalatest.FunSuite
 
-sealed trait AnyMealy extends scala.Any {
+sealed trait AnyMealy {
 
   type Input
   type State
@@ -15,7 +15,7 @@ sealed trait AnyMealy extends scala.Any {
   def apply: (Input × State) -> (State × Output)
 }
 
-case class Mealy[I,S,O](val next: (I × S) -> (S × O)) extends scala.AnyVal with AnyMealy {
+case class Mealy[I,S,O](val next: (I × S) -> (S × O)) extends AnyMealy {
 
   type Input  = I
   type State  = S

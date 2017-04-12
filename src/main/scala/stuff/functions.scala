@@ -10,10 +10,13 @@ package ohnosequences.stuff
 */
 import functions._, products._
 
-sealed abstract class Function { fn =>
+sealed
+trait Function extends scala.Any { fn =>
 
   type Domain
   type Codomain
+
+  def f: Domain => Codomain
 
   def apply(d: Domain): Codomain
 
@@ -23,65 +26,43 @@ sealed abstract class Function { fn =>
 
   @inline final
   def >->[C](g: Codomain -> C): Domain -> C =
-    new Function {
+    λ { this.f andThen g.f }
+}
 
-      type Domain   = fn.Domain
-      type Codomain = C
+final
+class FunctionImpl[X,Y](val f: X => Y) extends scala.AnyVal with Function {
 
-      @inline final
-      def apply(a: Domain): Codomain =
-        g.apply(fn.apply(a))
-    }
+  type Domain = X
+  type Codomain = Y
+
+  @inline final
+  def apply(d: Domain): Codomain =
+    f.apply(d)
 }
 
 object functions {
 
   @inline final implicit
   def fromScalaFunction[A,B](f: A => B): A -> B =
-    new Function {
-
-      type Domain   = A
-      type Codomain = B
-
-      @inline final
-      def apply(a: Domain): Codomain =
-        f.apply(a)
-    }
+    λ { f }
 
   @inline final
   def λ[A,B](f: A => B): A -> B =
-    fromScalaFunction { f }
+    new FunctionImpl(f)
 
   @inline final
   def const[Y,X]: X -> (Y -> X) =
-    λ { x: X =>
-      new Function {
-
-        type Domain   = Y
-        type Codomain = X
-
-        @inline final
-        def apply(y: Y) =
-          x
-      }
-    }
+    λ { x: X => λ { y: Y => x } }
 
   // NOTE what inline is doing here?
   @inline final
-  type ->[A,B] =
-    Function { type Domain = A; type Codomain = B }
+  type ->[asdfasdf,jkljkl] =
+    FunctionImpl[asdfasdf,jkljkl]
+    // Function { type Domain = A; type Codomain = B }
 
   @inline final
   def identity[A]: A -> A =
-    new Function {
-
-      type Domain   = A
-      type Codomain = A
-
-      @inline final
-      def apply(a: Domain): Codomain =
-        a
-    }
+    λ { a: A => a }
 
   /* Cartesian-closed structure */
   @inline final
@@ -109,11 +90,15 @@ object functions {
   def coev[A,B]: B -> (A -> (A × B)) =
     λ { b => both(identity and const(b)) }
 
-  implicit final
-  class FunctionProductSyntax[A,B](val f: A -> B) extends scala.AnyVal {
+  @inline final implicit
+  def functionProductSyntax[A,B](x: A -> B): FunctionProductSyntax[A,B] =
+    new FunctionProductSyntax(x.f)
+
+  final
+  class FunctionProductSyntax[A,B](val f: A => B) extends scala.AnyVal {
 
     @inline final
     def ×[C,D](g: C -> D): (A × C) -> (B × D) =
-      map(Tuple.×(f,g))
+      products.map( new TupleImpl(λ(f), g) )
   }
 }

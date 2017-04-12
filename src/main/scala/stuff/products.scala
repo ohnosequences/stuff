@@ -11,20 +11,17 @@ sealed abstract class Tuple {
 
 case object ∗
 
-case object Tuple {
+final
+case class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
 
-  final
-  case class ×[A,B](val left: A, val right: B) extends Tuple {
-
-    type Left = A
-    type Right = B
-  }
+  type Left   = A
+  type Right  = B
 }
 
 /*
   This has all methods needed for a Product structure.
 */
-case object products {
+object products {
 
   import functions._
 
@@ -54,12 +51,12 @@ case object products {
 
   @inline final
   def swap[A,B]: (A × B) -> (B × A) =
-    both(right and left)
+    both(new TupleImpl(right,left))
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
-    λ { fg =>
-      both { (left >-> fg.left) and (right >-> fg.right) }
+    λ { fg: ((A -> B) × (C -> D)) =>
+      both { new TupleImpl( (left >-> fg.left), (right >-> fg.right) ) }
     }
 
   @inline final
@@ -73,7 +70,7 @@ case object products {
     val pickY = right[X,(Y × Z)] >-> left[Y,Z]
     val pickZ = right[X,(Y × Z)] >-> right[Y,Z]
 
-    both(both(pickX and pickY) and pickZ)
+    both(new TupleImpl(both(new TupleImpl(pickX, pickY)),pickZ))
   }
 
 
@@ -108,7 +105,7 @@ case object products {
   def both[A,B,X]: ((X -> A) × (X -> B)) -> (X -> (A × B)) =
     λ { fg =>
       λ {
-        x => fg.left(x) and fg.right(x)
+        x => new TupleImpl(fg.left(x), fg.right(x))
       }
     }
 
@@ -124,7 +121,7 @@ case object products {
       }
     }
 
-  case object ProductFunctor extends Functor {
+  object ProductFunctor extends Functor {
 
     type S = Scala.type
     val S: S = Scala
@@ -141,16 +138,20 @@ case object products {
       products.map
   }
 
-  implicit final
+  @inline final implicit
+  def productOps[A](a: A): ProductOps[A] =
+    new ProductOps(a)
+
+  final
   class ProductOps[A](val a: A) extends scala.AnyVal {
 
     @inline final
     def and[B](b: B): A × B =
-      new Tuple.×(a,b)
+      new TupleImpl(a,b)
 
     // TODO find a better, less confusing symbolic syntax for building tuples
     @inline final
     def &[B](b: B): A × B =
-      new Tuple.×[A,B](a,b)
+      new TupleImpl[A,B](a,b)
   }
 }
