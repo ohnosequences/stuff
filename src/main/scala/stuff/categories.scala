@@ -1,8 +1,6 @@
 package ohnosequences.stuff
 
-import functions._
-import products._
-import scala.inline
+import functions._, products._
 
 abstract class Category {
 
@@ -80,6 +78,7 @@ object Category {
 
         type F[Z <: Source#Objects] = Z#Right
 
+        @inline final
         def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
           right
       }
@@ -138,13 +137,16 @@ object Category {
       new Functor {
 
         type Source = Product[Opposite[Cat], Cat]
+        @inline final
         val source = product(opposite(cat), cat)
 
         type Target = Scala.type
+        @inline final
         val target = Scala
 
         type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
 
+        @inline final
         def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> (F[X] -> F[Y]) =
           λ { fg =>
             λ { q =>

@@ -1,7 +1,5 @@
 package ohnosequences.stuff
 
-import scala.inline
-
 sealed abstract class Tuple {
 
   type Left
@@ -48,7 +46,7 @@ case object products {
 
   @inline final
   def duplicate[Z]: Z -> (Z × Z) =
-    both(identity & identity)
+    both(identity and identity)
 
   @inline final
   def Δ[Z]: Z -> (Z × Z) =
@@ -56,7 +54,7 @@ case object products {
 
   @inline final
   def swap[A,B]: (A × B) -> (B × A) =
-    both(right & left)
+    both(right and left)
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
@@ -110,7 +108,7 @@ case object products {
   def both[A,B,X]: ((X -> A) × (X -> B)) -> (X -> (A × B)) =
     λ { fg =>
       λ {
-        x => fg.left(x) & fg.right(x)
+        x => fg.left(x) and fg.right(x)
       }
     }
 

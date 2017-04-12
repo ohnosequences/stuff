@@ -4,8 +4,7 @@ import ohnosequences.stuff._
 import ohnosequences.stuff.products._
 import ohnosequences.stuff.functions._
 
-import scala.inline
-import org.scalatest.FunSuite
+// import org.scalatest.FunSuite
 
 sealed trait AnyMealy extends scala.Any {
 

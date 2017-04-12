@@ -16,6 +16,10 @@ class FunctionSyntax extends FunSuite {
     // automatic conversions:
     val asFunction: Int -> Boolean =
       { x: Int => x == 2 }
+
+    assert { (strLen at "hola") === 4 }
+
+    assert { (asFunction at 2) === true }
   }
 
   test("function composition") {
@@ -38,7 +42,7 @@ class FunctionSyntax extends FunSuite {
   }
 
   def η[A,X,Y]: ((A × X) -> Y) -> (A -> (X -> Y)) =
-    λ { f => λ { a => λ { x => f at (a & x) } } }
+    λ { f => λ { a => λ { x => f at (a and x) } } }
 
   test("η conversion") {
 
@@ -56,6 +60,10 @@ class FunctionSyntax extends FunSuite {
 
     val plus2 =
       η(sum)(2)
+
+    assert { (f(2 and "four")) === 6 }
+
+    assert { (sumCurried at 2)(4) === 6 }
 
     assert { (plus2 at 3) === sum (2 and 3) }
   }

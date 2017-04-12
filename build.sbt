@@ -12,18 +12,28 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 incOptions := incOptions.value.withNameHashing(false)
 
 scalacOptions ++= Seq(
-  // "-Xfatal-warnings",
-  // "-Ydebug", "-uniqid",
-  "-unchecked",
+  // warnings, log
   "-Xlint",
-  "-Xstrict-inference",
-  "-Ywarn-unused-import",
+  "-Xfatal-warnings",
+  "-Xlog-reflective-calls",
+  "-Xlog-free-types",
+  "-Xlog-free-terms",
+  "-Ywarn-unused",
+  "-Ywarn-adapted-args",
+  // "-Ydebug", //"-uniqid",
+  "-Yopt-log-inline", "_",
+  "-opt-warnings:_",
+  // generic options
+  "-unchecked",
   "-Xfuture",
-  "-Ywarn-unused-import",
+  "-Xstrict-inference",
   "-Yno-predef",
   "-Yno-imports",
+  "-Ywarn-unused-import",
+  "-Yno-adapted-args",
+  // optimizer
+  // "-Ydelambdafy:inline",
   "-opt:inline-project",
-  "-opt-warnings:_",
   "-opt:l:project",
   "-opt:l:method"
 )
@@ -35,6 +45,8 @@ wartremoverExcluded ++= Seq(
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala", // isInstanceOf
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"tailrec.scala"
 )
+
+wartremoverErrors in (Test, compile) := Seq()
 
 
 // removed will be

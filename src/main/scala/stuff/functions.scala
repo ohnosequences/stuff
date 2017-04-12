@@ -8,9 +8,7 @@ package ohnosequences.stuff
 
   justifying a different approach?
 */
-import scala.inline
-import functions._
-import products._
+import functions._, products._
 
 sealed abstract class Function { fn =>
 

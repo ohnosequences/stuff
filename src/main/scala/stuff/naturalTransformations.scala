@@ -1,6 +1,5 @@
 package ohnosequences.stuff
 
-import scala.inline
 import functions._, products._
 
 abstract class NaturalTransformation {
@@ -31,6 +30,7 @@ case object naturalTransformations {
       type TargetFunctor = nat#TargetFunctor { type Source = SourceCategory; type Target = TargetCategory }
     }
 
+  @inline final
   def is[nat <: NaturalTransformation](n: nat): is[nat] =
     n.asInstanceOf[is[nat]]
 
@@ -82,6 +82,7 @@ case object naturalTransformations {
       type TargetCategory = B#TargetCategory
     }
 
+  @inline final
   def verticalComposition[
     A <: NaturalTransformation,
     B <: NaturalTransformation {

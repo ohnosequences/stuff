@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import scala.{ Any, AnyVal, inline }
+import scala.{ Any, AnyVal }
 import functions._
 import products._
 /*
@@ -72,16 +72,16 @@ case object sums {
 
   @inline final
   def any[A]: (A + A) -> A =
-    either(identity & identity)
+    either(identity and identity)
 
   @inline final
   def swap[A,B]: (A + B) -> (B + A) =
-    either(inR & inL)
+    either(inR and inL)
 
   @inline final
   def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A + C) -> (B + D)) =
     λ { fg =>
-      either { (fg.left >-> inL[B,D]) & (fg.right >-> inR[B,D]) }
+      either { (fg.left >-> inL[B,D]) and (fg.right >-> inR[B,D]) }
     }
 
   case object SumFunctor extends Functor {
@@ -106,6 +106,6 @@ case object sums {
 
     @inline final
     def +[C,D](g: C -> D): (A + C) -> (B + D) =
-      map(f & g)
+      map(f and g)
   }
 }

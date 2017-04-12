@@ -19,8 +19,12 @@ class TuplesSyntax extends FunSuite {
     val buh: (String × Int) -> (Int × String) =
       l × toStr
 
+    assert { buh("hola" and 2) === (4 and "2") }
+
     val boh: (String -> Int) × (Int -> String) × (String -> Boolean) =
-      l & toStr & isEmpty
+      l and toStr and isEmpty
+
+    assert { (π_3_3 at boh)("") === true }
 
     assert {
       πL(l and toStr and isEmpty)    === (l and toStr)  &&
@@ -34,6 +38,8 @@ class TuplesSyntax extends FunSuite {
 
     val x =
       both(toStr and isZero)
+
+    assert { x(0) === ("0" and true) }
 
     val y =
       both(both(toStr and isZero) and isZero)
@@ -59,7 +65,7 @@ class TuplesSyntax extends FunSuite {
 
     import scala.Predef._
 
-    for(i <- 1 to iterations) { val zzz = (f(i), g(i), h(i)) }
+    for(i <- 1 to iterations) { (f(i), g(i), h(i)) }
   }
 
   test("std inline evaluation") {
@@ -67,8 +73,7 @@ class TuplesSyntax extends FunSuite {
     import scala.Predef._
 
     for(i <- 1 to iterations) {
-      val zzz =
-        (({ x: Int => x.toString })(i), ({ x: Int => (x == 0) })(i), ({ x: Int => (x == 0) })(i))
+      (({ x: Int => x.toString })(i), ({ x: Int => (x == 0) })(i), ({ x: Int => (x == 0) })(i))
     }
   }
 
@@ -76,6 +81,6 @@ class TuplesSyntax extends FunSuite {
 
     import scala.Predef._
 
-    for(i <- 1 to iterations) { val zzz = f0(i) }
+    for(i <- 1 to iterations) { f0(i) }
   }
 }

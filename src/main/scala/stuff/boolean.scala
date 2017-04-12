@@ -27,6 +27,7 @@ case object booleans {
     ???
 
   // better a curried version?
+  @inline final
   def If[X,Y]: (X -> Ω) -> (((∗ -> Y) × (∗ -> Y)) -> (X -> Y)) =
     λ { p => λ { tf => p >-> either(tf) } }
 

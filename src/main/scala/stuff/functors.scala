@@ -1,7 +1,6 @@
 package ohnosequences.stuff
 
 import functions._, products._
-import scala.inline
 
 abstract class Functor {
 

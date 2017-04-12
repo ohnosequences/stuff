@@ -5,7 +5,7 @@ import ohnosequences.stuff.functions._
 import ohnosequences.stuff.sums._
 import ohnosequences.stuff.products._
 
-import scala.{ Int, Boolean }
+import scala.{ Int }
 import scala.Predef.String
 import org.scalatest.FunSuite
 
@@ -17,7 +17,6 @@ class Sums extends FunSuite {
   val isEmpty = λ { x: String => x.isEmpty }
 
   test("either") {
-
 
     assert {
       either(isZero and isEmpty)(inL(0))  == isZero(0)     &&

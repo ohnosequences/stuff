@@ -4,7 +4,7 @@ import ohnosequences.stuff._
 import ohnosequences.stuff.functions._
 import ohnosequences.stuff.products._
 
-import scala.{ Int, Boolean }
+import scala.{ Int }
 import scala.Predef.String
 import org.scalatest.FunSuite
 
