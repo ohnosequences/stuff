@@ -1,6 +1,7 @@
 package ohnosequences.stuff
 
-import functions._, products._
+import products._
+import functions._
 
 abstract class Category {
 
@@ -21,7 +22,7 @@ object Category {
       type C[X <: category#Objects, Y <: category#Objects] = category#C[X,Y]
     }
 
-  @inline final
+  final
   def is[category <: Category](c: category): is[category] =
     c.asInstanceOf[is[category]]
 
@@ -31,7 +32,7 @@ object Category {
       type C[X <: Objects, Y <: Objects] = category#C[Y,X]
     }
 
-  @inline final
+  final
   def opposite[category <: Category](c: category): Opposite[category] =
     new Category {
 
@@ -41,28 +42,28 @@ object Category {
       type C[X <: Objects, Y <: Objects] =
         category#C[Y,X]
 
-      @inline final
+      final
       def identity[X <: Objects]: C[X,X] =
         is(c).identity
 
-      @inline final
+      final
       def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
         swap >-> is(c).composition
     }
 
   type UnitCategory = UnitCategory.type
-  case object UnitCategory extends Category {
+  object UnitCategory extends Category {
 
     type Objects = ∗
     type C[X <: Objects, Y <: Objects] = ∗
 
-    @inline final
+    final
     def identity[X <: Objects]: C[X,X] =
       ∗
 
-    @inline final
+    final
     def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
-      λ { _ => ∗ }
+      products.erase
   }
 
   // etc etc
@@ -78,8 +79,8 @@ object Category {
 
         type F[Z <: Source#Objects] = Z#Right
 
-        @inline final
-        def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+        final
+        def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
           right
       }
     }
@@ -97,7 +98,7 @@ object Category {
         leftCategory#C[X#Left,Y#Left] × rightCategory#C[X#Right, Y#Right]
     }
 
-  @inline final
+  final
   def product[leftCategory <: Category, rightCategory <: Category](l: leftCategory, r: rightCategory): Product[leftCategory,rightCategory] =
     new Category {
 
@@ -110,11 +111,11 @@ object Category {
       type C[X <: Objects, Y <: Objects] =
         leftCategory#C[X#Left,Y#Left] × rightCategory#C[X#Right, Y#Right]
 
-      @inline final
+      final
       def identity[X <: Objects]: C[X,X] =
         is(l).identity and is(r).identity
 
-      @inline final
+      final
       def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
         both(
           πL[C[X,Y]] × πL[C[Y,Z]] >-> is(l).composition and
@@ -130,24 +131,24 @@ object Category {
       type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
     }
 
-  @inline final
+  final
   def hom[Cat <: Category]: Cat -> Hom[Cat] =
     λ { cat: Cat =>
 
       new Functor {
 
         type Source = Product[Opposite[Cat], Cat]
-        @inline final
+        final
         val source = product(opposite(cat), cat)
 
         type Target = Scala.type
-        @inline final
+        final
         val target = Scala
 
         type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
 
-        @inline final
-        def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> (F[X] -> F[Y]) =
+        final
+        def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> (F[X] -> F[Y]) =
           λ { fg =>
             λ { q =>
               is(cat).composition( is(cat).composition(left(fg) and q) and right(fg))

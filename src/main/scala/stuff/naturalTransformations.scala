@@ -30,7 +30,7 @@ case object naturalTransformations {
       type TargetFunctor = nat#TargetFunctor { type Source = SourceCategory; type Target = TargetCategory }
     }
 
-  @inline final
+  final
   def is[nat <: NaturalTransformation](n: nat): is[nat] =
     n.asInstanceOf[is[nat]]
 
@@ -44,7 +44,7 @@ case object naturalTransformations {
       type TargetFunctor = functors.is[functor]
     }
 
-  @inline final
+  final
   def identity[functor <: Functor]: functor -> Identity[functor] =
     λ { F0: functor =>
       new NaturalTransformation {
@@ -82,7 +82,7 @@ case object naturalTransformations {
       type TargetCategory = B#TargetCategory
     }
 
-  @inline final
+  final
   def verticalComposition[
     A <: NaturalTransformation,
     B <: NaturalTransformation {
@@ -110,7 +110,7 @@ case object naturalTransformations {
         type TargetCategory = B#TargetCategory
         val targetCategory: TargetCategory = b.targetCategory
 
-        @inline final
+        final
         def apply[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
           Category.is(targetCategory).composition( is(a).apply[X] and is(b).apply[X])
       }

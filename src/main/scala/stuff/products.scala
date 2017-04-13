@@ -1,33 +1,18 @@
 package ohnosequences.stuff
 
-sealed abstract class Tuple {
+import functions._
 
-  type Left
-  val left: Left
-
-  type Right
-  val right: Right
-}
-
-case object ∗
-
-final
-case class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
-
-  type Left   = A
-  type Right  = B
-}
-
-/*
-  This has all methods needed for a Product structure.
-*/
 object products {
 
-  import functions._
+  type ×[A,B] =
+    TupleImpl[A,B]
 
-  type ×[A,B] = Tuple { type Left = A; type Right = B }
-
-  type ∗    = ohnosequences.stuff.∗.type
+  type ∗ =
+    EmptyTuple.type
+    
+  @inline final
+  def ∗ : ∗ =
+    EmptyTuple
 
   @inline final
   def left[A,B]: A × B -> A =
@@ -39,7 +24,7 @@ object products {
 
   @inline final
   def erase[A]: A -> ∗ =
-    λ { a => ∗ }
+    λ { _ => ∗ }
 
   @inline final
   def duplicate[Z]: Z -> (Z × Z) =
@@ -54,9 +39,10 @@ object products {
     both(new TupleImpl(right,left))
 
   @inline final
-  def map[A,B,C,D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
-    λ { fg: ((A -> B) × (C -> D)) =>
-      both { new TupleImpl( (left >-> fg.left), (right >-> fg.right) ) }
+  def map[U,V,C,D]: ((U -> V) × (C -> D)) -> ((U × C) -> (V × D)) =
+    λ { fg =>
+      both { new TupleImpl( left >-> fg.left, right >-> fg.right ) }
+      // both { (left[U,C] >-> fg.left) and (right[U,C] >-> fg.right) }
     }
 
   @inline final
@@ -72,7 +58,6 @@ object products {
 
     both(new TupleImpl(both(new TupleImpl(pickX, pickY)),pickZ))
   }
-
 
   // all these functions can be generated. Yes, I mean that: code generation.
   // see http://yefremov.net/blog/scala-code-generation/ probably using Twirl
@@ -117,7 +102,8 @@ object products {
   def all3[A,B,C,X]: ((X -> A) × (X -> B) × (X -> C)) -> (X -> (A × B × C)) =
     λ { fgh =>
       λ {
-        x => π_1_3(fgh)(x) and π_2_3(fgh)(x) and π_3_3(fgh)(x)
+        x => new TupleImpl( new TupleImpl( π_1_3(fgh)(x), π_2_3(fgh)(x) ), π_3_3(fgh)(x) )
+        // x => π_1_3(fgh)(x) and π_2_3(fgh)(x) and π_3_3(fgh)(x)
       }
     }
 
@@ -134,24 +120,38 @@ object products {
 
     type F[Z <: Source#Objects] = Z#Left × Z#Right
 
-    def apply[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
       products.map
   }
 
+  // syntax
   @inline final implicit
   def productOps[A](a: A): ProductOps[A] =
     new ProductOps(a)
 
-  final
+  @inline final
   class ProductOps[A](val a: A) extends scala.AnyVal {
 
     @inline final
     def and[B](b: B): A × B =
       new TupleImpl(a,b)
-
-    // TODO find a better, less confusing symbolic syntax for building tuples
-    @inline final
-    def &[B](b: B): A × B =
-      new TupleImpl[A,B](a,b)
   }
+}
+
+sealed abstract class Tuple {
+
+  type Left
+  val left: Left
+
+  type Right
+  val right: Right
+}
+
+case object EmptyTuple
+
+final
+case class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
+
+  type Left   = A
+  type Right  = B
 }

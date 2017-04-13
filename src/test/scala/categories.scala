@@ -4,8 +4,6 @@ import ohnosequences.stuff._
 import ohnosequences.stuff.products._
 import ohnosequences.stuff.functions._
 
-// import org.scalatest.FunSuite
-
 sealed trait AnyMealy {
 
   type Input
@@ -21,7 +19,7 @@ case class Mealy[I,S,O](val next: (I × S) -> (S × O)) extends AnyMealy {
   type State  = S
   type Output = O
 
-  @inline final
+  final
   def apply =
     next
 }
@@ -41,11 +39,11 @@ case object Machines extends Category {
 
   type C[X <: Objects, Y <: Objects] = Mealy.between[X,Y]
 
-  @inline final
+  final
   def identity[X] =
     Mealy[X,∗,X](swap)
 
-  @inline final
+  final
   def composition[X,Y,Z]: C[X,Y] × C[Y,Z] -> C[X,Z] =
     λ { mn =>
 

@@ -15,11 +15,18 @@ class ScalaCategoryTests extends FunSuite {
   // val idInt : Int -> Int = Scala.identity
 
   val uh: (Int -> String) -> (String -> Int) =
-    Category.hom(Scala)[Int × String, String × Int](l and l) // no good inference here
+    Category.hom(Scala).at[Int × String, String × Int](l and l) // no good inference here
     // Category.hom(Scala)(l and l)
 
   test("Hom functor") {
 
     assert {  ( (uh at toStr) at "hola" ) === 1 }
+  }
+
+  test("composition and identity") {
+
+    assert { Scala.composition( Scala.identity[String] and Scala.identity[String] )("hola") === "hola"  }
+
+    assert { Scala.composition( Scala.identity[Int] and toStr )(234243) === toStr(234243)  }
   }
 }

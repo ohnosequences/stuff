@@ -1,7 +1,8 @@
 package ohnosequences.stuff.test.functions
 
-import ohnosequences.stuff._, functions._, products._
-import scala.{ Int, Boolean }
+import ohnosequences.stuff.functions._
+import ohnosequences.stuff.products._
+import scala.{ Int }
 import scala.Predef.String
 import org.scalatest.FunSuite
 
@@ -13,13 +14,7 @@ class FunctionSyntax extends FunSuite {
     val strLen: String -> Int =
       λ { _.length }
 
-    // automatic conversions:
-    val asFunction: Int -> Boolean =
-      { x: Int => x == 2 }
-
     assert { (strLen at "hola") === 4 }
-
-    assert { (asFunction at 2) === true }
   }
 
   test("function composition") {
@@ -41,8 +36,8 @@ class FunctionSyntax extends FunSuite {
     }
   }
 
-  def η[A,X,Y]: ((A × X) -> Y) -> (A -> (X -> Y)) =
-    λ { f => λ { a => λ { x => f at (a and x) } } }
+  // def η[A,X,Y]: ((A × X) -> Y) -> (A -> (X -> Y)) =
+  //   λ { f => λ { a => λ { x => f at (a and x) } } }
 
   test("η conversion") {
 
