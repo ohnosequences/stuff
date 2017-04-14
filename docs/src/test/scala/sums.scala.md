@@ -3,62 +3,50 @@
 package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
-import ohnosequences.stuff.products._
 import ohnosequences.stuff.functions._
+import ohnosequences.stuff.sums._
+import ohnosequences.stuff.products._
 
-sealed trait AnyMealy {
+import scala.{ Int }
+import scala.Predef.String
+import org.scalatest.FunSuite
 
-  type Input
-  type State
-  type Output
+class Sums extends FunSuite {
 
-  def apply: (Input × State) -> (State × Output)
-}
+  val l       = λ { x: String => x.length }
+  val toStr   = λ { x: Int => x.toString }
+  val isZero  = λ { x: Int => x == 0 }
+  val isEmpty = λ { x: String => x.isEmpty }
 
-case class Mealy[I,S,O](val next: (I × S) -> (S × O)) extends AnyMealy {
+  test("either") {
 
-  type Input  = I
-  type State  = S
-  type Output = O
-
-  final
-  def apply =
-    next
-}
-
-case object Mealy {
-
-  type between[I,O] =
-    AnyMealy {
-      type Input  = I
-      type Output = O
+    assert {
+      either(isZero and isEmpty)(inL(0))  == isZero(0)     &&
+      either(isZero and isEmpty)(inR("")) == isEmpty("")
     }
-}
+  }
 
-case object Machines extends Category {
+  test("+") {
 
-  type Objects = Scala.Objects
-
-  type C[X <: Objects, Y <: Objects] = Mealy.between[X,Y]
-
-  final
-  def identity[X] =
-    Mealy[X,∗,X](swap)
-
-  final
-  def composition[X,Y,Z]: C[X,Y] × C[Y,Z] -> C[X,Z] =
-    λ { mn =>
-
-      val m = left(mn); val n = right(mn)
-
-      Mealy(
-        assoc_left                            >->
-        (m.apply × Scala.identity[n.State])   >->
-        assoc_right                           >->
-        (Scala.identity[m.State] × n.apply)   >->
-        assoc_left
-      )
+    assert {
+      (l + toStr)(inR(2))               === inR("2")  &&
+      (l + toStr >-> toStr + l)(inR(2)) === inR(1)
     }
+  }
+
+  test("any nothing commutative monoid") {
+
+    val l: String + String =
+      inL("hola")
+
+    val r: String + String =
+      inR("scalac")
+
+    assert {
+      any(l) == (sums.swap >-> any[String])(l) &&
+      any(r) == (sums.swap >-> any[String])(r)
+    }
+  }
 }
 
 ```
