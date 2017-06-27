@@ -1,119 +1,60 @@
 package ohnosequences.stuff.test
 
-import org.scalatest.FunSuite
-import ohnosequences.stuff._, syntax._
+import ohnosequences.stuff._
+import ohnosequences.stuff.products._
+import ohnosequences.stuff.functions._
 
-trait AnyMealy {
+sealed trait AnyMealy {
 
   type Input
   type State
   type Output
 
-  def apply(i: Input, s: State): (State, Output)
+  def apply: (Input × State) -> (State × Output)
 }
 
-abstract class Mealy[A,U,B] extends AnyMealy with ( (A,U) => (U,B) ) {
+case class Mealy[I,S,O](val next: (I × S) -> (S × O)) extends AnyMealy {
 
-  type Input = A
-  type State = U
-  type Output = B
+  type Input  = I
+  type State  = S
+  type Output = O
+
+  final
+  def apply =
+    next
 }
 
 case object Mealy {
 
-  def apply[A,U,B](next: (A,U) => (U,B)): Mealy[A,U,B] =
-    new Mealy[A,U,B] {
-
-      def apply(i: Input, s: State): (State, Output) = next(i,s)
+  type between[I,O] =
+    AnyMealy {
+      type Input  = I
+      type Output = O
     }
 }
 
-case object MealyCat extends AnyCategory {
+case object Machines extends Category {
 
-  type Objects = Any
+  type Objects = Scala.Objects
 
-  type C[A,B] = AnyMealy { type Input = A; type Output = B }
+  type C[X <: Objects, Y <: Objects] = Mealy.between[X,Y]
 
-  def id[A]: C[A,A] =
-    Mealy[A,Unit,A]{ case (a,u) => (u,a) }
+  final
+  def identity[X] =
+    Mealy[X,∗,X](swap)
 
-  def compose[X,Y,Z]: (C[Y,Z], C[X,Y]) => C[X,Z] = {
+  final
+  def composition[X,Y,Z]: C[X,Y] × C[Y,Z] -> C[X,Z] =
+    λ { mn =>
 
-    (m,n) => Mealy[X, (n.State, m.State), Z] {
+      val m = left(mn); val n = right(mn)
 
-      case (x, (nu,mu)) => {
-
-        val (nu1, y) = n(x, nu)
-        val (mu1, z) = m(y, mu)
-        ((nu1, mu1), z)
-      }
+      Mealy(
+        assoc_left                            >->
+        (m.apply × Scala.identity[n.State])   >->
+        assoc_right                           >->
+        (Scala.identity[m.State] × n.apply)   >->
+        assoc_left
+      )
     }
-  }
-}
-
-
-case object Scala extends AnyCategory {
-
-  type Objects = Any
-  type C[A,B] = A => B
-
-  def compose[X <: Objects, Y <: Objects, Z <: Objects]: (C[Y,Z], C[X,Y]) => C[X,Z] = (g,f) => f andThen g
-  def id[X <: Objects]: C[X,X] = { x: X => x }
-}
-
-
-case object ScalaSums extends AnyCoproducts {
-
-  type On     = Scala.type
-  val on: On  = Scala
-
-  type ⊗[X, Y] = X Either Y
-  type I = Nothing
-
-  def  left[A <: On#Objects, B <: On#Objects]: A => A + B = { a =>  Left(a) }
-  def right[A <: On#Objects, B <: On#Objects]: B => A + B = { b => Right(b) }
-
-  def nothing[A <: On#Objects]: Nothing => A = Predef.identity[Nothing]
-
-  def univ[A <: On#Objects, B <: On#Objects, X <: On#Objects]: (A => X, B => X) => (A + B => X) =
-    (f,g) => { ab => ab.fold(f,g) }
-
-  def assoc_right[A, B, C]: (A + B) + C => A + (B + C) =
-    {
-      ab_c => ab_c match {
-
-        case Left(ab) => ab match {
-
-          case Left(a)  => Left(a)
-          case Right(b) => Right(Left(b))
-        }
-
-        case Right(c) => Right(Right(c))
-      }
-    }
-
-  def assoc_left[A, B, C]: A + (B + C) => (A + B) + C =
-    {
-      a_bc => a_bc match {
-
-        case Left(a) => Left(Left(a))
-
-        case Right(bc) => bc match {
-
-          case Left(b)  => Left(Right(b))
-          case Right(c) => Right(c)
-        }
-      }
-    }
-}
-
-
-class MealyTests extends FunSuite {
-
-  test("identity monad") {
-
-    val idMonad     = IdentityMonad(Scala)
-    val idMonadKl   = idMonad kleisliCategory
-    val kleisliSums = idMonadKl coproductsFrom ScalaSums
-  }
 }

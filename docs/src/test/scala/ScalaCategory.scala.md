@@ -3,62 +3,34 @@
 package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
-import ohnosequences.stuff.products._
 import ohnosequences.stuff.functions._
+import ohnosequences.stuff.products._
 
-sealed trait AnyMealy {
+import scala.{ Int }
+import scala.Predef.String
+import org.scalatest.FunSuite
 
-  type Input
-  type State
-  type Output
+class ScalaCategoryTests extends FunSuite {
 
-  def apply: (Input × State) -> (State × Output)
-}
+  val l     : String -> Int = λ { x: String => x.length }
+  val toStr : Int -> String = λ { x: Int => x.toString  }
+  // val idInt : Int -> Int = Scala.identity
 
-case class Mealy[I,S,O](val next: (I × S) -> (S × O)) extends AnyMealy {
+  val uh: (Int -> String) -> (String -> Int) =
+    Category.hom(Scala).at[Int × String, String × Int](l and l) // no good inference here
+    // Category.hom(Scala)(l and l)
 
-  type Input  = I
-  type State  = S
-  type Output = O
+  test("Hom functor") {
 
-  final
-  def apply =
-    next
-}
+    assert {  ( (uh at toStr) at "hola" ) === 1 }
+  }
 
-case object Mealy {
+  test("composition and identity") {
 
-  type between[I,O] =
-    AnyMealy {
-      type Input  = I
-      type Output = O
-    }
-}
+    assert { Scala.composition( Scala.identity[String] and Scala.identity[String] )("hola") === "hola"  }
 
-case object Machines extends Category {
-
-  type Objects = Scala.Objects
-
-  type C[X <: Objects, Y <: Objects] = Mealy.between[X,Y]
-
-  final
-  def identity[X] =
-    Mealy[X,∗,X](swap)
-
-  final
-  def composition[X,Y,Z]: C[X,Y] × C[Y,Z] -> C[X,Z] =
-    λ { mn =>
-
-      val m = left(mn); val n = right(mn)
-
-      Mealy(
-        assoc_left                            >->
-        (m.apply × Scala.identity[n.State])   >->
-        assoc_right                           >->
-        (Scala.identity[m.State] × n.apply)   >->
-        assoc_left
-      )
-    }
+    assert { Scala.composition( Scala.identity[Int] and toStr )(234243) === toStr(234243)  }
+  }
 }
 
 ```

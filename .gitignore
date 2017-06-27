@@ -5,14 +5,14 @@ boot/
 lib_managed/
 src_managed/
 project/boot/
+project/project/
 project/plugins/project/
+
+# cfr jar
+cfr_0_120.jar
 
 # Scala-IDE specific
 .scala_dependencies
-
-# data folders
-data/in/
-data/out/
 
 .tags*
 .sublime*
