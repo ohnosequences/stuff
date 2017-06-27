@@ -34,6 +34,7 @@ scalacOptions ++= Seq(
   "-opt:l:method"
 )
 
+// all these exceptions come from not being able to only exclude `asInstanceOf`
 wartremoverExcluded ++= Seq(
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"naturalTransformations.scala",
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"categories.scala",
