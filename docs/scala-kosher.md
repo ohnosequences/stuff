@@ -61,7 +61,7 @@ Use type members. The only legit context for type parameters is a method (mostly
 
 Scala doesn't have dependent types, it only has a (seriously buggy) notion of type-dependent types (type members and projections).
 
-Use projections, there's no use case for value-dependent types. The classical example of "guarantee that this comes from this value lalala" is seriously broken, as Scala does not (and will not) perform any sort of source analysis for values (trying to find if two values are provably equal), and even if it will, for this to be usable you'd need to have a mechanism for writing proofs yourself, which looks even less likely. 
+Use projections, there's no use case for value-dependent types. The classical example of "guarantee that this comes from this value lalala" is seriously broken, as Scala does not (and will not) perform any sort of source analysis for values (trying to find if two values are provably equal), and, even if it will, for this to be usable you'd need to have a mechanism for writing proofs yourself, which looks even less likely.
 
 ## Implicits only for syntax
 
