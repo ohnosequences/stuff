@@ -1,7 +1,7 @@
 # http://www.scala-sbt.org/0.13/docs/Travis-CI-with-sbt.html
 language: scala
 scala:
-  - 2.11.7
+  - 2.12.2
 jdk:
   - oraclejdk8
 # see http://docs.travis-ci.com/user/encryption-keys
@@ -9,7 +9,7 @@ env:
   # codacy stuff
   secure: "wQbtxDPGuYahhLyYgamc+rjxvj0TBRBeQp6MFF5SjgOvH9sj/TqEsnOA7KM3YEzTqXm5y4pZ6HLb8/csSUP0suIks6hVnxwgoU7kztHt8fiUo7u5M027nKMyJGqqSblYn8qd3GzqaTmLx0wazEMGF/eMTQdblHSL/hdUVD4uMoMTLjgfNhjjofn8YRHToNzwwti0Qz1V5239+xAYAbWBrrITC//QAF5WCc1ekWJtUhRvh5f+gxVyp7tgW3m5Y4w6EuDHTSdTv/NqQsnUP2b9/QH79yWFBnYs0bfpdnGVXns0HpitSORleP/L87/XM9KS9ZYFrisi9ibsupesOWBi4M6jaP94NpWusXVhnYKByn20CQki0npp1wu0x4+sGL+aU2urbP2G5Cp20Ar1vUjDdsSGLgeuxA6LQURvyU5baiXPJKMs9BtaAfTA/0wIzRIZvrdS1NwjDRkC9IXe2X5CYnky8ph2NrudntS5YdKuEkKP21M5AFH01z6KflTuN3fSIEqzmD5FRqdGkGDyTzCUTnwyouVgGi9x0qn28slQ87fWWaYR3uCqG/EtKyZ/PabqzrWOAwjR2A1DOpxzZMYTVIorwyBrpoAZb3ji3OVA+i216Eb3thmfah3wVYKWOW8aCeyGldp88+6gkGhLcjnPZm+SeMCzohCvR+2j6uJZST4="
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION compile clean coverage test coverageReport coverageAggregate codacyCoverage
+  - sbt ++$TRAVIS_SCALA_VERSION compile clean test
   # Tricks to avoid unnecessary cache updates
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
