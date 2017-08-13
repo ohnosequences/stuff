@@ -3,7 +3,7 @@ name          := "stuff"
 organization  := "ohnosequences"
 description   := "some stuff"
 bucketSuffix  := "era7.com"
-scalaVersion  := "2.12.2"
+scalaVersion  := "2.12.3"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
 
@@ -29,8 +29,8 @@ scalacOptions ++= Seq(
   "-Yno-adapted-args",
   // optimizer
   "-Ydelambdafy:method",
-  "-opt:inline-project",
-  "-opt:l:project",
+  "-opt:l:inline",
+  "-opt-inline-from:<sources>",
   "-opt:l:method"
 )
 
