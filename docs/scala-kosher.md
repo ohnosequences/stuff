@@ -73,6 +73,23 @@ The only reasonable use of implicits is for providing syntax, more concretely cr
 
 and I mean for real. No tuples, functions, etc. From the point of view of Kosher Scala, they are broken without any possible remedy. Of course, we have substitutes for them here. This includes Scala collections: wrap better tested, scalable Java implementations (fastutil, Koloboke).
 
+## Do not use equals
+
+*Ever*. Types have no equality by default. If you want equality, build a category where objects are types *together with* an equality predicate. Eventually this should be available for a category with enough structure (a subobject classifier or something similar); right now this would be an ad-hoc extension to full subcategories of `Scala`.
+
+### Impact on collections
+
+Most "collections" like Maps, sets or bags *require* a notion of equality. They should only be available for categories supporting it.
+
+<!--
+  NOTE the way I see it now
+
+  - free monoids will be wrapped arrays for Scala, something else in other cases (generic stacks if possible)
+  - bags will be wrapped fastutil hashmaps with custom equality
+  - sets will be wrapped fastutil hashsets with custom equality
+  - maps will be *morphisms* in a category. 
+-->
+
 ## "But this goes against XYZ and ..."
 
 I'm aware that the current Scala design and what's happening on Dotty goes against basically everything detailed here. I simply don't care.
