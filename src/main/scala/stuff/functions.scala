@@ -4,21 +4,26 @@ import products._, functions._
 
 object functions {
 
-  // functions
+  /**
+    The type of functions from A to B
+  */
+  @infix
   type ->[A,B] =
-    FunctionImpl[A,B]
-
-  @inline final
-  def λ[A,B](f: A => B): A -> B =
-    new FunctionImpl(f)
-
-  @inline final
-  def const[Y,X]: X -> (Y -> X) =
-    λ { x: X => λ { y: Y => x } }
+    Function[A,B]
 
   @inline final
   def identity[A]: A -> A =
     λ { a: A => a }
+
+  /** Convenience method for building a function out of a Scala std `Function1` */
+  @inline final
+  def λ[A,B](f: A => B): A -> B =
+    new Function(f)
+
+  /** a constant function from Y to X given a value of X  */
+  @inline final
+  def const[Y,X]: X -> (Y -> X) =
+    λ { x: X => λ { y: Y => x } }
 
   /* Cartesian-closed structure */
   final
@@ -39,12 +44,12 @@ object functions {
 
   final
   def ev[A,B]: (A × (A -> B)) -> B =
-    (point[A] × identity[A -> B]) >-> Scala.composition >-> force // it's nice that this works too
+    (point[A] × identity[A -> B]) >-> Scala.composition >-> force
     // λ { af => right(af) at left(af) }
 
-  // final
-  // def coev[A,B]: B -> (A -> (A × B)) =
-  //   λ { b => both(identity and (const at b)) }
+  final
+  def coev[A,B]: B -> (A -> (A × B)) =
+    λ { b => both(identity and (const at b)) }
 
   final
   class FunctionProductSyntax[A,B](val f: A => B) extends scala.AnyVal {
@@ -64,7 +69,7 @@ object functions {
   justifying a different approach?
 */
 final
-class FunctionImpl[X,Y](val stdF: X => Y) extends scala.AnyVal {
+class Function[X,Y](val stdF: X => Y) extends scala.AnyVal {
 
   @inline final
   def at(d: X): Y =
@@ -76,10 +81,10 @@ class FunctionImpl[X,Y](val stdF: X => Y) extends scala.AnyVal {
 
   final
   def >->[C](g: Y -> C): X -> C =
-    new FunctionImpl(this.stdF andThen g.stdF)
+    new Function(this.stdF andThen g.stdF)
 }
 
-object FunctionImpl {
+object Function {
 
   final implicit
   def functionProductSyntax[A,B](x: A -> B): functions.FunctionProductSyntax[A,B] =

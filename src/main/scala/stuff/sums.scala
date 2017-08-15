@@ -33,6 +33,7 @@ class Right[L,R](val value: R) extends AnyVal with Or {
 
 object sums {
 
+  @infix
   type +[A, B] =
     Or { type Left = A; type Right = B }
 

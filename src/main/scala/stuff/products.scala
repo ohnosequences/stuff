@@ -4,6 +4,7 @@ import functions._
 
 object products {
 
+  @infix
   type ×[A,B] =
     TupleImpl[A,B]
 

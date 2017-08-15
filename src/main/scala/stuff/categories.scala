@@ -3,8 +3,17 @@ package ohnosequences.stuff
 import products._
 import functions._
 
+/** Categories
+
+    This encoding is close in spirit to a category enriched in `Scala`.
+*/
 abstract class Category {
 
+  /**
+    Acts as the 2-type of types which are objects of this category.
+
+    Categories where objects are encoded in terms of typeclasses should create a type alias/tag or a class storing the corresponding typeclass, and use that as their `Objects` type.
+  */
   type Objects
 
   type C[X <: Objects, Y <: Objects]
