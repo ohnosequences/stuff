@@ -19,7 +19,7 @@ abstract class NaturalTransformation {
   def apply[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]]
 }
 
-case object naturalTransformations {
+object naturalTransformations {
 
   type is[nat <: NaturalTransformation] =
     nat {

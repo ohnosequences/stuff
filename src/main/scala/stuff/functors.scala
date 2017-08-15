@@ -39,7 +39,7 @@ object functors {
   def is[functor <: Functor](f: functor): is[functor] =
     f.asInstanceOf[is[functor]]
 
-  case class Identity[Cat <: Category](cat: Cat) extends Functor {
+  class Identity[Cat <: Category](cat: Cat) extends Functor {
 
     type Source = Cat
     val source = cat
@@ -52,7 +52,7 @@ object functors {
       Scala.identity
   }
 
-  case class Composition[
+  class Composition[
     F0 <: Functor,
     G0 <: Functor { type Source = F0#Target }
   ](
@@ -74,8 +74,8 @@ object functors {
   }
 
   def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (F0 × G0) -> Composition[F0,G0] =
-    λ { fg => Composition(left(fg), right(fg)) }
+    λ { fg => new Composition(left(fg), right(fg)) }
 
   def identity[Cat <: Category]: Cat -> Identity[Cat] =
-    λ { cat: Cat => Identity(cat) }
+    λ { cat: Cat => new Identity(cat) }
 }

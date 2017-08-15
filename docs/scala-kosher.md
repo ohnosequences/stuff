@@ -87,8 +87,12 @@ Most "collections" like Maps, sets or bags *require* a notion of equality. They 
   - free monoids will be wrapped arrays for Scala, something else in other cases (generic stacks if possible)
   - bags will be wrapped fastutil hashmaps with custom equality
   - sets will be wrapped fastutil hashsets with custom equality
-  - maps will be *morphisms* in a category. 
+  - maps will be *morphisms* in a category.
 -->
+
+### No case classes
+
+An obvious consequence of the above.
 
 ## "But this goes against XYZ and ..."
 

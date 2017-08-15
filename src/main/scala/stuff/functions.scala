@@ -64,11 +64,11 @@ object functions {
   justifying a different approach?
 */
 final
-class FunctionImpl[X,Y](val f: X => Y) extends scala.AnyVal {
+class FunctionImpl[X,Y](val stdF: X => Y) extends scala.AnyVal {
 
   @inline final
   def at(d: X): Y =
-    f.apply(d)
+    stdF apply d
 
   @inline final
   def apply(a: X): Y =
@@ -76,12 +76,12 @@ class FunctionImpl[X,Y](val f: X => Y) extends scala.AnyVal {
 
   final
   def >->[C](g: Y -> C): X -> C =
-    new FunctionImpl(this.f andThen g.f)
+    new FunctionImpl(this.stdF andThen g.stdF)
 }
 
 object FunctionImpl {
 
   final implicit
   def functionProductSyntax[A,B](x: A -> B): functions.FunctionProductSyntax[A,B] =
-    new functions.FunctionProductSyntax(x.f)
+    new functions.FunctionProductSyntax(x.stdF)
 }
