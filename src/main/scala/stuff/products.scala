@@ -9,7 +9,7 @@ object products {
 
   type ∗ =
     EmptyTuple.type
-    
+
   @inline final
   def ∗ : ∗ =
     EmptyTuple
@@ -147,10 +147,10 @@ sealed abstract class Tuple {
   val right: Right
 }
 
-case object EmptyTuple
+object EmptyTuple
 
 final
-case class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
+class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
 
   type Left   = A
   type Right  = B

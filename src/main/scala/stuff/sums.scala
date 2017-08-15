@@ -16,7 +16,7 @@ sealed trait Or extends Any {
 }
 
 private final
-case class Left[L,R](val value: L) extends AnyVal with Or {
+class Left[L,R](val value: L) extends AnyVal with Or {
 
   type Left   = L
   type Right  = R
@@ -24,7 +24,7 @@ case class Left[L,R](val value: L) extends AnyVal with Or {
 }
 
 private final
-case class Right[L,R](val value: R) extends AnyVal with Or {
+class Right[L,R](val value: R) extends AnyVal with Or {
 
   type Left   = L
   type Right  = R
@@ -41,19 +41,19 @@ object sums {
 
   final
   def inL[A,B]: A -> (A + B) =
-    λ { Left(_) }
+    λ { new Left(_) }
 
   final
   def ιL[O <: Or]: O#Left -> (O#Left + O#Right) =
-    λ { Left(_) }
+    λ { new Left(_) }
 
   final
   def inR[A,B]: B -> (A + B) =
-    λ { Right(_) }
+    λ { new Right(_) }
 
   final
   def ιR[O <: Or]: O#Right -> (O#Left + O#Right) =
-    λ { Right(_) }
+    λ { new Right(_) }
 
   final
   def nothing[X]: ∅ -> X =
@@ -105,7 +105,7 @@ object sums {
 
   final implicit
   def functionSumSyntax[A,B](asdf: A -> B): FunctionSumSyntax[A,B] =
-    new FunctionSumSyntax(asdf.f)
+    new FunctionSumSyntax(asdf.stdF)
 
   final
   class FunctionSumSyntax[A,B](val f: A => B) extends scala.AnyVal {
