@@ -1,0 +1,3 @@
+#!/bin/sh
+# pass version as arg
+java -jar cfr_0_122.jar --elidescala true --outputdir decompiled target/scala-2.12/stuff_2.12-${1}.jar
