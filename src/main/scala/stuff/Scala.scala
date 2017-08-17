@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import products._, functions._
+import functions._
 
 object Scala extends Category {
 

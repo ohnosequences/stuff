@@ -1,15 +1,8 @@
 package ohnosequences.stuff
 
-import products._, functions._
+import products._
 
 object functions {
-
-  /**
-    The type of functions from A to B
-  */
-  @infix
-  type ->[A,B] =
-    Function[A,B]
 
   @inline final
   def identity[A]: A -> A =
@@ -68,6 +61,7 @@ object functions {
 
   justifying a different approach?
 */
+private[stuff]
 final
 class Function[X,Y](val stdF: X => Y) extends scala.AnyVal {
 

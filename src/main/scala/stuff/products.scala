@@ -4,13 +4,6 @@ import functions._
 
 object products {
 
-  @infix
-  type ×[A,B] =
-    TupleImpl[A,B]
-
-  type ∗ =
-    EmptyTuple.type
-
   @inline final
   def ∗ : ∗ =
     EmptyTuple
@@ -139,7 +132,9 @@ object products {
   }
 }
 
-sealed abstract class Tuple {
+private[stuff]
+sealed abstract
+class Tuple {
 
   type Left
   val left: Left
@@ -148,8 +143,10 @@ sealed abstract class Tuple {
   val right: Right
 }
 
+private[stuff]
 object EmptyTuple
 
+private[stuff]
 final
 class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
 
