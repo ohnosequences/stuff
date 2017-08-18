@@ -5,7 +5,7 @@ import functions._
 
 /** Categories
 
-    This encoding is close in spirit to a category enriched in `Scala`.
+  This encoding is close in spirit to a category enriched in [[Scala]].
 */
 abstract class Category {
 
@@ -16,10 +16,13 @@ abstract class Category {
   */
   type Objects
 
+  /** The type of morphisms between `X` and `Y`. */
   type C[X <: Objects, Y <: Objects]
 
+  /** Identity morphism on `X`. */
   def identity[X <: Objects]: C[X,X]
 
+  /** Morphism composition. */
   def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z]
 }
 
