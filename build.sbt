@@ -34,6 +34,10 @@ scalacOptions ++= Seq(
   "-opt:l:method"
 )
 
+// scaladoc
+scalacOptions in (Compile,doc) ++= Seq("-groups")
+autoAPIMappings := true
+
 // all these exceptions come from not being able to only exclude `asInstanceOf`
 wartremoverExcluded ++= Seq(
   baseDirectory.value/"src"/"main"/"scala"/"stuff"/"naturalTransformations.scala",
