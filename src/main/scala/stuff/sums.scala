@@ -7,39 +7,6 @@ import products._
 /*
   `Or` is a more reasonable sum type. Right now it is implemented using value classes for constructors; sadly, these will box (I think) in a lot of cases. A totally unboxed representation using type lists and unboxed denotations could be considered at some point.
 */
-
-private[stuff]
-object empty
-
-private[stuff]
-sealed
-trait Or extends Any {
-
-  type Left
-  type Right
-  type Value
-
-  def value: Value
-}
-
-private
-final
-class Left[L,R](val value: L) extends AnyVal with Or {
-
-  type Left   = L
-  type Right  = R
-  type Value  = Left
-}
-
-private
-final
-class Right[L,R](val value: R) extends AnyVal with Or {
-
-  type Left   = L
-  type Right  = R
-  type Value  = Right
-}
-
 object sums {
 
   final
@@ -88,16 +55,53 @@ object sums {
       either { (fg.left >-> inL[B,D]) and (fg.right >-> inR[B,D]) }
     }
 
+  // TODO could be implemented using functor composition
+  final
+  class -+[X] extends Functor {
+
+    type Source = Scala
+    val source  = Scala
+
+    type Target = Scala
+    val target  = Scala
+
+    type F[A] = A + X
+    def at[A,B]: (A -> B) -> (F[A] -> F[B]) =
+      λ { f => map(f and identity) }
+  }
+
+  @inline final
+  def -+[X]: -+[X] =
+    new -+
+
+  final
+  class +-[X] extends Functor {
+
+    type Source = Scala
+    val source  = Scala
+
+    type Target = Scala
+    val target  = Scala
+
+    type F[A] = X + A
+    def at[A,B]: (A -> B) -> (F[A] -> F[B]) =
+      λ { f => map(identity and f) }
+  }
+
+  @inline final
+  def +-[X]: +-[X] =
+    new +-
+
+  def f[X]: (scala.Predef.String + X) -> (scala.Int + X) =
+    -+ at λ { _.length }
+
   object SumFunctor extends Functor {
 
-    type S = Scala.type
-    final val S: S = Scala
+    type Source = Category.Product[Scala, Scala]
+    val source  = Category.product(Scala, Scala)
 
-    type Source = Category.Product[S,S]
-    final val source: Source = Category.product(S,S)
-
-    type Target = S
-    final val target = S
+    type Target = Scala
+    val target  = Scala
 
     type F[Z <: Source#Objects] = Z#Left + Z#Right
 
@@ -117,4 +121,36 @@ object sums {
     def +[C,D](g: C -> D): (A + C) -> (B + D) =
       map(λ(f) and g)
   }
+}
+
+private[stuff]
+object empty
+
+private[stuff]
+sealed
+trait Or extends Any {
+
+  type Left
+  type Right
+  type Value
+
+  def value: Value
+}
+
+private
+final
+class Left[L,R](val value: L) extends AnyVal with Or {
+
+  type Left   = L
+  type Right  = R
+  type Value  = Left
+}
+
+private
+final
+class Right[L,R](val value: R) extends AnyVal with Or {
+
+  type Left   = L
+  type Right  = R
+  type Value  = Right
 }

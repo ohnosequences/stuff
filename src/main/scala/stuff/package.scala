@@ -22,6 +22,9 @@ package ohnosequences
 */
 package object stuff {
 
+  type Scala =
+    ohnosequences.stuff.Scala.type
+
   /**
     The type of functions from A to B.
     @group functions
