@@ -9,6 +9,7 @@ abstract class MonoidalCategory {
   val on: On
 
   type I <: On#Objects
+  @infix
   type ⊗[X <: On#Objects, Y <: On#Objects] <: On#Objects
 
   def ⊗[A <: On#Objects, B <: On#Objects, C <: On#Objects, D <: On#Objects]:
@@ -77,4 +78,12 @@ object MonoidalCategory {
       type I = MCat#I
       type ⊗[X <: On#Objects, Y <: On#Objects] = MCat# ⊗[X,Y]
     }
+}
+
+abstract class SymmetricStructure {
+
+  type On <: MonoidalCategory
+  val on: On
+
+  def swap[X <: On#On#Objects, Y <: On#On#Objects]: On#On#C[On# ⊗[X,Y], On# ⊗[Y,X]]
 }
