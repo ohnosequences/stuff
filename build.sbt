@@ -16,7 +16,9 @@ scalacOptions ++= Seq(
   // "-Xlog-free-terms",
   "-Ywarn-unused",
   "-Ywarn-adapted-args",
-  // "-Ydebug", //"-uniqid",
+  // "-Ydebug",
+  // "-explaintypes",
+  // "-uniqid",
   // "-Yopt-log-inline", "_", // noisy
   "-opt-warnings:_",
   // generic options

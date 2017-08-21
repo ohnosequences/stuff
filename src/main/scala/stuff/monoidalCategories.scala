@@ -3,6 +3,7 @@ package ohnosequences.stuff
 abstract class MonoidalCategory {
 
   type On <: Category
+  val on: On
 
   type I <: On#Objects
   type ⊗[X <: On#Objects, Y <: On#Objects] <: On#Objects
@@ -18,6 +19,21 @@ abstract class MonoidalCategory {
 }
 
 object MonoidalCategory {
+
+  class TensorFunctor[MCat <: MonoidalCategory](val mcat: MCat) extends Functor {
+
+    type Source = Category.Product[MCat#On, MCat#On]
+    val source  = Category.product(mcat.on, mcat.on)
+
+    type Target = MCat#On
+    val target  = mcat.on
+
+    type F[X <: Source#Objects] =
+      MCat# ⊗[X#Left,X#Right]
+
+    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+      is(mcat).⊗
+  }
 
   def is[MCat <: MonoidalCategory](mcat: MCat): is[MCat] =
     mcat.asInstanceOf[is[MCat]]
