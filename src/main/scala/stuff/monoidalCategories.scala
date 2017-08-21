@@ -1,5 +1,8 @@
 package ohnosequences.stuff
 
+import functions._
+import products._
+
 abstract class MonoidalCategory {
 
   type On <: Category
@@ -19,6 +22,36 @@ abstract class MonoidalCategory {
 }
 
 object MonoidalCategory {
+
+  class LeftTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: MCat) extends Functor {
+
+    type Source = MCat#On
+    val source  = mcat.on
+
+    type Target = MCat#On
+    val target  = mcat.on
+
+    type F[X <: Source#Objects] =
+      MCat# ⊗[A,X]
+
+    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+      λ { f: Source#C[X,Y] => is(mcat).⊗(Category.is(is(mcat).on).identity and f) }
+  }
+
+  class RightTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: MCat) extends Functor {
+
+    type Source = MCat#On
+    val source  = mcat.on
+
+    type Target = MCat#On
+    val target  = mcat.on
+
+    type F[X <: Source#Objects] =
+      MCat# ⊗[X,A]
+
+    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+      λ { f: Source#C[X,Y] => is(mcat).⊗(f and Category.is(is(mcat).on).identity) }
+  }
 
   class TensorFunctor[MCat <: MonoidalCategory](val mcat: MCat) extends Functor {
 
