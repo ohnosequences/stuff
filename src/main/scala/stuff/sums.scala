@@ -55,7 +55,17 @@ object sums {
       either { (fg.left >-> inL[B,D]) and (fg.right >-> inR[B,D]) }
     }
 
-  // TODO could be implemented using functor composition
+  /** returns the "X + -" functor [[Scala]] → [[Scala]]. */
+  @inline final
+  def +-[X]: +-[X] =
+    new +-
+
+  /** returns the "- + X" functor [[Scala]] → [[Scala]]. */
+  @inline final
+  def -+[X]: -+[X] =
+    new -+
+
+  private[stuff]
   final
   class -+[X] extends Functor {
 
@@ -70,10 +80,7 @@ object sums {
       λ { f => map(f and identity) }
   }
 
-  @inline final
-  def -+[X]: -+[X] =
-    new -+
-
+  private[stuff]
   final
   class +-[X] extends Functor {
 
@@ -87,10 +94,6 @@ object sums {
     def at[A,B]: (A -> B) -> (F[A] -> F[B]) =
       λ { f => map(identity and f) }
   }
-
-  @inline final
-  def +-[X]: +-[X] =
-    new +-
 
   def f[X]: (scala.Predef.String + X) -> (scala.Int + X) =
     -+ at λ { _.length }
