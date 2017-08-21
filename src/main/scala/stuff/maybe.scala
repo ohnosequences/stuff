@@ -4,6 +4,7 @@ import sums._
 
 case object maybe {
 
+  /** The Maybe type, sometimes called Option. */
   type Maybe[X] =
     ∗ + X
 
@@ -14,6 +15,7 @@ case object maybe {
       type F[X] = Maybe[X]
     }
 
-  lazy val functor: MaybeFunctor =
+  /** Canonical functor instance on Maybe, derived from the sum structure. */
+  val functor: MaybeFunctor =
     +-
 }
