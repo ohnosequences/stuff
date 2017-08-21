@@ -29,3 +29,35 @@ object Monoid {
       MonoidalCategory.is(mcat).unitl
   }
 }
+
+abstract class CommutativeMonoid {
+
+  type In <: SymmetricStructure
+
+  type M <: In#On#On#Objects
+
+  val unit: In#On#On#C[In#On#I, M]
+
+  val multiplication: In#On#On#C[In#On# ⊗[M, M], M]
+}
+
+object CommutativeMonoid {
+
+  type In[SMC <: SymmetricStructure] =
+    CommutativeMonoid { type In = SMC }
+
+  final
+  class coproduct[SMC <: SymmetricStructure, X <: In[SMC], Y <: In[SMC]] extends CommutativeMonoid {
+
+    type In = SMC
+    type M = SMC#On# ⊗[X#M, Y#M]
+
+    val unit =
+      scala.Predef.???
+      // lunit_inv >-> x.unit ⊗ y.unit
+
+    val multiplication =
+      scala.Predef.???
+      // reassoc >-> swap >-> x.multiplication ⊗ y.multiplication
+  }
+}
