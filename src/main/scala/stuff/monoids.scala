@@ -2,20 +2,24 @@ package ohnosequences.stuff
 
 abstract class Monoid {
 
-  type OnM <: MonoidalCategory
+  type In <: MonoidalCategory
 
-  type M <: OnM#On#Objects
+  type M <: In#On#Objects
 
-  val unit: OnM#On#C[OnM#I, M]
+  val unit: In#On#C[In#I, M]
 
-  val multiplication: OnM#On#C[OnM# ⊗[M, M], M]
+  val multiplication: In#On#C[In# ⊗[M, M], M]
 }
 
 object Monoid {
 
+  type In[MC <: MonoidalCategory] =
+    Monoid { type In = MC }
+
+  final
   class UnitMonoid[MCat <: MonoidalCategory](mcat: MCat) extends Monoid {
 
-    type OnM = MCat
+    type In = MCat
     type M = MCat#I
 
     val unit =
