@@ -22,7 +22,7 @@ object Scala extends Category {
   def identity[X <: Objects]: C[X,X] =
     functions.identity[X]
 
-  /** Function composition. */  
+  /** Function composition. */
   @inline final
   def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
     λ { fg => fg.left >-> fg.right }

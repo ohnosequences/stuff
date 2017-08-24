@@ -94,10 +94,9 @@ object products {
 
   @inline final
   def all3[A,B,C,X]: ((X -> A) × (X -> B) × (X -> C)) -> (X -> (A × B × C)) =
-    λ { fgh =>
+    λ { fgh: ((X -> A) × (X -> B) × (X -> C)) =>
       λ {
-        x => new TupleImpl( new TupleImpl( π_1_3(fgh)(x), π_2_3(fgh)(x) ), π_3_3(fgh)(x) )
-        // x => π_1_3(fgh)(x) and π_2_3(fgh)(x) and π_3_3(fgh)(x)
+        x => new TupleImpl( new TupleImpl( π_1_3(fgh) at x, π_2_3(fgh) at x ), π_3_3(fgh) at x )
       }
     }
 
