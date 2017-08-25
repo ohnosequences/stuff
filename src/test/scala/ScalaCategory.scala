@@ -29,4 +29,14 @@ class ScalaCategoryTests extends FunSuite {
 
     assert { Scala.composition( Scala.identity[Int] and toStr )(234243) === toStr(234243)  }
   }
+
+  import ohnosequences.stuff.syntax.categories._
+
+  test("syntax") {
+
+    def z[X] =
+      Scala.category ⊢ { id[X] >=> id}
+
+    assert { (z[String] at "hola") === "hola" }
+  }
 }

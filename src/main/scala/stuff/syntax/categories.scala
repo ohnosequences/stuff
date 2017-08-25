@@ -31,6 +31,13 @@ object categories {
       Category.is(cat).identity[X]
   }
 
+  implicit final
+  class AddSyntax[Cat <: Category](val cat: Cat) extends scala.AnyVal {
+
+    def category: syntax[Cat] =
+      new syntax(cat)
+  }
+
   final
   class MorphismSyntax[Cat <: Category, X <: Cat#Objects, Y <: Cat#Objects](val f: Cat#C[X,Y]) extends scala.AnyVal {
 

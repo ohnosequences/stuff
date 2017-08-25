@@ -27,3 +27,16 @@ object Scala extends Category {
   def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
     λ { fg => fg.left >-> fg.right }
 }
+
+object oh {
+
+  import syntax.categories._
+
+  val s = new syntax(Scala)
+
+  def x[X] =
+    s ⊢ { id[X] >=> id[X] }
+
+  def y[X] =
+    s ⊢ { id[X] >=> id[X] }
+}
