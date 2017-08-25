@@ -1,7 +1,7 @@
 package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
-import ohnosequences.stuff.products._
+import ohnosequences.stuff.products.{ I => _I, _ }
 import ohnosequences.stuff.functions._
 
 sealed trait AnyMealy {
@@ -31,6 +31,8 @@ case object Mealy {
       type Input  = I
       type Output = O
     }
+
+  type Argh = _I
 }
 
 case object Machines extends Category {
