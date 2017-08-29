@@ -5,35 +5,32 @@ description   := "some stuff"
 bucketSuffix  := "era7.com"
 scalaVersion  := "2.12.3"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test
+addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
 
 scalacOptions ++= Seq(
-  // warnings, log
   "-Xlint",
   "-Xfatal-warnings",
   "-Xlog-reflective-calls",
-  // "-Xlog-free-types",
-  // "-Xlog-free-terms",
   "-Ywarn-unused",
   "-Ywarn-adapted-args",
-  // "-Ydebug",
-  // "-explaintypes",
-  // "-uniqid",
-  // "-Yopt-log-inline", "_", // noisy
   "-opt-warnings:_",
-  // generic options
   "-unchecked",
-  // "-Xfuture",
   "-Xstrict-inference",
   "-Yno-predef",
   "-Yno-imports",
   "-Ywarn-unused-import",
   "-Yno-adapted-args",
-  // optimizer
   "-Ydelambdafy:method",
   "-opt:l:inline",
   "-opt-inline-from:<sources>",
   "-opt:l:method"
+  // "-Xfuture",
+  // "-Xlog-free-types",
+  // "-Xlog-free-terms",
+  // "-Ydebug",
+  // "-explaintypes",
+  // "-uniqid",
+  // "-Yopt-log-inline", "_", // noisy
 )
 
 // scaladoc
