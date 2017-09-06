@@ -9,6 +9,7 @@ abstract class MonoidalCategory {
   val on: On
 
   type I <: On#Objects
+  
   @infix
   type ⊗[X <: On#Objects, Y <: On#Objects] <: On#Objects
 
