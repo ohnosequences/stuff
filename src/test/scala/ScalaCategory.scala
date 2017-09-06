@@ -38,10 +38,13 @@ class ScalaCategoryTests extends FunSuite {
 
     assert { (boh[String] at "hola") === "hola" }
 
-    import ohnosequences.stuff.syntax.monoidalCategories._
-    
+    def zz =
+      products ⊢ { id[String] }
+
+    assert { (zz at "hola") === "hola" }
+
     def u =
-      products.monoidalCategory ⊢ { l ⊗ toStr }
+      products ⊢ { l ⊗ toStr }
 
     val _2and2 = (u at ("ab" and 2))
 
