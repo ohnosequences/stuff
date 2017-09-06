@@ -5,7 +5,7 @@ description   := "some stuff"
 bucketSuffix  := "era7.com"
 scalaVersion  := "2.12.3"
 
-addCompilerPlugin("ohnosequences" %% "local-imports" % "0.4.0-3-g9f6fc52")
+addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
 
 scalacOptions ++= Seq(
   // "-Xfuture",
