@@ -30,8 +30,8 @@ object monoidalCategories {
 
     @inline
     implicit final
-    def morphismSyntax[X <: Cat#Objects, Y <: Cat#Objects](f: Cat#C[X,Y]): categories.MorphismSyntax[Cat, X, Y] =
-      new categories.MorphismSyntax(f)
+    def morphismSyntax[X <: Cat#Objects, Y <: Cat#Objects](f: C[X,Y]): Category.MorphismSyntax[Cat, X, Y] =
+      new Category.MorphismSyntax[Cat,X,Y](f)
 
     @inline
     implicit final

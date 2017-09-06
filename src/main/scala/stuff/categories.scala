@@ -24,9 +24,33 @@ abstract class Category {
 
   /** Morphism composition. */
   def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z]
+
+  @inline
+  implicit final
+  val _this: this.type =
+    this
+
+  @inline
+  implicit final
+  def morphismSyntax[X <: Objects, Y <: Objects](f: C[X,Y]): Category.MorphismSyntax[this.type, X, Y] =
+    new Category.MorphismSyntax(f)
+
+  @inline
+  final
+  def id[X <: Objects]: C[X,X] =
+    identity[X]
 }
 
 object Category {
+
+  final
+  class MorphismSyntax[Cat <: Category, X <: Cat#Objects, Y <: Cat#Objects](val f: Cat#C[X,Y]) extends scala.AnyVal {
+
+    @inline
+    final
+    def >=>[Z <: Cat#Objects](g: Cat#C[Y,Z])(implicit cat: Cat): Cat#C[X,Z] =
+      Category.is(cat).composition at (f and g)
+  }
 
   type is[category <: Category] =
     category {

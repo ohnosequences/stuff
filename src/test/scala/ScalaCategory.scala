@@ -30,20 +30,21 @@ class ScalaCategoryTests extends FunSuite {
     assert { Scala.composition( Scala.identity[Int] and toStr )(234243) === toStr(234243)  }
   }
 
-  import ohnosequences.stuff.syntax.monoidalCategories._
-  import ohnosequences.stuff.syntax.categories._
 
   test("syntax") {
 
-    def z[X] =
-      Scala.category ⊢ { id[X] >=> id}
+    def boh[X] =
+      Scala ⊢ { id[X] >=> id[X] }
 
-    assert { (z[String] at "hola") === "hola" }
+    assert { (boh[String] at "hola") === "hola" }
 
+    import ohnosequences.stuff.syntax.monoidalCategories._
+    
     def u =
       products.monoidalCategory ⊢ { l ⊗ toStr }
 
     val _2and2 = (u at ("ab" and 2))
+
     assert { left(_2and2) === 2 && right(_2and2) === "2" }
   }
 }
