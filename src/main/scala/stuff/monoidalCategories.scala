@@ -23,8 +23,8 @@ abstract class MonoidalCategory {
   def unitr[A <: On#Objects]: On#C[A ⊗ I, A]
 
   /** syntax */
-
   type Objects = On#Objects
+
   type Hom[X <: On#Objects, Y <: On#Objects] = On#C[X,Y]
 
   @inline
@@ -39,7 +39,8 @@ abstract class MonoidalCategory {
 
   @inline
   implicit final
-  def morphismSyntax[X <: Objects, Y <: Objects](f: Hom[X,Y]): Category.MorphismSyntax[On, X, Y] =
+  def morphismSyntax[X <: Objects, Y <: Objects](f: Hom[X,Y])
+  : Category.MorphismSyntax[On, X, Y] =
     new Category.MorphismSyntax(f)
 
   @inline
@@ -49,21 +50,26 @@ abstract class MonoidalCategory {
 
   @inline
   implicit final
-  def monoidalMorphismSyntax[X <: Objects, Y <: Objects](f: Hom[X,Y]): MonoidalCategory.MorphismSyntax[this.type, X, Y] =
+  def monoidalMorphismSyntax[X <: Objects, Y <: Objects](f: Hom[X,Y])
+  : MonoidalCategory.MorphismSyntax[this.type, X, Y] =
     new MonoidalCategory.MorphismSyntax(f)
 }
 
 object MonoidalCategory {
 
   final
-  class MorphismSyntax[MonCat <: MonoidalCategory, A1 <: MonCat#On#Objects, B1 <: MonCat#On#Objects](val f: MonCat#On#C[A1,B1]) extends scala.AnyVal {
+  class MorphismSyntax[
+    MonCat <: MonoidalCategory,
+    A1 <: MonCat#On#Objects,
+    B1 <: MonCat#On#Objects
+  ]
+  (val f: MonCat#On#C[A1,B1]) extends scala.AnyVal {
 
     @inline
     final
     def ⊗[A2 <: MonCat#On#Objects, B2 <: MonCat#On#Objects](g: MonCat#On#C[A2,B2])(implicit monCat: MonCat): MonCat#On#C[MonCat# ⊗[A1,A2], MonCat# ⊗[B1,B2]] =
       MonoidalCategory.is(monCat). ⊗ (f and g)
   }
-
 
   class LeftTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: MCat) extends Functor {
 

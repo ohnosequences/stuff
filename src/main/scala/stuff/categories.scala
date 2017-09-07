@@ -32,7 +32,8 @@ abstract class Category {
 
   @inline
   implicit final
-  def morphismSyntax[X <: Objects, Y <: Objects](f: C[X,Y]): Category.MorphismSyntax[this.type, X, Y] =
+  def morphismSyntax[X <: Objects, Y <: Objects](f: C[X,Y])
+  : Category.MorphismSyntax[this.type,X,Y] =
     new Category.MorphismSyntax(f)
 
   @inline
@@ -44,12 +45,22 @@ abstract class Category {
 object Category {
 
   final
-  class MorphismSyntax[Cat <: Category, X <: Cat#Objects, Y <: Cat#Objects](val f: Cat#C[X,Y]) extends scala.AnyVal {
+  class MorphismSyntax[
+    Cat <: Category,
+    X <: Cat#Objects,
+    Y <: Cat#Objects
+  ]
+  (val f: Cat#C[X,Y]) extends scala.AnyVal {
 
     @inline
     final
     def >=>[Z <: Cat#Objects](g: Cat#C[Y,Z])(implicit cat: Cat): Cat#C[X,Z] =
       Category.is(cat).composition at (f and g)
+
+    @inline
+    final
+    def ∘[U <: Cat#Objects](h: Cat#C[U,X])(implicit cat: Cat): Cat#C[U,Y] =
+      Category.is(cat).composition at (h and f)
   }
 
   type is[category <: Category] =
