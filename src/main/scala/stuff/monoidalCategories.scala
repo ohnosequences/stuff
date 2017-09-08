@@ -84,10 +84,10 @@ object MonoidalCategory {
   class LeftTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: MCat) extends Functor {
 
     type Source = MCat#On
-    val source  = mcat.on
+    val source: Source  = mcat.on
 
     type Target = MCat#On
-    val target  = mcat.on
+    val target: Target = mcat.on
 
     type F[X <: Source#Objects] =
       MCat# ⊗[A,X]

@@ -29,7 +29,7 @@ abstract class Category {
   implicit final
   val _this: this.type =
     this
-
+  
   @inline
   implicit final
   def morphismSyntax[X <: Objects, Y <: Objects](f: C[X,Y])
