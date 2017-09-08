@@ -83,7 +83,7 @@ object MonoidalCategory {
       MCat# ⊗[A,X]
 
     def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
-      λ { f: Source#C[X,Y] => is(mcat).⊗(Category.is(is(mcat).on).identity and f) }
+      is(mcat) ⊢ { λ { id ⊗ _ } }
   }
 
   class RightTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: MCat) extends Functor {
@@ -98,7 +98,7 @@ object MonoidalCategory {
       MCat# ⊗[X,A]
 
     def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
-      λ { f: Source#C[X,Y] => is(mcat).⊗(f and Category.is(is(mcat).on).identity) }
+      is(mcat) ⊢ { λ {  _ ⊗ id } }
   }
 
   class TensorFunctor[MCat <: MonoidalCategory](val mcat: MCat) extends Functor {
