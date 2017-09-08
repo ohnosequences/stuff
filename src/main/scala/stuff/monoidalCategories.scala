@@ -49,6 +49,16 @@ abstract class MonoidalCategory {
     Category.is(on).identity[X]
 
   @inline
+  final
+  def ⊗-[A <: On#Objects]: MonoidalCategory.LeftTensor[this.type, A] =
+    new MonoidalCategory.LeftTensor(this)
+
+  @inline
+  final
+  def -⊗[A <: On#Objects]: MonoidalCategory.RightTensor[this.type, A] =
+    new MonoidalCategory.RightTensor(this)
+
+  @inline
   implicit final
   def monoidalMorphismSyntax[X <: Objects, Y <: Objects](f: Hom[X,Y])
   : MonoidalCategory.MorphismSyntax[this.type, X, Y] =
