@@ -6,6 +6,10 @@ import functions._
 /** Categories
 
   This encoding is close in spirit to a category enriched in [[Scala]].
+
+  @groupprio syntax 0
+  @groupname syntax Syntax
+  @groupdesc These are aliases and infix operators (...)
 */
 abstract class Category {
 
@@ -25,17 +29,25 @@ abstract class Category {
   /** Morphism composition. */
   def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z]
 
+  /** @group syntax */
   @inline
   implicit final
   val _this: this.type =
     this
-  
+
+  /** @group syntax */
+  @infix
+  type >=>[A <: Objects, B <: Objects] =
+    C[A,B]
+
+  /** @group syntax */
   @inline
   implicit final
   def morphismSyntax[X <: Objects, Y <: Objects](f: C[X,Y])
   : Category.MorphismSyntax[this.type,X,Y] =
     new Category.MorphismSyntax(f)
 
+  /** @group syntax */
   @inline
   final
   def id[X <: Objects]: C[X,X] =
