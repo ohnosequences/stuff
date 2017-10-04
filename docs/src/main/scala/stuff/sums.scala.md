@@ -12,54 +12,23 @@ import products._
 
 
 ```scala
-sealed trait Or extends Any {
-
-  type Left
-  type Right
-  type Value
-
-  def value: Value
-}
-
-private final
-case class Left[L,R](val value: L) extends AnyVal with Or {
-
-  type Left   = L
-  type Right  = R
-  type Value  = Left
-}
-
-private final
-case class Right[L,R](val value: R) extends AnyVal with Or {
-
-  type Left   = L
-  type Right  = R
-  type Value  = Right
-}
-
 object sums {
-
-  type +[A, B] =
-    Or { type Left = A; type Right = B }
-
-  type ∅ = empty.type
-  object empty
 
   final
   def inL[A,B]: A -> (A + B) =
-    λ { Left(_) }
+    λ { new Left(_) }
 
   final
   def ιL[O <: Or]: O#Left -> (O#Left + O#Right) =
-    λ { Left(_) }
+    λ { new Left(_) }
 
   final
   def inR[A,B]: B -> (A + B) =
-    λ { Right(_) }
+    λ { new Right(_) }
 
   final
   def ιR[O <: Or]: O#Right -> (O#Left + O#Right) =
-    λ { Right(_) }
+    λ { new Right(_) }
 
   final
   def nothing[X]: ∅ -> X =
@@ -91,16 +60,56 @@ object sums {
       either { (fg.left >-> inL[B,D]) and (fg.right >-> inR[B,D]) }
     }
 
+  /** returns the "X + -" functor [[Scala]] → [[Scala]]. */
+  @inline final
+  def +-[X]: +-[X] =
+    new +-
+
+  /** returns the "- + X" functor [[Scala]] → [[Scala]]. */
+  @inline final
+  def -+[X]: -+[X] =
+    new -+
+
+  private[stuff]
+  final
+  class -+[X] extends Functor {
+
+    type Source = Scala
+    val source  = Scala
+
+    type Target = Scala
+    val target  = Scala
+
+    type F[A] = A + X
+    def at[A,B]: (A -> B) -> (F[A] -> F[B]) =
+      λ { f => map(f and identity) }
+  }
+
+  private[stuff]
+  final
+  class +-[X] extends Functor {
+
+    type Source = Scala
+    val source  = Scala
+
+    type Target = Scala
+    val target  = Scala
+
+    type F[A] = X + A
+    def at[A,B]: (A -> B) -> (F[A] -> F[B]) =
+      λ { f => map(identity and f) }
+  }
+
+  def f[X]: (scala.Predef.String + X) -> (scala.Int + X) =
+    -+ at λ { _.length }
+
   object SumFunctor extends Functor {
 
-    type S = Scala.type
-    final val S: S = Scala
+    type Source = Category.Product[Scala, Scala]
+    val source  = Category.product(Scala, Scala)
 
-    type Source = Category.Product[S,S]
-    final val source: Source = Category.product(S,S)
-
-    type Target = S
-    final val target = S
+    type Target = Scala
+    val target  = Scala
 
     type F[Z <: Source#Objects] = Z#Left + Z#Right
 
@@ -111,15 +120,47 @@ object sums {
 
   final implicit
   def functionSumSyntax[A,B](asdf: A -> B): FunctionSumSyntax[A,B] =
-    new FunctionSumSyntax(asdf.f)
+    new FunctionSumSyntax(asdf.stdF)
 
   final
   class FunctionSumSyntax[A,B](val f: A => B) extends scala.AnyVal {
 
-    final
+    @inline final
     def +[C,D](g: C -> D): (A + C) -> (B + D) =
       map(λ(f) and g)
   }
+}
+
+private[stuff]
+object empty
+
+private[stuff]
+sealed
+trait Or extends Any {
+
+  type Left
+  type Right
+  type Value
+
+  def value: Value
+}
+
+private
+final
+class Left[L,R](val value: L) extends AnyVal with Or {
+
+  type Left   = L
+  type Right  = R
+  type Value  = Left
+}
+
+private
+final
+class Right[L,R](val value: R) extends AnyVal with Or {
+
+  type Left   = L
+  type Right  = R
+  type Value  = Right
 }
 
 ```
@@ -134,10 +175,13 @@ object sums {
 [test/scala/ScalaCategory.scala]: ../../../test/scala/ScalaCategory.scala.md
 [test/scala/functions/syntax.scala]: ../../../test/scala/functions/syntax.scala.md
 [test/scala/categories.scala]: ../../../test/scala/categories.scala.md
+[main/scala/stuff/monoidalCategories.scala]: monoidalCategories.scala.md
 [main/scala/stuff/products.scala]: products.scala.md
 [main/scala/stuff/Scala.scala]: Scala.scala.md
 [main/scala/stuff/package.scala]: package.scala.md
 [main/scala/stuff/sums.scala]: sums.scala.md
+[main/scala/stuff/monoids.scala]: monoids.scala.md
+[main/scala/stuff/maybe.scala]: maybe.scala.md
 [main/scala/stuff/boolean.scala]: boolean.scala.md
 [main/scala/stuff/functors.scala]: functors.scala.md
 [main/scala/stuff/naturalTransformations.scala]: naturalTransformations.scala.md

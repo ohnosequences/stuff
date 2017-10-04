@@ -2,50 +2,34 @@
 ```scala
 package ohnosequences.stuff
 
-import products._, sums._, functions._
+abstract class Monoid {
 
-object booleans {
+  type In <: MonoidalCategory
 
-  import scala.Predef.???
+  type M <: In#On#Objects
 
-  type Ω = (∗ + ∗)
+  val unit: In#On#C[In#I, M]
 
-  val ⊤ : Ω = inR(∗)
-  val ⊥ : Ω = inL(∗)
+  val multiplication: In#On#C[In# ⊗[M, M], M]
+}
 
-  val fromBoolean: scala.Boolean -> Ω =
-    λ { b: scala.Boolean => if(b) ⊤ else ⊥  }
+object Monoid {
 
-  val toBoolean: Ω -> scala.Boolean =
-    either { point(true) and point(false) }
+  type In[MC <: MonoidalCategory] =
+    Monoid { type In = MC }
 
-  def eq[A]: A × A -> Ω =
-    λ { as: A × A => left(as) == right(as) } >-> fromBoolean
-
-  val ∧ : Ω × Ω -> Ω =
-    ???
-
-  val ∨ : Ω × Ω -> Ω =
-    ???
-
-  // better a curried version?
   final
-  def If[X,Y]: (X -> Ω) -> (((∗ -> Y) × (∗ -> Y)) -> (X -> Y)) =
-    λ { p => λ { tf => p >-> either(tf) } }
+  class UnitMonoid[MCat <: MonoidalCategory](mcat: MCat) extends Monoid {
 
-  import scala.Int
+    type In = MCat
+    type M = MCat#I
 
-  val isEven: Int -> Ω =
-    λ { x => eq(x % 2 and 0) }
+    val unit =
+      Category.is(MonoidalCategory.is(mcat).on).identity
 
-  val msg =
-    point("Is Even!")
-
-  val other =
-    point("Is odd!")
-
-  val tellMe =
-    If(isEven)(msg and other)
+    val multiplication =
+      MonoidalCategory.is(mcat).unitl
+  }
 }
 
 ```
