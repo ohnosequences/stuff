@@ -61,10 +61,13 @@ class Sums extends FunSuite {
 [test/scala/ScalaCategory.scala]: ScalaCategory.scala.md
 [test/scala/functions/syntax.scala]: functions/syntax.scala.md
 [test/scala/categories.scala]: categories.scala.md
+[main/scala/stuff/monoidalCategories.scala]: ../../main/scala/stuff/monoidalCategories.scala.md
 [main/scala/stuff/products.scala]: ../../main/scala/stuff/products.scala.md
 [main/scala/stuff/Scala.scala]: ../../main/scala/stuff/Scala.scala.md
 [main/scala/stuff/package.scala]: ../../main/scala/stuff/package.scala.md
 [main/scala/stuff/sums.scala]: ../../main/scala/stuff/sums.scala.md
+[main/scala/stuff/monoids.scala]: ../../main/scala/stuff/monoids.scala.md
+[main/scala/stuff/maybe.scala]: ../../main/scala/stuff/maybe.scala.md
 [main/scala/stuff/boolean.scala]: ../../main/scala/stuff/boolean.scala.md
 [main/scala/stuff/functors.scala]: ../../main/scala/stuff/functors.scala.md
 [main/scala/stuff/naturalTransformations.scala]: ../../main/scala/stuff/naturalTransformations.scala.md

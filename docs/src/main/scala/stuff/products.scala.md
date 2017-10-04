@@ -6,12 +6,38 @@ import functions._
 
 object products {
 
-  type ×[A,B] =
-    TupleImpl[A,B]
+  // TODO derive it from a Cartesian Structure
+  object monoidalCategory extends MonoidalCategory {
 
-  type ∗ =
-    EmptyTuple.type
-    
+    type On = Scala
+    val on: On = Scala
+
+    @infix
+    type ⊗[X <: On#Objects, Y <: On#Objects] = X × Y
+
+    type I = ∗
+
+    def unitl[A] = right
+    def unitr[A] = left
+
+    def ⊗[A,B,C,D] = map
+
+    def assoc_left[A,B,C] =
+      products.assoc_left
+
+    def assoc_right[A,B,C] =
+      products.assoc_right
+  }
+
+  object symmetricStructure extends SymmetricStructure {
+
+    type On = monoidalCategory.type
+    val on: On = monoidalCategory
+
+    def swap[X,Y] =
+      products.swap
+  }
+
   @inline final
   def ∗ : ∗ =
     EmptyTuple
@@ -140,7 +166,9 @@ object products {
   }
 }
 
-sealed abstract class Tuple {
+private[stuff]
+sealed abstract
+class Tuple {
 
   type Left
   val left: Left
@@ -149,10 +177,12 @@ sealed abstract class Tuple {
   val right: Right
 }
 
-case object EmptyTuple
+private[stuff]
+object EmptyTuple
 
+private[stuff]
 final
-case class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
+class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
 
   type Left   = A
   type Right  = B
@@ -170,10 +200,13 @@ case class TupleImpl[A,B](val left: A, val right: B) extends Tuple {
 [test/scala/ScalaCategory.scala]: ../../../test/scala/ScalaCategory.scala.md
 [test/scala/functions/syntax.scala]: ../../../test/scala/functions/syntax.scala.md
 [test/scala/categories.scala]: ../../../test/scala/categories.scala.md
+[main/scala/stuff/monoidalCategories.scala]: monoidalCategories.scala.md
 [main/scala/stuff/products.scala]: products.scala.md
 [main/scala/stuff/Scala.scala]: Scala.scala.md
 [main/scala/stuff/package.scala]: package.scala.md
 [main/scala/stuff/sums.scala]: sums.scala.md
+[main/scala/stuff/monoids.scala]: monoids.scala.md
+[main/scala/stuff/maybe.scala]: maybe.scala.md
 [main/scala/stuff/boolean.scala]: boolean.scala.md
 [main/scala/stuff/functors.scala]: functors.scala.md
 [main/scala/stuff/naturalTransformations.scala]: naturalTransformations.scala.md
