@@ -9,7 +9,7 @@ import org.scalatest.FunSuite
 case object boh {
 
   val buh =
-    (functors.identity at Scala) at { λ { x: String => s"hola ${x}!" } }
+    (Functor.identity at Scala) at { λ { x: String => s"hola ${x}!" } }
 }
 
 class FunctorsExamples extends FunSuite {
