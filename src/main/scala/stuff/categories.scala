@@ -34,10 +34,6 @@ object Category {
       type C[X <: category#Objects, Y <: category#Objects] = category#C[X,Y]
     }
 
-  final
-  def is[category <: Category](c: category): is[category] =
-    c.asInstanceOf[is[category]]
-
   type Opposite[category <: Category] =
     Category {
       type Objects = category#Objects
@@ -45,7 +41,7 @@ object Category {
     }
 
   final
-  def opposite[category <: Category](c: category): Opposite[category] =
+  def opposite[category <: Category](c: is[category]): Opposite[category] =
     new Category {
 
       type Objects =
@@ -56,11 +52,11 @@ object Category {
 
       final
       def identity[X <: Objects]: C[X,X] =
-        is(c).identity
+        c.identity
 
       final
       def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
-        swap >-> is(c).composition
+        swap >-> c.composition
     }
 
   type UnitCategory = UnitCategory.type
@@ -79,7 +75,7 @@ object Category {
   }
 
   // etc etc
-  def lunit[Cat <: Category]: Cat -> Functor =
+  def lunit[Cat <: Category]: is[Cat] -> Functor =
     λ { cat =>
       new Functor {
 
@@ -87,7 +83,7 @@ object Category {
         val source: Source = product(UnitCategory, cat)
 
         type Target = Cat
-        val target: Target = cat
+        val target = cat
 
         type F[Z <: Source#Objects] = Z#Right
 
@@ -111,7 +107,7 @@ object Category {
     }
 
   final
-  def product[leftCategory <: Category, rightCategory <: Category](l: leftCategory, r: rightCategory): Product[leftCategory,rightCategory] =
+  def product[leftCategory <: Category, rightCategory <: Category](l: is[leftCategory], r: is[rightCategory]): Product[leftCategory,rightCategory] =
     new Category {
 
       type Objects =
@@ -125,13 +121,13 @@ object Category {
 
       final
       def identity[X <: Objects]: C[X,X] =
-        is(l).identity and is(r).identity
+        l.identity and r.identity
 
       final
       def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
         both(
-          πL[C[X,Y]] × πL[C[Y,Z]] >-> is(l).composition and
-          πR[C[X,Y]] × πR[C[Y,Z]] >-> is(r).composition
+          πL[C[X,Y]] × πL[C[Y,Z]] >-> l.composition and
+          πR[C[X,Y]] × πR[C[Y,Z]] >-> r.composition
         )
     }
 
@@ -144,9 +140,8 @@ object Category {
     }
 
   final
-  def hom[Cat <: Category]: Cat -> Hom[Cat] =
-    λ { cat: Cat =>
-
+  def hom[Cat <: Category]: is[Cat] -> Hom[is[Cat]] =
+    λ { cat =>
       new Functor {
 
         type Source = Product[Opposite[Cat], Cat]
@@ -163,7 +158,7 @@ object Category {
         def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> (F[X] -> F[Y]) =
           λ { fg =>
             λ { q =>
-              is(cat).composition( is(cat).composition(left(fg) and q) and right(fg))
+              cat.composition( cat.composition(left(fg) and q) and right(fg))
             }
           }
       }

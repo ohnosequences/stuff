@@ -57,7 +57,16 @@ because otherwise you can use a function instead.
 
 ## No type parameters in classes
 
-Use type members. The only legit context for type parameters is a method (mostly, there are others which I don't want to discuss here).
+Use type members. The only legit context for type parameters is a method.
+
+## Abstract values of type `X.is[Z]`
+
+Ideally, I'd like Scala to require that for a value to conform to a type `X`, all their type members should be concrete (assigned to something). What we're doing is:
+
+- For every type `X` with abstract type members, define an alias `X.is[X0 <: X]` in the companion object which forces all type members to correspond to their own projection
+- whenever you want a *value* of type `X0 <: X`, require it to be of type `X.is[X0]`; note that `X.is[X0] <: X0`.
+
+Writing this `X.is[X0 <: X]` type is boring; I'd like to generate it automatically (compiler plugin, whatever).
 
 ## No value-dependent types
 
