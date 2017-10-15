@@ -37,14 +37,9 @@ scalacOptions ++= Seq(
 scalacOptions in (Compile,doc) ++= Seq("-groups")
 autoAPIMappings := true
 
-// all these exceptions come from not being able to only exclude `asInstanceOf`
+// // all these exceptions come from not being able to only exclude `asInstanceOf`
 wartremoverExcluded ++= Seq(
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"naturalTransformations.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"categories.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"monoidalCategories.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"functors.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"tailrec.scala"
+  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala"
 )
 
 wartremoverErrors in (Test, compile) := Seq()
