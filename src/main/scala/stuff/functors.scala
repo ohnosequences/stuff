@@ -5,22 +5,23 @@ import functions._, products._
 abstract class Functor {
 
   type Source <: Category
-  def source: Source
+  val source: Category.is[Source]
 
   type Target <: Category
-  def target: Target
+  val target: Category.is[Target]
 
   type F[Z <: Source#Objects] <: Target#Objects
 
   def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]]
 }
 
-object functors {
+object Functor {
 
-  implicit class FunctorSyntax[Fn <: Functor](val functor: Fn) {
+  implicit final
+  class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
 
     def apply[X <: Fn#Source#Objects, Y <: Fn#Source#Objects](f: Fn#Source#C[X,Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
-      is(functor).at[X,Y](f)
+      functor.at[X,Y](f)
   }
 
   type between[Src <: Category, Tgt <: Category] =
@@ -36,13 +37,11 @@ object functors {
       type F[Z <: functor#Source#Objects] = functor#F[Z]
     }
 
-  def is[functor <: Functor](f: functor): is[functor] =
-    f.asInstanceOf[is[functor]]
-
-  class Identity[Cat <: Category](cat: Cat) extends Functor {
+  class Identity[Cat <: Category](cat: Category.is[Cat]) extends Functor {
 
     type Source = Cat
     val source = cat
+
     type Target = Cat
     val target = cat
 
@@ -56,26 +55,26 @@ object functors {
     F0 <: Functor,
     G0 <: Functor { type Source = F0#Target }
   ](
-    val first: F0,
-    val second: G0
+    val first : is[F0],
+    val second: is[G0]
   )
   extends Functor {
 
     type Source = F0#Source
-    val source: Source = first.source
+    val source = first.source
 
     type Target = G0#Target
-    val target: Target = second.target
+    val target = second.target
 
     type F[Z <: F0#Source#Objects] = G0#F[ F0#F[Z] ]
 
     def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
-      is(first).at >-> is(second).at
+      first.at >-> second.at
   }
 
-  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (F0 × G0) -> Composition[F0,G0] =
+  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (is[F0] × is[G0]) -> Composition[F0,G0] =
     λ { fg => new Composition(left(fg), right(fg)) }
 
-  def identity[Cat <: Category]: Cat -> Identity[Cat] =
-    λ { cat: Cat => new Identity(cat) }
+  def identity[Cat <: Category]: Category.is[Cat] -> Identity[Cat] =
+    λ { new Identity(_) }
 }

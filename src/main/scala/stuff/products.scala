@@ -18,6 +18,38 @@ object products extends MonoidalCategory {
   def unitr[A]: (A × I) -> A =
     left
 
+  // TODO derive it from a Cartesian Structure
+  object monoidalCategory extends MonoidalCategory {
+
+    type On = Scala
+    val on: On = Scala
+
+    @infix
+    type ⊗[X <: On#Objects, Y <: On#Objects] = X × Y
+
+    type I = ∗
+
+    def unitl[A] = right
+    def unitr[A] = left
+
+    def ⊗[A,B,C,D] = map
+
+    def assoc_left[A,B,C] =
+      products.assoc_left
+
+    def assoc_right[A,B,C] =
+      products.assoc_right
+  }
+
+  object symmetricStructure extends SymmetricStructure {
+
+    type On = monoidalCategory.type
+    val on: On = monoidalCategory
+
+    def swap[X,Y] =
+      products.swap
+  }
+
   @inline final
   def ∗ : ∗ =
     EmptyTuple

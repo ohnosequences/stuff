@@ -8,14 +8,6 @@ scalaVersion  := "2.12.3"
 addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
 
 scalacOptions ++= Seq(
-  // "-Xfuture",
-  // "-Xstrict-inference",
-  // "-Xlog-free-types",
-  // "-Xlog-free-terms",
-  // "-Ydebug",
-  // "-explaintypes",
-  // "-uniqid",
-  // "-Yopt-log-inline", "_", // noisy
   "-Xlint",
   "-Xfatal-warnings",
   "-Xlog-reflective-calls",
@@ -23,6 +15,7 @@ scalacOptions ++= Seq(
   "-Ywarn-adapted-args",
   "-opt-warnings:_",
   "-unchecked",
+  "-Xstrict-inference",
   "-Yno-predef",
   "-Yno-imports",
   "-Ywarn-unused-import",
@@ -31,6 +24,13 @@ scalacOptions ++= Seq(
   "-opt:l:inline",
   "-opt-inline-from:<sources>",
   "-opt:l:method"
+  // "-Xfuture",
+  // "-Xlog-free-types",
+  // "-Xlog-free-terms",
+  // "-Ydebug",
+  // "-explaintypes",
+  // "-uniqid",
+  // "-Yopt-log-inline", "_", // noisy
 )
 
 // scaladoc

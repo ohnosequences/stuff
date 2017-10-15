@@ -1,0 +1,9 @@
+Added a minimal Maybe (#38), a type for monoids (#21) and several features/improvements related with monoidal categories:
+
+- add symmetric monoidal categories (#43)
+- functors for $- ⊗ A, A ⊗ -$, same for $- + A, A + -$ (#39, #40)
+- make products a monoidal category (#46)
+
+I'm also starting to use scaladoc (#34) and a purer version of Scala.
+
+There are other additions too that I'm too lazy to write about now.

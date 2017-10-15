@@ -6,9 +6,9 @@ abstract class Monoid {
 
   type M <: In#On#Objects
 
-  val unit: In#On#C[In#I, M]
+  val unit: MonoidalCategory.is[In]#On#C[In#I, M]
 
-  val multiplication: In#On#C[In# ⊗[M, M], M]
+  val multiplication: MonoidalCategory.is[In]#On#C[In# ⊗[M, M], M]
 }
 
 object Monoid {
@@ -17,15 +17,15 @@ object Monoid {
     Monoid { type In = MC }
 
   final
-  class UnitMonoid[MCat <: MonoidalCategory](mcat: MCat) extends Monoid {
+  class UnitMonoid[MCat <: MonoidalCategory](val mcat: MonoidalCategory.is[MCat]) extends Monoid {
 
     type In = MCat
     type M = MCat#I
 
     val unit =
-      Category.is(MonoidalCategory.is(mcat).on).identity
+      mcat.on.identity
 
     val multiplication =
-      MonoidalCategory.is(mcat).unitl
+      mcat.unitl
   }
 }
