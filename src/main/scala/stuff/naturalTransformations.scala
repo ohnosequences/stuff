@@ -29,9 +29,13 @@ abstract class NaturalTransformation {
 
 object naturalTransformations {
 
+  // NOTE bounds are not checked in type aliases
+  // we can use this to our advantage here
   type ~>[F0 <: Functor, G0 <: Functor] =
     NaturalTransformation {
 
+      type SourceCategory = F0#Source
+      type TargetCategory = F0#Target
       type SourceFunctor = F0
       type TargetFunctor = G0
     }
