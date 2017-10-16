@@ -37,7 +37,8 @@ object Functor {
       type F[Z <: functor#Source#Objects] = functor#F[Z]
     }
 
-  class Identity[Cat <: Category](cat: Category.is[Cat]) extends Functor {
+  final
+  class Identity[Cat <: Category](val cat: Category.is[Cat]) extends Functor {
 
     type Source = Cat
     val source = cat
@@ -72,9 +73,13 @@ object Functor {
       first.at >-> second.at
   }
 
-  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (is[F0] × is[G0]) -> Composition[F0,G0] =
-    λ { fg => new Composition(left(fg), right(fg)) }
+  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (is[F0] × is[G0]) -> is[Composition[F0,G0]] =
+    λ { fg => new Composition(left(fg), right(fg)).asInstanceOf[is[Composition[F0,G0]]] }
 
-  def identity[Cat <: Category]: Category.is[Cat] -> Identity[Cat] =
-    λ { new Identity(_) }
+  // due to a bug
+  def identity[Cat <: Category]: Category.is[Cat] -> Functor.is[Identity[Cat]] =
+    λ { new Identity(_).asInstanceOf[Functor.is[Identity[Cat]]] }
+
+  def identityB[Cat <: Category]: Category.is[Cat] -> Identity[Cat] =
+      λ { new Identity(_) }
 }

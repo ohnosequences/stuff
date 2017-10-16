@@ -29,6 +29,13 @@ abstract class NaturalTransformation {
 
 object naturalTransformations {
 
+  type ~>[F0 <: Functor, G0 <: Functor] =
+    NaturalTransformation {
+
+      type SourceFunctor = F0
+      type TargetFunctor = G0
+    }
+
   type is[nat <: NaturalTransformation] =
     nat {
       type SourceCategory = nat#SourceCategory
