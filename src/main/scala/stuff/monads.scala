@@ -32,7 +32,7 @@ class KleisliCategory extends Category {
     BaseCat#Objects
 
   type C[X <: Objects, Y <: Objects] =
-    M#On#C[X, M#OnF#F[Y]]
+    BaseCat#C[X, M#OnF#F[Y]]
 
   def identity[X <: Objects]: C[X,X] =
     m.ι[X]
