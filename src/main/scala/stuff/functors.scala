@@ -23,10 +23,8 @@ abstract class Functor {
 
 object Functor {
 
-  type EndoFunctor = Functor {
-
-    type Source = Target
-  }
+  type endo =
+    Functor { type Source = Target }
 
   implicit final
   class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {

@@ -7,38 +7,31 @@ import functions._
 abstract
 class Monad {
 
-  type On = OnF#Source
-  val on   : Category.is[On]
-
-  type OnF <: Functor.EndoFunctor
-  val onF   : Functor.is[OnF]
+  type On <: Functor.endo
+  val on   : Functor.is[On]
 
   // TODO do I need another Functor.is here?
-  val μ: Functor.Composition[Functor.is[OnF],Functor.is[OnF]] ~> Functor.is[OnF]
+  val μ: Functor.Composition[Functor.is[On],Functor.is[On]] ~> Functor.is[On]
 
-  val ι: Functor.is[Functor.Identity[On]] ~> Functor.is[OnF]
+  val ι: Functor.is[Functor.Identity[On#Source]] ~> Functor.is[On]
 }
 
-abstract
-class KleisliCategory extends Category {
+final
+class KleisliCategory[M <: Monad](val monad: Monad.is[M]) extends Category {
 
-  // NOTE we need this, don't ask me why
-  type BaseCat = M#On
-  lazy
+  type BaseCat = M#On#Source
   val baseCat: Category.is[BaseCat] =
-    m.on
-
-  type M <: Monad
-  val m: Monad.is[M]
+    monad.on.source
 
   type Objects =
-    M#OnF#Source#Objects
+    M#On#Source#Objects
 
   type C[X <: Objects, Y <: Objects] =
-    BaseCat#C[X, M#OnF#F[Y]]
+    BaseCat#C[X, M#On#F[Y]]
 
+  @inline final
   def identity[X <: Objects]: C[X,X] =
-    m.ι[X]
+    monad.ι[X]
 
   def composition[
     X <: Objects,
@@ -48,63 +41,61 @@ class KleisliCategory extends Category {
   : C[X,Y] × C[Y,Z] -> C[X,Z] =
     λ { fg =>
       baseCat.composition(
-        left(fg) and baseCat.composition(m.onF(right(fg)) and m.μ[Z])
+        left(fg) and baseCat.composition(monad.on(right(fg)) and monad.μ[Z])
       )
     }
 }
 
 object KleisliCategory {
 
-  def apply[Mnd <: Monad](mnd: Monad.is[Mnd]): KleisliCategory { type M = Mnd } =
-    new KleisliCategory {
-      type M = Mnd
-      val m  = mnd
-    }
+  @inline final
+  def apply[Mnd <: Monad]: Monad.is[Mnd] -> KleisliCategory[Mnd] =
+    λ { new KleisliCategory(_) }
 }
 
 object Monad {
 
-  type on[Cat <: Category] =
-    Monad { type On = Cat }
-
   type is[M <: Monad] =
     M {
-      type OnF  = M#OnF
+      type On = M#On
     }
 
-  final
-  class Identity[Cat <: Category](val on: Category.is[Cat]) extends Monad {
+  type on[F0 <: Functor.endo] =
+    Monad { type On = F0 }
 
-    type OnF = Functor.Identity[Cat]
-    val onF  = Functor.identity(on)
+  final
+  class Identity[Cat <: Category](val cat: Category.is[Cat]) extends Monad {
+
+    type On = Functor.Identity[Cat]
+    val on  = Functor.identity(cat)
 
     val μ =
       new NaturalTransformation {
 
-        type SourceCategory = On
-        val sourceCategory  = on
+        type SourceCategory = On#Source
+        val sourceCategory  = on.source
 
         type SourceFunctor =
-          Functor.Composition[Functor.is[OnF],Functor.is[OnF]]
+          Functor.Composition[Functor.is[On], Functor.is[On]]
 
         val sourceFunctor: Functor.is[SourceFunctor] =
-          Functor.composition(onF and onF)
+          Functor.composition(on and on)
 
-        type TargetCategory = On
-        val targetCategory  = on
+        type TargetCategory = On#Target
+        val targetCategory  = on.target
 
-        type TargetFunctor = Functor.is[OnF]
-        val targetFunctor  = onF
+        type TargetFunctor = Functor.is[On]
+        val targetFunctor  = on
 
-        def apply[X <: On#Objects]: On#C[X,X] =
-          on.identity
+        def apply[X <: SourceCategory#Objects]: TargetCategory#C[X,X] =
+          cat.identity
       }
 
     val ι =
-      naturalTransformations.identity(onF)
+      naturalTransformations.identity(on)
   }
 
   @inline final
-  def identity[Cat <: Category]: Category.is[Cat] -> Identity[Cat] =
+  def identity[Cat <: Category]: Category.is[Cat] -> is[Identity[Cat]] =
     λ { new Identity(_) }
 }
