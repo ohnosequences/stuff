@@ -10,12 +10,23 @@ abstract class Functor {
   type Target <: Category
   val target: Category.is[Target]
 
-  type F[Z <: Source#Objects] <: Target#Objects
+  type F[Z <: SourceObjects] <: Target#Objects
 
-  def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]]
+  type SourceObjects = Source#Objects
+
+  def at[
+    X <: Source#Objects,
+    Y <: Source#Objects
+  ]
+  :  Category.is[Source]#C[X,Y] -> Target#C[F[X], F[Y]]
 }
 
 object Functor {
+
+  type EndoFunctor = Functor {
+
+    type Source = Target
+  }
 
   implicit final
   class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
@@ -34,7 +45,7 @@ object Functor {
     functor {
       type Source = functor#Source
       type Target = functor#Target
-      type F[Z <: functor#Source#Objects] = functor#F[Z]
+      type F[Z <: functor#SourceObjects] = functor#F[Z]
     }
 
   final
@@ -81,9 +92,9 @@ object Functor {
     F0 <: Functor,
     G0 <: Functor { type Source = F0#Target }
   ]
-  : (is[F0] × is[G0]) -> is[Composition[F0,G0]] =
+  : (is[F0] × is[G0]) -> is[Composition[is[F0],is[G0]]] =
     λ { fg =>
-      new Composition(left(fg), right(fg)).asInstanceOf[is[Composition[F0,G0]]]
+      new Composition(left(fg), right(fg)).asInstanceOf[is[Composition[is[F0],is[G0]]]]
     }
 
   // due to a bug

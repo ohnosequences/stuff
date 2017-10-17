@@ -7,13 +7,14 @@ import functions._
 abstract
 class Monad {
 
-  type On <: Category
+  type On = OnF#Source
   val on   : Category.is[On]
 
-  type OnF <: Functor { type Source = On; type Target = On }
+  type OnF <: Functor.EndoFunctor
   val onF   : Functor.is[OnF]
 
-  val μ: Functor.is[Functor.Composition[OnF,OnF]] ~> Functor.is[OnF]
+  // TODO do I need another Functor.is here?
+  val μ: Functor.Composition[Functor.is[OnF],Functor.is[OnF]] ~> Functor.is[OnF]
 
   val ι: Functor.is[Functor.Identity[On]] ~> Functor.is[OnF]
 }
@@ -22,14 +23,16 @@ abstract
 class KleisliCategory extends Category {
 
   // NOTE we need this, don't ask me why
-  type BaseCat <: Category
-  val baseCat: Category.is[BaseCat]
+  type BaseCat = M#On
+  lazy
+  val baseCat: Category.is[BaseCat] =
+    m.on
 
-  type M <: Monad.on[BaseCat]
+  type M <: Monad
   val m: Monad.is[M]
 
   type Objects =
-    BaseCat#Objects
+    M#OnF#Source#Objects
 
   type C[X <: Objects, Y <: Objects] =
     BaseCat#C[X, M#OnF#F[Y]]
@@ -50,6 +53,15 @@ class KleisliCategory extends Category {
     }
 }
 
+object KleisliCategory {
+
+  def apply[Mnd <: Monad](mnd: Monad.is[Mnd]): KleisliCategory { type M = Mnd } =
+    new KleisliCategory {
+      type M = Mnd
+      val m  = mnd
+    }
+}
+
 object Monad {
 
   type on[Cat <: Category] =
@@ -57,14 +69,11 @@ object Monad {
 
   type is[M <: Monad] =
     M {
-      type On   = M#On
       type OnF  = M#OnF
     }
 
   final
   class Identity[Cat <: Category](val on: Category.is[Cat]) extends Monad {
-
-    type On = Cat
 
     type OnF = Functor.Identity[Cat]
     val onF  = Functor.identity(on)
@@ -75,8 +84,11 @@ object Monad {
         type SourceCategory = On
         val sourceCategory  = on
 
-        type SourceFunctor = Functor.is[Functor.Composition[OnF,OnF]]
-        val sourceFunctor  = Functor.composition(onF and onF)
+        type SourceFunctor =
+          Functor.Composition[Functor.is[OnF],Functor.is[OnF]]
+
+        val sourceFunctor: Functor.is[SourceFunctor] =
+          Functor.composition(onF and onF)
 
         type TargetCategory = On
         val targetCategory  = on
