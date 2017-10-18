@@ -2,6 +2,28 @@ package ohnosequences.stuff
 
 import functions._
 
+abstract
+class Products {
+
+  type On <: Category
+  val  on  : Category.is[On]
+
+  @infix
+  type ×[X <: On#Objects, Y <: On#Objects] <: On#Objects
+
+  type ∗ <: On#Objects
+
+  def both[
+    X <: On#Objects,
+    A <: On#Objects,
+    B <: On#Objects,
+  ]
+  // TODO find a convenient aliasing convention for both ×'s
+  : ohnosequences.stuff.×[On#C[X, A], On#C[X, B]] -> On#C[X, A × B]
+
+  def erase[X <: On#Objects]: On#C[X, ∗]
+}
+
 object products {
 
   // TODO derive it from a Cartesian Structure
