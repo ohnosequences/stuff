@@ -1,9 +1,10 @@
 package ohnosequences.stuff
 
 import functions._
+import products._
 
 abstract
-class Products {
+class Product {
 
   type On <: Category
   val  on  : Category.is[On]
@@ -27,7 +28,63 @@ class Products {
   def right[A <: On#Objects, B <: On#Objects]: On#C[A × B, B]
 }
 
+object Product {
 
+  type is[P <: Product] =
+    P {
+      type On = P#On
+      type ×[X <: P#On#Objects, Y <: P#On#Objects] = P# ×[X,Y]
+      type ∗ = P# ∗
+    }
+}
+
+// TODO make it final once we have assocs implemented
+abstract
+class CartesianMonoidalCategory[P <: Product](val product: Product.is[P]) {
+
+  type On = P#On
+  val on  = product.on
+
+  @infix
+  type ⊗[X <: On#Objects, Y <: On#Objects] = P # ×[X,Y]
+  type I = P # ∗
+
+  def ⊗[
+    A <: On#Objects,
+    B <: On#Objects,
+    C <: On#Objects,
+    D <: On#Objects
+  ]
+  : On#C[A,B] × On#C[C,D] -> On#C[A ⊗ C, B ⊗ D] =
+    λ { fg =>
+      product.both(
+        on.composition( product.left[A,C] and fg.left ) and
+        on.composition(product.right[A,C] and fg.right)
+      )
+    }
+
+  // TODO these two are nice exercises
+  // TODO rename params to X,Y,Z to avoid clashes with On#C[_,_]
+  def assoc_right[
+    A <: On#Objects,
+    B <: On#Objects,
+    C <: On#Objects
+  ]
+  : On#C[ (A ⊗ B) ⊗ C, A ⊗ (B ⊗ C) ]
+
+  def assoc_left[
+    A <: On#Objects,
+    B <: On#Objects,
+    C <: On#Objects
+  ]
+  : On#C[ A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C ]
+
+  def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
+    product.right
+
+  def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
+    product.left
+}
 
 object products {
 
