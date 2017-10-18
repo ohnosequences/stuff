@@ -72,8 +72,8 @@ object Functor {
       first.at >-> second.at
   }
 
-  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (is[F0] × is[G0]) -> Composition[F0,G0] =
-    λ { fg => new Composition(left(fg), right(fg)) }
+  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (is[F0] × is[G0]) -> is[Composition[F0,G0]] =
+    λ { fg => new Composition(left(fg), right(fg)).asInstanceOf[is[Composition[F0,G0]]] }
 
   def identity[Cat <: Category]: Category.is[Cat] -> Identity[Cat] =
     λ { new Identity(_) }
