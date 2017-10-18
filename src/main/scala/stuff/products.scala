@@ -23,8 +23,8 @@ class Products {
 
   def erase[X <: On#Objects]: On#C[X, ∗]
 
-  def  left[A <: On#Objects, B <: On#Objects]: A × B -> A
-  def right[A <: On#Objects, B <: On#Objects]: A × B -> B
+  def  left[A <: On#Objects, B <: On#Objects]: On#C[A × B, A]
+  def right[A <: On#Objects, B <: On#Objects]: On#C[A × B, B]
 }
 
 
