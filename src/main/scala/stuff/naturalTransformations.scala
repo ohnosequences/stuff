@@ -2,75 +2,77 @@ package ohnosequences.stuff
 
 import functions._, products._
 
-abstract class NaturalTransformation {
+abstract
+class NaturalTransformation {
 
   type SourceCategory <: Category
-  val sourceCategory: Category.is[SourceCategory]
+  val sourceCategory   : Category.is[SourceCategory]
 
   type TargetCategory <: Category
-  val targetCategory: Category.is[TargetCategory]
+  val targetCategory   : Category.is[TargetCategory]
 
-  type SourceFunctor <: Functor {
-    type Source = SourceCategory
-    type Target = TargetCategory
-  }
+  type SourceFunctor <: Functor.between[SourceCategory, TargetCategory]
+  val sourceFunctor   : Functor.is[SourceFunctor]
 
-  val sourceFunctor: Functor.is[SourceFunctor]
+  type TargetFunctor <: Functor.between[SourceCategory, TargetCategory]
+  val targetFunctor   : Functor.is[TargetFunctor]
 
-  type TargetFunctor <: Functor {
-    type Source = SourceCategory
-    type Target = TargetCategory
-  }
+  final
+  type SourceObjects =
+    SourceCategory#Objects
 
-  val targetFunctor: Functor.is[TargetFunctor]
-
-  def apply[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]]
+  def apply[X <: SourceObjects]
+    : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]]
 }
 
-object naturalTransformations {
+object NaturalTransformation {
+
+  type ~>[F1 <: Functor, F2 <: Functor] =
+    NaturalTransformation {
+      type SourceFunctor = F1
+      type TargetFunctor = F2
+    }
 
   type is[nat <: NaturalTransformation] =
     nat {
       type SourceCategory = nat#SourceCategory
       type TargetCategory = nat#TargetCategory
 
-      type SourceFunctor = nat#SourceFunctor { type Source = SourceCategory; type Target = TargetCategory }
-      type TargetFunctor = nat#TargetFunctor { type Source = SourceCategory; type Target = TargetCategory }
-    }
+      type SourceObjects = nat#SourceObjects
 
-  type Identity[functor <: Functor] =
-    NaturalTransformation {
-
-      type SourceCategory = functor#Source
-      type TargetCategory = functor#Target
-
-      type SourceFunctor = Functor.is[functor]
-      type TargetFunctor = Functor.is[functor]
-    }
-
-  final
-  def identity[functor <: Functor]: Functor.is[functor] -> Identity[functor] =
-    λ { F0: Functor.is[functor] =>
-      new NaturalTransformation {
-
-        type SourceCategory = functor#Source
-        val sourceCategory = F0.source
-
-        type TargetCategory = functor#Target
-        val targetCategory = F0.target
-
-        type SourceFunctor = Functor.is[functor]
-        val sourceFunctor = F0
-
-        type TargetFunctor = Functor.is[functor]
-        val targetFunctor = F0
-
-        def apply[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
-          targetCategory.identity
+      type SourceFunctor  = nat#SourceFunctor {
+        type Source = nat#SourceCategory
+        type Target = nat#TargetCategory
+      }
+      type TargetFunctor = nat#TargetFunctor {
+        type Source = nat#SourceCategory
+        type Target = nat#TargetCategory
       }
     }
 
-  type VerticalComposition[
+  final
+  class Identity[Fnctr <: Functor](val fnctr: Functor.is[Fnctr])
+  extends NaturalTransformation {
+
+    type SourceCategory = Fnctr#Source
+    val sourceCategory  = fnctr.source
+
+    type TargetCategory = Fnctr#Target
+    val targetCategory  = fnctr.target
+
+    type SourceFunctor = Functor.is[Fnctr]
+    val sourceFunctor  = fnctr
+
+    type TargetFunctor = Functor.is[Fnctr]
+    val targetFunctor  = fnctr
+
+    def apply[X <: SourceObjects]
+      : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
+        targetCategory.identity
+  }
+
+  @infix
+  type >-> [
     A <: NaturalTransformation,
     B <: NaturalTransformation {
       type SourceFunctor  = A#TargetFunctor
@@ -78,16 +80,42 @@ object naturalTransformations {
       type TargetCategory = A#TargetCategory
     }
   ] =
-    NaturalTransformation {
-
-      type SourceFunctor = is[A]#SourceFunctor
-      type SourceCategory = A#SourceCategory
-
-      type TargetFunctor  = is[B]#TargetFunctor
-      type TargetCategory = B#TargetCategory
-    }
+    VerticalComposition[A, B]
 
   final
+  class VerticalComposition[
+    A <: NaturalTransformation,
+    B <: NaturalTransformation {
+      type SourceFunctor  = A#TargetFunctor
+      type SourceCategory = A#SourceCategory
+      type TargetCategory = A#TargetCategory
+    }
+  ](val pair: is[A] × is[B]) extends NaturalTransformation {
+
+    @inline final
+    def first = left(pair)
+
+    @inline final
+    def second = right(pair)
+
+    type SourceCategory = is[A]#SourceCategory
+    val sourceCategory  = first.sourceCategory
+
+    type SourceFunctor  = is[A]#SourceFunctor
+    val sourceFunctor   = first.sourceFunctor
+
+    type TargetFunctor  = is[B]#TargetFunctor
+    val targetFunctor   = second.targetFunctor
+
+    type TargetCategory = is[B]#TargetCategory
+    val targetCategory  = second.targetCategory
+
+    final
+    def apply[X <: SourceObjects]
+      : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
+        targetCategory.composition( first[X] and second[X])
+  }
+
   def verticalComposition[
     A <: NaturalTransformation,
     B <: NaturalTransformation {
@@ -96,33 +124,65 @@ object naturalTransformations {
       type TargetCategory = A#TargetCategory
     }
   ]
-  : (is[A] × is[B]) -> VerticalComposition[A,B] =
-    λ { ab =>
-      new NaturalTransformation {
+  : (is[A] × is[B]) -> (A >-> B) =
+    λ { new VerticalComposition(_) }
 
-        val a = left(ab)
-        val b = right(ab)
-
-        type SourceFunctor  = is[A]#SourceFunctor
-        val sourceFunctor = a.sourceFunctor
-
-        type SourceCategory = A#SourceCategory
-        val sourceCategory = a.sourceCategory
-
-        type TargetFunctor  = is[B]#TargetFunctor
-        val targetFunctor = b.targetFunctor
-
-        type TargetCategory = B#TargetCategory
-        val targetCategory = b.targetCategory
-
-        final
-        def apply[X <: SourceCategory#Objects]: TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
-          targetCategory.composition( a.apply[X] and b.apply[X])
-          // targetCategory ⊢ { a.at >-> b.at } // would be nice
-      }
+  @infix
+  type >=> [
+    M <: NaturalTransformation,
+    N <: NaturalTransformation {
+      type SourceCategory = M#TargetCategory
     }
+  ] = HorizontalComposition[M,N]
 
+  final
+  class HorizontalComposition[
+    M <: NaturalTransformation,
+    N <: NaturalTransformation { type SourceCategory = M#TargetCategory }
+  ]
+  (val pair: is[M] × is[N]) extends NaturalTransformation {
 
+    @inline final
+    def first = left(pair)
 
+    @inline final
+    def second = right(pair)
 
+    type SourceCategory = M#SourceCategory
+    val sourceCategory  = first.sourceCategory
+
+    type SourceFunctor =
+      Functor.Composition[
+        is[M]#SourceFunctor,
+        is[N]#SourceFunctor
+      ]
+    val sourceFunctor =
+      Functor.composition(first.sourceFunctor and second.sourceFunctor)
+
+    type TargetFunctor =
+      Functor.Composition[
+        is[M]#TargetFunctor,
+        is[N]#TargetFunctor
+      ]
+    val targetFunctor =
+      Functor.composition(first.targetFunctor and second.targetFunctor)
+
+    type TargetCategory = N#TargetCategory
+    val targetCategory  = second.targetCategory
+
+    final
+    def apply[X <: SourceObjects]
+      : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
+        targetCategory.composition(
+           second.sourceFunctor(first[X]) and second[is[M]#TargetFunctor#F[X]]
+        )
+  }
+
+  @inline final
+  def horizontalComposition[
+    M <: NaturalTransformation,
+    N <: NaturalTransformation { type SourceCategory = M#TargetCategory }
+  ]
+  : (is[M] × is[N]) -> (M >=> N) =
+    λ { new HorizontalComposition(_) }
 }
