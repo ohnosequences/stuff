@@ -3,7 +3,8 @@ package ohnosequences.stuff
 import functions._
 import products._
 
-abstract class MonoidalCategory {
+abstract
+class MonoidalCategory {
 
   type On <: Category
   val on: Category.is[On]
@@ -22,29 +23,26 @@ abstract class MonoidalCategory {
   def unitl[A <: On#Objects]: On#C[I ⊗ A, A]
   def unitr[A <: On#Objects]: On#C[A ⊗ I, A]
 
+  //////////////////////////////////////////////////////////////////////////////
   /** syntax */
   type Objects = On#Objects
 
   type Hom[X <: On#Objects, Y <: On#Objects] = On#C[X,Y]
 
-  @inline
-  implicit final
-  val _on: On =
+  @inline implicit final
+  val _on: Category.is[On] =
     on
 
-  @inline
-  implicit final
+  @inline implicit final
   val _this: this.type =
     this
 
-  @inline
-  implicit final
+  @inline implicit final
   def morphismSyntax[X <: Objects, Y <: Objects](f: Hom[X,Y])
   : Category.MorphismSyntax[On, X, Y] =
     new Category.MorphismSyntax(f)
 
-  @inline
-  final
+  @inline final
   def id[X <: Objects]: Hom[X,X] =
     on.identity[X]
 
@@ -87,6 +85,7 @@ object MonoidalCategory {
       monCat ⊗ (f and g)
   }
 
+  final
   class LeftTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: is[MCat]) extends Functor {
 
     type Source = MCat#On
@@ -102,6 +101,7 @@ object MonoidalCategory {
       mcat ⊢ { λ { id ⊗ _ } }
   }
 
+  final
   class RightTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: is[MCat]) extends Functor {
 
     type Source = MCat#On

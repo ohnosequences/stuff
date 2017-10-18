@@ -11,7 +11,8 @@ import functions._
   @groupname syntax Syntax
   @groupdesc These are aliases and infix operators (...)
 */
-abstract class Category {
+abstract
+class Category {
 
   /**
     Acts as the 2-type of types which are objects of this category.
@@ -62,7 +63,7 @@ object Category {
     X <: Cat#Objects,
     Y <: Cat#Objects
   ]
-  (val f: Cat#C[X,Y]) extends scala.AnyVal {
+  (val f: is[Cat]#C[X,Y]) extends scala.AnyVal {
 
     @inline
     final
@@ -72,8 +73,7 @@ object Category {
     : Cat#C[X,Z] =
       cat.composition at (f and g)
 
-    @inline
-    final
+    @inline final
     def ∘[U <: Cat#Objects](h: Cat#C[U,X])(
       implicit cat: Category.is[Cat]
     )

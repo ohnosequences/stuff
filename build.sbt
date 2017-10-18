@@ -3,7 +3,7 @@ name          := "stuff"
 organization  := "ohnosequences"
 description   := "some stuff"
 bucketSuffix  := "era7.com"
-scalaVersion  := "2.12.3"
+scalaVersion  := "2.12.4"
 
 addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
 
@@ -39,7 +39,8 @@ autoAPIMappings := true
 
 // // all these exceptions come from not being able to only exclude `asInstanceOf`
 wartremoverExcluded ++= Seq(
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala"
+  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala",
+  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"functors.scala"
 )
 
 wartremoverErrors in (Test, compile) := Seq()
