@@ -22,7 +22,12 @@ class Products {
   : ohnosequences.stuff.×[On#C[X, A], On#C[X, B]] -> On#C[X, A × B]
 
   def erase[X <: On#Objects]: On#C[X, ∗]
+
+  def  left[A <: On#Objects, B <: On#Objects]: A × B -> A
+  def right[A <: On#Objects, B <: On#Objects]: A × B -> B
 }
+
+
 
 object products {
 
