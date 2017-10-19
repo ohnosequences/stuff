@@ -3,7 +3,7 @@ package ohnosequences.stuff
 import functions._, products._
 
 abstract
-class NaturalTransformation {
+class NaturalTransformation { nat =>
 
   type SourceCategory <: Category
   val sourceCategory   : Category.is[SourceCategory]
@@ -11,15 +11,23 @@ class NaturalTransformation {
   type TargetCategory <: Category
   val targetCategory   : Category.is[TargetCategory]
 
-  type SourceFunctor <: Functor.between[SourceCategory, TargetCategory]
-  val sourceFunctor   : Functor.is[SourceFunctor]
+  type SourceFunctor <:
+    Functor {
+      type Source = SourceCategory
+      type Target = TargetCategory
+    }
+  val sourceFunctor: Functor.is[SourceFunctor]
 
-  type TargetFunctor <: Functor.between[SourceCategory, TargetCategory]
-  val targetFunctor   : Functor.is[TargetFunctor]
+  type TargetFunctor <:
+    Functor {
+      type Source = SourceCategory
+      type Target = TargetCategory
+    }
+  val targetFunctor: Functor.is[TargetFunctor]
 
   final
   type SourceObjects =
-    SourceCategory#Objects
+    SourceFunctor#SourceObjects
 
   def apply[X <: SourceObjects]
     : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]]
@@ -27,10 +35,14 @@ class NaturalTransformation {
 
 object NaturalTransformation {
 
+  // NOTE bounds are not checked in type aliases
+  // we can use this to our advantage here
   type ~>[F1 <: Functor, F2 <: Functor] =
     NaturalTransformation {
+      type SourceCategory = F1#Source
       type SourceFunctor = F1
       type TargetFunctor = F2
+      type TargetCategory = F1#Target
     }
 
   type is[nat <: NaturalTransformation] =
@@ -70,6 +82,11 @@ object NaturalTransformation {
       : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
         targetCategory.identity
   }
+
+  @inline final
+  def identity[Fnctr <: Functor]
+    : Functor.is[Fnctr] -> Identity[Fnctr] =
+    λ { new Identity(_) }
 
   @infix
   type >-> [
