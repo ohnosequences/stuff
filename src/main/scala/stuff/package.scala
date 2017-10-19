@@ -19,7 +19,7 @@ package ohnosequences
   @groupprio annotations 3
   @groupname annotations Annotations
   @groupdesc annotations Scala annotations.
-*/
+  */
 package object stuff {
 
   type Scala =
@@ -28,22 +28,24 @@ package object stuff {
   /**
     The type of functions from A to B.
     @group functions
-  */
+    */
   @infix
-  type ->[A,B] =
-    Function[A,B]
+  type ->[A, B] =
+    Function[A, B]
 
   /** @group products */
   type ∗ =
     EmptyTuple.type
+
   /** @group products */
   @infix
-  type ×[A,B] =
-    TupleImpl[A,B]
+  type ×[A, B] =
+    TupleImpl[A, B]
 
   /** @group sums */
   type ∅ =
     empty.type
+
   /** @group sums */
   @infix
   type +[A, B] =
@@ -52,7 +54,8 @@ package object stuff {
   /** @group annotations */
   type inline =
     scala.inline
+
   /** @group annotations */
-  type infix  =
+  type infix =
     scala.annotation.showAsInfix
 }

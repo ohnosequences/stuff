@@ -1,18 +1,30 @@
 package ohnosequences.stuff.test.tuples
 
 import ohnosequences.stuff._, functions._, products._
-import scala.{ Int, Boolean }
+import scala.{Boolean, Int}
 import scala.Predef.String
 import org.scalatest.FunSuite
 
 class TuplesSyntax extends FunSuite {
 
-  final val l           = λ { x: String => x.length  }
-  final val toStr       = λ { x: Int => x.toString   }
-  final val isZero      = λ { x: Int => x == 0       }
-  final val isPositive  = λ { x: Int => x > -1       }
-  final val plusOne     = λ { x: Int => x + 1        }
-  final val isEmpty     = λ { x: String => x.isEmpty }
+  final val l = λ { x: String =>
+    x.length
+  }
+  final val toStr = λ { x: Int =>
+    x.toString
+  }
+  final val isZero = λ { x: Int =>
+    x == 0
+  }
+  final val isPositive = λ { x: Int =>
+    x > -1
+  }
+  final val plusOne = λ { x: Int =>
+    x + 1
+  }
+  final val isEmpty = λ { x: String =>
+    x.isEmpty
+  }
 
   // TODO fix tuple equality
   ignore("build tuple values") {
@@ -28,9 +40,9 @@ class TuplesSyntax extends FunSuite {
     assert { (π_3_3 at boh)("") === true }
 
     assert {
-      πL(l and toStr and isEmpty)    === (l and toStr)  &&
-      left(l and toStr and isEmpty)  === (l and toStr)  &&
-      πR(l and toStr and isEmpty)    === isEmpty        &&
+      πL(l and toStr and isEmpty) === (l and toStr) &&
+      left(l and toStr and isEmpty) === (l and toStr) &&
+      πR(l and toStr and isEmpty) === isEmpty &&
       right(l and toStr and isEmpty) === isEmpty
     }
   }
@@ -50,7 +62,7 @@ class TuplesSyntax extends FunSuite {
       all3(toStr and isZero and isZero)
 
     assert {
-      all3(toStr and isZero and isZero)(1) === ("1" and false and false)  &&
+      all3(toStr and isZero and isZero)(1) === ("1" and false and false) &&
       y(12) === yAgain(12)
     }
   }

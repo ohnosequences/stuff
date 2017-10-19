@@ -5,4 +5,5 @@ resolvers ++=
     "repo.jenkins-ci.org" at "https://repo.jenkins-ci.org/public"
   )
 
-addSbtPlugin("ohnosequences" % "nice-sbt-settings" % "0.8.0")
+addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "1.12")
+addSbtPlugin("ohnosequences" % "nice-sbt-settings" % "0.9.0")

@@ -3,24 +3,22 @@ package ohnosequences.stuff
 import NaturalTransformation._
 import products._
 import functions._
-import Functor.{ ∘ }
+import Functor.{∘}
 
-abstract
-class Monad {
+abstract class Monad {
 
   type On <: Functor { type Target = Source }
-  val on   : Functor.is[On]
+  val on: Functor.is[On]
 
-  final
-  type OnCat = On#Source
+  final type OnCat = On#Source
 
   val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On]
 
   val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On]
 }
 
-final
-class KleisliCategory[M <: Monad](val monad: Monad.is[M]) extends Category {
+final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
+    extends Category {
 
   type BaseCat = M#On#Source
   val baseCat: Category.is[BaseCat] =
@@ -32,17 +30,14 @@ class KleisliCategory[M <: Monad](val monad: Monad.is[M]) extends Category {
   type C[X <: Objects, Y <: Objects] =
     BaseCat#C[X, M#On#F[Y]]
 
-  @inline final
-  def identity[X <: Objects]: C[X,X] =
+  @inline final def identity[X <: Objects]: C[X, X] =
     monad.ι[X]
 
-  @inline final
-  def composition[
-    X <: Objects,
-    Y <: Objects,
-    Z <: Objects
-  ]
-  : C[X,Y] × C[Y,Z] -> C[X,Z] =
+  @inline final def composition[
+      X <: Objects,
+      Y <: Objects,
+      Z <: Objects
+  ]: C[X, Y] × C[Y, Z] -> C[X, Z] =
     λ { fg =>
       baseCat.composition(
         left(fg) and baseCat.composition(monad.on(right(fg)) and monad.μ[Z])
@@ -52,8 +47,7 @@ class KleisliCategory[M <: Monad](val monad: Monad.is[M]) extends Category {
 
 object KleisliCategory {
 
-  @inline final
-  def apply[Mnd <: Monad]: Monad.is[Mnd] -> KleisliCategory[Mnd] =
+  @inline final def apply[Mnd <: Monad]: Monad.is[Mnd] -> KleisliCategory[Mnd] =
     λ { new KleisliCategory(_) }
 }
 
@@ -67,9 +61,9 @@ object Monad {
   type on[F0 <: Functor { type Target = Source }] =
     Monad { type On = F0 }
 
-  final
-  class Identity[Cat <: Category](val on: Functor.is[Functor.Identity[Cat]])
-  extends Monad {
+  final class Identity[Cat <: Category](
+      val on: Functor.is[Functor.Identity[Cat]])
+      extends Monad {
 
     type On = Functor.Identity[Cat]
 
@@ -77,9 +71,9 @@ object Monad {
       new NaturalTransformation {
 
         type SourceCategory = Cat
-        val sourceCategory  = on.source
+        val sourceCategory = on.source
         type TargetCategory = Cat
-        val targetCategory  = on.target
+        val targetCategory = on.target
 
         type SourceFunctor =
           Functor.Composition[Functor.is[On], Functor.is[On]]
@@ -90,9 +84,9 @@ object Monad {
           )
 
         type TargetFunctor = Functor.is[On]
-        val targetFunctor  = on
+        val targetFunctor = on
 
-        def apply[X <: SourceCategory#Objects]: TargetCategory#C[X,X] =
+        def apply[X <: SourceCategory#Objects]: TargetCategory#C[X, X] =
           on.source.identity
       }
 
@@ -100,7 +94,7 @@ object Monad {
       NaturalTransformation.identity(on)
   }
 
-  @inline final
-  def identity[Cat <: Category]: Functor.is[Functor.Identity[Cat]] -> is[Identity[Cat]] =
+  @inline final def identity[Cat <: Category]
+    : Functor.is[Functor.Identity[Cat]] -> is[Identity[Cat]] =
     λ { new Identity(_) }
 }
