@@ -10,9 +10,10 @@ abstract class Functor {
   type Target <: Category
   val target: Category.is[Target]
 
-  type F[Z <: SourceObjects] <: Target#Objects
-
   type SourceObjects = Source#Objects
+  type TargetObjects = Target#Objects
+
+  type F[Z <: SourceObjects] <: TargetObjects
 
   def at[
     X <: Source#Objects,
@@ -41,9 +42,11 @@ object Functor {
 
   type is[functor <: Functor] =
     functor {
-      type Source = functor#Source
-      type Target = functor#Target
-      type F[Z <: functor#SourceObjects] = functor#F[Z]
+      type Source                         = functor#Source
+      type SourceObjects                  = functor#SourceObjects
+      type Target                         = functor#Target
+      type TargetObjects                  = functor#TargetObjects
+      type F[Z <: functor#SourceObjects]  = functor#F[Z]
     }
 
   final
@@ -57,10 +60,17 @@ object Functor {
 
     type F[Z <: Cat#Objects] = Z
 
-    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+    def at[X <: SourceObjects, Y <: SourceObjects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
       Scala.identity
   }
 
+  // @infix
+  type ∘ [
+    F0 <: Functor,
+    G0 <: Functor { type Source = F0#Target }
+  ] = Composition[F0, G0]
+
+  final
   class Composition[
     F0 <: Functor,
     G0 <: Functor { type Source = F0#Target }
@@ -86,14 +96,8 @@ object Functor {
       first.at >-> second.at
   }
 
-  def composition[
-    F0 <: Functor,
-    G0 <: Functor { type Source = F0#Target }
-  ]
-  : (is[F0] × is[G0]) -> is[Composition[is[F0],is[G0]]] =
-    λ { fg =>
-      new Composition(left(fg), right(fg)).asInstanceOf[is[Composition[is[F0],is[G0]]]]
-    }
+  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (is[F0] × is[G0]) -> is[Composition[F0,G0]] =
+    λ { fg => new Composition(left(fg), right(fg)).asInstanceOf[is[Composition[F0,G0]]] }
 
   // due to a bug
   def identity[Cat <: Category]: Category.is[Cat] -> Functor.is[Identity[Cat]] =

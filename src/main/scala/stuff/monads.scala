@@ -1,19 +1,22 @@
 package ohnosequences.stuff
 
-import naturalTransformations._
+import NaturalTransformation._
 import products._
 import functions._
+import Functor.{ ∘ }
 
 abstract
 class Monad {
 
-  type On <: Functor.endo
+  type On <: Functor { type Target = Source }
   val on   : Functor.is[On]
 
-  // TODO do I need another Functor.is here?
-  val μ: Functor.Composition[Functor.is[On],Functor.is[On]] ~> Functor.is[On]
+  final
+  type OnCat = On#Source
 
-  val ι: Functor.is[Functor.Identity[On#Source]] ~> Functor.is[On]
+  val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On]
+
+  val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On]
 }
 
 final
@@ -33,6 +36,7 @@ class KleisliCategory[M <: Monad](val monad: Monad.is[M]) extends Category {
   def identity[X <: Objects]: C[X,X] =
     monad.ι[X]
 
+  @inline final
   def composition[
     X <: Objects,
     Y <: Objects,
@@ -64,38 +68,39 @@ object Monad {
     Monad { type On = F0 }
 
   final
-  class Identity[Cat <: Category](val cat: Category.is[Cat]) extends Monad {
+  class Identity[Cat <: Category](val on: Functor.is[Functor.Identity[Cat]])
+  extends Monad {
 
     type On = Functor.Identity[Cat]
-    val on  = Functor.identity(cat)
 
     val μ =
       new NaturalTransformation {
 
-        type SourceCategory = On#Source
+        type SourceCategory = Cat
         val sourceCategory  = on.source
+        type TargetCategory = Cat
+        val targetCategory  = on.target
 
         type SourceFunctor =
           Functor.Composition[Functor.is[On], Functor.is[On]]
 
         val sourceFunctor: Functor.is[SourceFunctor] =
-          Functor.composition(on and on)
-
-        type TargetCategory = On#Target
-        val targetCategory  = on.target
+          Functor.composition[Functor.is[On], Functor.is[On]](
+            on and on
+          )
 
         type TargetFunctor = Functor.is[On]
         val targetFunctor  = on
 
         def apply[X <: SourceCategory#Objects]: TargetCategory#C[X,X] =
-          cat.identity
+          on.source.identity
       }
 
     val ι =
-      naturalTransformations.identity(on)
+      NaturalTransformation.identity(on)
   }
 
   @inline final
-  def identity[Cat <: Category]: Category.is[Cat] -> is[Identity[Cat]] =
+  def identity[Cat <: Category]: Functor.is[Functor.Identity[Cat]] -> is[Identity[Cat]] =
     λ { new Identity(_) }
 }
