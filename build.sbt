@@ -2,11 +2,13 @@ name := "stuff"
 organization := "ohnosequences"
 description := "some stuff"
 bucketSuffix := "era7.com"
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.4"
 
 addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+
+dependencyOverrides += "org.scala-lang" % "scala-library" % "2.12.4"
 
 scalacOptions ++= Seq(
   "-Xlint",
