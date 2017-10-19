@@ -2,7 +2,8 @@ package ohnosequences.stuff
 
 import functions._, products._
 
-abstract class Functor {
+abstract
+class Functor {
 
   type Source <: Category
   val source: Category.is[Source]
@@ -23,9 +24,6 @@ abstract class Functor {
 }
 
 object Functor {
-
-  type endo =
-    Functor { type Source = Target }
 
   implicit final
   class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
@@ -96,10 +94,18 @@ object Functor {
       first.at >-> second.at
   }
 
-  def composition[F0 <: Functor, G0 <: Functor { type Source = F0#Target }]: (is[F0] × is[G0]) -> is[Composition[F0,G0]] =
-    λ { fg => new Composition(left(fg), right(fg)).asInstanceOf[is[Composition[F0,G0]]] }
+  @inline final
+  def composition[
+    F0 <: Functor,
+    G0 <: Functor { type Source = F0#Target }
+  ]
+  : (is[F0] × is[G0]) -> is[F0 ∘ G0] =
+    λ { fg =>
+      new Composition(left(fg), right(fg))
+        .asInstanceOf[is[Composition[F0,G0]]]
+    }
 
-  // due to a bug
+  @inline final
   def identity[Cat <: Category]: Category.is[Cat] -> Functor.is[Identity[Cat]] =
     λ { new Identity(_).asInstanceOf[Functor.is[Identity[Cat]]] }
 }

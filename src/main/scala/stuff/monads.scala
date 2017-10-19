@@ -64,7 +64,7 @@ object Monad {
       type On = M#On
     }
 
-  type on[F0 <: Functor.endo] =
+  type on[F0 <: Functor { type Target = Source }] =
     Monad { type On = F0 }
 
   final
