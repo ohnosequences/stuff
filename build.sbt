@@ -6,6 +6,8 @@ scalaVersion := "2.12.3"
 
 addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
 
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+
 scalacOptions ++= Seq(
   "-Xlint",
   "-Xfatal-warnings",

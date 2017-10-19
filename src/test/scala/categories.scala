@@ -13,20 +13,19 @@ sealed trait AnyMealy {
   def apply: (Input × State) -> (State × Output)
 }
 
-case class Mealy[I,S,O](val next: (I × S) -> (S × O)) extends AnyMealy {
+case class Mealy[I, S, O](val next: (I × S) -> (S × O)) extends AnyMealy {
 
   type Input  = I
   type State  = S
   type Output = O
 
-  final
-  def apply =
+  final def apply =
     next
 }
 
 case object Mealy {
 
-  type between[I,O] =
+  type between[I, O] =
     AnyMealy {
       type Input  = I
       type Output = O
@@ -37,24 +36,21 @@ case object Machines extends Category {
 
   type Objects = Scala.Objects
 
-  type C[X <: Objects, Y <: Objects] = Mealy.between[X,Y]
+  type C[X <: Objects, Y <: Objects] = Mealy.between[X, Y]
 
-  final
-  def identity[X] =
-    Mealy[X,∗,X](swap)
+  final def identity[X] =
+    Mealy[X, ∗, X](swap)
 
-  final
-  def composition[X,Y,Z]: C[X,Y] × C[Y,Z] -> C[X,Z] =
+  final def composition[X, Y, Z]: C[X, Y] × C[Y, Z] -> C[X, Z] =
     λ { mn =>
-
       val m = left(mn); val n = right(mn)
 
       Mealy(
-        assoc_left                            >->
-        (m.apply × Scala.identity[n.State])   >->
-        assoc_right                           >->
-        (Scala.identity[m.State] × n.apply)   >->
-        assoc_left
+        assoc_left >->
+          (m.apply × Scala.identity[n.State]) >->
+          assoc_right >->
+          (Scala.identity[m.State] × n.apply) >->
+          assoc_left
       )
     }
 }
