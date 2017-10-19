@@ -12,7 +12,7 @@ case object maybe {
     Functor {
       type Source = Scala
       type Target = Scala
-      type F[X] = Maybe[X]
+      type F[X]   = Maybe[X]
     }
 
   /** Canonical functor instance on Maybe, derived from the sum structure. */

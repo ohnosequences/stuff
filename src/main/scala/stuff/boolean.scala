@@ -12,13 +12,17 @@ object booleans {
   val ⊥ : Ω = inL(∗)
 
   val fromBoolean: scala.Boolean -> Ω =
-    λ { b: scala.Boolean => if(b) ⊤ else ⊥  }
+    λ { b: scala.Boolean =>
+      if (b) ⊤ else ⊥
+    }
 
   val toBoolean: Ω -> scala.Boolean =
     either { point(true) and point(false) }
 
   def eq[A]: A × A -> Ω =
-    λ { as: A × A => left(as) == right(as) } >-> fromBoolean
+    λ { as: A × A =>
+      left(as) == right(as)
+    } >-> fromBoolean
 
   val ∧ : Ω × Ω -> Ω =
     ???
@@ -27,14 +31,19 @@ object booleans {
     ???
 
   // better a curried version?
-  final
-  def If[X,Y]: (X -> Ω) -> (((∗ -> Y) × (∗ -> Y)) -> (X -> Y)) =
-    λ { p => λ { tf => p >-> either(tf) } }
+  final def If[X, Y]: (X -> Ω) -> (((∗ -> Y) × (∗ -> Y)) -> (X -> Y)) =
+    λ { p =>
+      λ { tf =>
+        p >-> either(tf)
+      }
+    }
 
   import scala.Int
 
   val isEven: Int -> Ω =
-    λ { x => eq(x % 2 and 0) }
+    λ { x =>
+      eq(x % 2 and 0)
+    }
 
   val msg =
     point("Is Even!")

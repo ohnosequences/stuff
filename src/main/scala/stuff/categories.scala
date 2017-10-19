@@ -6,71 +6,70 @@ import functions._
 /** Categories
 
   This encoding is close in spirit to a category enriched in [[Scala]].
-*/
+  */
 abstract class Category {
 
   /**
     Acts as the 2-type of types which are objects of this category.
 
     Categories where objects are encoded in terms of typeclasses should create a type alias/tag or a class storing the corresponding typeclass, and use that as their `Objects` type.
-  */
+    */
   type Objects
 
   /** The type of morphisms between `X` and `Y`. */
   type C[X <: Objects, Y <: Objects]
 
   /** Identity morphism on `X`. */
-  def identity[X <: Objects]: C[X,X]
+  def identity[X <: Objects]: C[X, X]
 
   /** Morphism composition. */
-  def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z]
+  def composition[X <: Objects, Y <: Objects, Z <: Objects]
+    : C[X, Y] × C[Y, Z] -> C[X, Z]
 }
 
 object Category {
 
   type is[category <: Category] =
     category {
-      type Objects = category#Objects
-      type C[X <: category#Objects, Y <: category#Objects] = category#C[X,Y]
+      type Objects                                         = category#Objects
+      type C[X <: category#Objects, Y <: category#Objects] = category#C[X, Y]
     }
 
   type Opposite[category <: Category] =
     Category {
-      type Objects = category#Objects
-      type C[X <: Objects, Y <: Objects] = category#C[Y,X]
+      type Objects                       = category#Objects
+      type C[X <: Objects, Y <: Objects] = category#C[Y, X]
     }
 
-  final
-  def opposite[category <: Category](c: is[category]): Opposite[category] =
+  final def opposite[category <: Category](
+      c: is[category]): Opposite[category] =
     new Category {
 
       type Objects =
         category#Objects
 
       type C[X <: Objects, Y <: Objects] =
-        category#C[Y,X]
+        category#C[Y, X]
 
-      final
-      def identity[X <: Objects]: C[X,X] =
+      final def identity[X <: Objects]: C[X, X] =
         c.identity
 
-      final
-      def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
+      final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+        : C[X, Y] × C[Y, Z] -> C[X, Z] =
         swap >-> c.composition
     }
 
   type UnitCategory = UnitCategory.type
   object UnitCategory extends Category {
 
-    type Objects = ∗
+    type Objects                       = ∗
     type C[X <: Objects, Y <: Objects] = ∗
 
-    final
-    def identity[X <: Objects]: C[X,X] =
+    final def identity[X <: Objects]: C[X, X] =
       ∗
 
-    final
-    def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
+    final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+      : C[X, Y] × C[Y, Z] -> C[X, Z] =
       products.erase
   }
 
@@ -87,8 +86,8 @@ object Category {
 
         type F[Z <: Source#Objects] = Z#Right
 
-        final
-        def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+        final def at[X <: Source#Objects, Y <: Source#Objects]
+          : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
           right
       }
     }
@@ -98,67 +97,63 @@ object Category {
 
       type Objects =
         Tuple {
-          type Left   <: leftCategory#Objects
-          type Right  <: rightCategory#Objects
+          type Left <: leftCategory#Objects
+          type Right <: rightCategory#Objects
         }
 
       type C[X <: Objects, Y <: Objects] =
-        leftCategory#C[X#Left,Y#Left] × rightCategory#C[X#Right, Y#Right]
+        leftCategory#C[X#Left, Y#Left] × rightCategory#C[X#Right, Y#Right]
     }
 
-  final
-  def product[leftCategory <: Category, rightCategory <: Category](l: is[leftCategory], r: is[rightCategory]): Product[leftCategory,rightCategory] =
+  final def product[leftCategory <: Category, rightCategory <: Category](
+      l: is[leftCategory],
+      r: is[rightCategory]): Product[leftCategory, rightCategory] =
     new Category {
 
       type Objects =
         Tuple {
-          type Left   <: leftCategory#Objects
-          type Right  <: rightCategory#Objects
+          type Left <: leftCategory#Objects
+          type Right <: rightCategory#Objects
         }
 
       type C[X <: Objects, Y <: Objects] =
-        leftCategory#C[X#Left,Y#Left] × rightCategory#C[X#Right, Y#Right]
+        leftCategory#C[X#Left, Y#Left] × rightCategory#C[X#Right, Y#Right]
 
-      final
-      def identity[X <: Objects]: C[X,X] =
+      final def identity[X <: Objects]: C[X, X] =
         l.identity and r.identity
 
-      final
-      def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z] =
+      final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+        : C[X, Y] × C[Y, Z] -> C[X, Z] =
         both(
-          πL[C[X,Y]] × πL[C[Y,Z]] >-> l.composition and
-          πR[C[X,Y]] × πR[C[Y,Z]] >-> r.composition
+          πL[C[X, Y]] × πL[C[Y, Z]] >-> l.composition and
+            πR[C[X, Y]] × πR[C[Y, Z]] >-> r.composition
         )
     }
 
-  final
-  type Hom[Cat <: Category] =
+  final type Hom[Cat <: Category] =
     Functor {
-      type Source = Product[Opposite[Cat], Cat]
-      type Target = Scala.type
+      type Source                 = Product[Opposite[Cat], Cat]
+      type Target                 = Scala.type
       type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
     }
 
-  final
-  def hom[Cat <: Category]: is[Cat] -> Hom[is[Cat]] =
+  final def hom[Cat <: Category]: is[Cat] -> Hom[is[Cat]] =
     λ { cat =>
       new Functor {
 
         type Source = Product[Opposite[Cat], Cat]
-        final
-        val source = product(opposite(cat), cat)
+        final val source = product(opposite(cat), cat)
 
         type Target = Scala.type
-        final
-        val target = Scala
+        final val target = Scala
 
         type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
 
-        final
-        def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> (F[X] -> F[Y]) =
+        final def at[X <: Source#Objects, Y <: Source#Objects]
+          : Source#C[X, Y] -> (F[X] -> F[Y]) =
           λ { fg =>
             λ { q =>
-              cat.composition( cat.composition(left(fg) and q) and right(fg))
+              cat.composition(cat.composition(left(fg) and q) and right(fg))
             }
           }
       }
