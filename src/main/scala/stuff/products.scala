@@ -121,14 +121,11 @@ object products {
 
   object ProductFunctor extends Functor {
 
-    type S = Scala.type
-    val S: S = Scala
+    type Source = Category.ProductCategory[Scala, Scala]
+    val source = Category.product(Scala and Scala)
 
-    type Source = Category.Product[S, S]
-    val source: Source = Category.product(S, S)
-
-    type Target = S
-    val target = S
+    type Target = Scala
+    val target = Scala
 
     type F[Z <: Source#Objects] = Z#Left × Z#Right
 

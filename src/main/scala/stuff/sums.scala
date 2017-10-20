@@ -90,8 +90,8 @@ object sums {
 
   object SumFunctor extends Functor {
 
-    type Source = Category.Product[Scala, Scala]
-    val source = Category.product(Scala, Scala)
+    type Source = Category.ProductCategory[Scala, Scala]
+    val source = Category.product(Scala and Scala)
 
     type Target = Scala
     val target = Scala
