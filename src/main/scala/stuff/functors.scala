@@ -18,16 +18,24 @@ abstract class Functor {
   def at[
       X <: Source#Objects,
       Y <: Source#Objects
-  ]: Category.is[Source]#C[X, Y] -> Target#C[F[X], F[Y]]
+  ]: Source#C[X, Y] -> Target#C[F[X], F[Y]]
 }
 
 object Functor {
 
-  implicit final class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
+  implicit final class FunctorSyntax[Fn <: Functor](val functor: inferIs[Fn]) {
 
-    def apply[X <: Fn#Source#Objects, Y <: Fn#Source#Objects](
+    @inline final def apply[X <: Fn#SourceObjects, Y <: Fn#SourceObjects](
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
       functor.at[X, Y](f)
+
+    @inline final def >->[Gn <: Functor { type Source = Fn#Target }](
+        other: inferIs[Gn]): is[Fn ∘ Gn] =
+      composition(functor and other)
+
+    @inline final def ∘[Gn <: Functor { type Source = Fn#Target }](
+        other: inferIs[Gn]): is[Fn ∘ Gn] =
+      composition(functor and other)
   }
 
   type between[Src <: Category, Tgt <: Category] =
@@ -35,6 +43,9 @@ object Functor {
       type Source = Src
       type Target = Tgt
     }
+
+  // Let's hope https://github.com/scala/scala/pull/6140 makes this unnecessary
+  type inferIs[functor <: Functor] >: is[functor] <: is[functor]
 
   type is[functor <: Functor] =
     functor {
@@ -81,11 +92,11 @@ object Functor {
     type Target = G0#Target
     val target = second.target
 
-    type F[Z <: F0#Source#Objects] = G0#F[F0#F[Z]]
+    type F[Z <: F0#SourceObjects] = G0#F[F0#F[Z]]
 
     def at[
-        X <: Source#Objects,
-        Y <: Source#Objects
+        X <: SourceObjects,
+        Y <: SourceObjects
     ]: Source#C[X, Y] -> Target#C[F[X], F[Y]] =
       first.at >-> second.at
   }
