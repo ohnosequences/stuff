@@ -23,11 +23,15 @@ abstract class Functor {
 
 object Functor {
 
-  implicit final class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
+  implicit final class FunctorSyntax[Fn <: Functor](val functor: inferIs[Fn]) {
 
     def apply[X <: Fn#Source#Objects, Y <: Fn#Source#Objects](
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
       functor.at[X, Y](f)
+
+    def >->[Gn <: Functor { type Source = Fn#Target }](
+        other: inferIs[Gn]): is[Fn ∘ Gn] =
+      composition(functor and other)
   }
 
   type between[Src <: Category, Tgt <: Category] =
@@ -35,6 +39,9 @@ object Functor {
       type Source = Src
       type Target = Tgt
     }
+
+  // Let's hope https://github.com/scala/scala/pull/6140 makes this unnecessary
+  type inferIs[functor <: Functor] >: is[functor] <: is[functor]
 
   type is[functor <: Functor] =
     functor {
