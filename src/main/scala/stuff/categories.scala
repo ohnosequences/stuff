@@ -127,32 +127,24 @@ object Category {
         .asInstanceOf[is[ProductCategory[LeftCat, RightCat]]]
     }
 
-  final type Hom[Cat <: Category] =
-    Functor {
-      type Source                 = ProductCategory[Opposite[Cat], Cat]
-      type Target                 = Scala.type
-      type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
-    }
+  final class HomFunctor[Cat <: Category](val cat: is[Cat]) extends Functor {
 
-  final def hom[Cat <: Category]: is[Cat] -> Hom[Cat] =
-    λ { cat =>
-      new Functor {
+    type Source = ProductCategory[Opposite[Cat], Cat]
+    val source = product(opposite(cat) and cat)
+    type Target = Scala
+    val target = Scala
+    type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
 
-        type Source = ProductCategory[Opposite[Cat], Cat]
-        final val source = product(opposite(cat) and cat)
-
-        type Target = Scala.type
-        final val target = Scala
-
-        type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
-
-        final def at[X <: SourceObjects, Y <: SourceObjects]
-          : Source#C[X, Y] -> (F[X] -> F[Y]) =
-          λ { fg =>
-            λ { q =>
-              cat.composition(cat.composition(left(fg) and q) and right(fg))
-            }
-          }
+    final def at[X <: SourceObjects, Y <: SourceObjects]
+      : Source#C[X, Y] -> (F[X] -> F[Y]) =
+      λ { fg =>
+        λ { q =>
+          cat.composition(cat.composition(left(fg) and q) and right(fg))
+        }
       }
-    }
+  }
+
+  final def homFunctor[Cat <: Category]
+    : is[Cat] -> Functor.is[HomFunctor[Cat]] =
+    λ { new HomFunctor(_).asInstanceOf[Functor.is[HomFunctor[Cat]]] }
 }

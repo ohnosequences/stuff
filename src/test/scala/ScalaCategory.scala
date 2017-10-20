@@ -20,7 +20,7 @@ class ScalaCategoryTests extends FunSuite {
 
   val uh: (Int -> String) -> (String -> Int) =
     Category
-      .hom(Scala)
+      .homFunctor(Scala)
       .at[Int × String, String × Int](l and l) // no good inference here
   // Category.hom(Scala)(l and l)
 
