@@ -78,8 +78,8 @@ object Category {
     λ { cat =>
       new Functor {
 
-        type Source = Product[UnitCategory, Cat]
-        val source: Source = product(UnitCategory, cat)
+        type Source = ProductCategory[UnitCategory, Cat]
+        val source = product(UnitCategory and cat)
 
         type Target = Cat
         val target = cat
@@ -92,64 +92,61 @@ object Category {
       }
     }
 
-  type Product[leftCategory <: Category, rightCategory <: Category] =
-    Category {
+  final class ProductCategory[
+      LeftCat <: Category,
+      RightCat <: Category
+  ](
+      val leftCat: is[LeftCat],
+      val rightCat: is[RightCat]
+  ) extends Category {
 
-      type Objects =
-        Tuple {
-          type Left <: leftCategory#Objects
-          type Right <: rightCategory#Objects
-        }
+    final type Objects =
+      Tuple {
+        type Left <: LeftCat#Objects
+        type Right <: RightCat#Objects
+      }
 
-      type C[X <: Objects, Y <: Objects] =
-        leftCategory#C[X#Left, Y#Left] × rightCategory#C[X#Right, Y#Right]
-    }
+    final type C[X <: Objects, Y <: Objects] =
+      LeftCat#C[X#Left, Y#Left] × RightCat#C[X#Right, Y#Right]
 
-  final def product[leftCategory <: Category, rightCategory <: Category](
-      l: is[leftCategory],
-      r: is[rightCategory]): Product[leftCategory, rightCategory] =
-    new Category {
+    final def identity[X <: Objects]: C[X, X] =
+      leftCat.identity and rightCat.identity
 
-      type Objects =
-        Tuple {
-          type Left <: leftCategory#Objects
-          type Right <: rightCategory#Objects
-        }
+    final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+      : C[X, Y] × C[Y, Z] -> C[X, Z] =
+      both(
+        πL[C[X, Y]] × πL[C[Y, Z]] >-> leftCat.composition and
+          πR[C[X, Y]] × πR[C[Y, Z]] >-> rightCat.composition
+      )
+  }
 
-      type C[X <: Objects, Y <: Objects] =
-        leftCategory#C[X#Left, Y#Left] × rightCategory#C[X#Right, Y#Right]
-
-      final def identity[X <: Objects]: C[X, X] =
-        l.identity and r.identity
-
-      final def composition[X <: Objects, Y <: Objects, Z <: Objects]
-        : C[X, Y] × C[Y, Z] -> C[X, Z] =
-        both(
-          πL[C[X, Y]] × πL[C[Y, Z]] >-> l.composition and
-            πR[C[X, Y]] × πR[C[Y, Z]] >-> r.composition
-        )
+  final def product[LeftCat <: Category, RightCat <: Category]
+    : (is[LeftCat] × is[RightCat]) -> is[ProductCategory[LeftCat, RightCat]] =
+    λ { lr =>
+      new ProductCategory(left(lr), right(lr))
+        .asInstanceOf[is[ProductCategory[LeftCat, RightCat]]]
     }
 
   final type Hom[Cat <: Category] =
     Functor {
-      type Source                 = Product[Opposite[Cat], Cat]
+      type Source                 = ProductCategory[Opposite[Cat], Cat]
       type Target                 = Scala.type
       type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
     }
 
-  final def hom[Cat <: Category]: is[Cat] -> Hom[is[Cat]] =
+  final def hom[Cat <: Category]: is[Cat] -> Hom[Cat] =
     λ { cat =>
       new Functor {
 
-        type Source = Product[Opposite[Cat], Cat]
-        final val source = product(opposite(cat), cat)
+        type Source = ProductCategory[Opposite[Cat], Cat]
+        final val source = product(opposite(cat) and cat)
 
         type Target = Scala.type
         final val target = Scala
 
         type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
 
-        final def at[X <: Source#Objects, Y <: Source#Objects]
+        final def at[X <: SourceObjects, Y <: SourceObjects]
           : Source#C[X, Y] -> (F[X] -> F[Y]) =
           λ { fg =>
             λ { q =>

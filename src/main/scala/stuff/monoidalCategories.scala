@@ -74,8 +74,8 @@ object MonoidalCategory {
   class TensorFunctor[MCat <: MonoidalCategory](val mcat: is[MCat])
       extends Functor {
 
-    type Source = Category.Product[MCat#On, MCat#On]
-    val source = Category.product(mcat.on, mcat.on)
+    type Source = Category.ProductCategory[MCat#On, MCat#On]
+    val source = Category.product(mcat.on and mcat.on)
 
     type Target = MCat#On
     val target = mcat.on
