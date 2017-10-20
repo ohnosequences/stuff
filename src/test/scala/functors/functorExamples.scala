@@ -20,6 +20,9 @@ case object boh {
 
   val IdTwice =
     Id >-> Id
+
+  val IdTwiceAgain =
+    Id ∘ Id
 }
 
 class FunctorsExamples extends FunSuite {

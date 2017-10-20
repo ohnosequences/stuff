@@ -25,11 +25,15 @@ object Functor {
 
   implicit final class FunctorSyntax[Fn <: Functor](val functor: inferIs[Fn]) {
 
-    def apply[X <: Fn#SourceObjects, Y <: Fn#SourceObjects](
+    @inline final def apply[X <: Fn#SourceObjects, Y <: Fn#SourceObjects](
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
       functor.at[X, Y](f)
 
-    def >->[Gn <: Functor { type Source = Fn#Target }](
+    @inline final def >->[Gn <: Functor { type Source = Fn#Target }](
+        other: inferIs[Gn]): is[Fn ∘ Gn] =
+      composition(functor and other)
+
+    @inline final def ∘[Gn <: Functor { type Source = Fn#Target }](
         other: inferIs[Gn]): is[Fn ∘ Gn] =
       composition(functor and other)
   }
