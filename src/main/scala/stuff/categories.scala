@@ -35,29 +35,24 @@ object Category {
       type C[X <: category#Objects, Y <: category#Objects] = category#C[X, Y]
     }
 
-  type Opposite[category <: Category] =
-    Category {
-      type Objects                       = category#Objects
-      type C[X <: Objects, Y <: Objects] = category#C[Y, X]
-    }
+  final class Opposite[Cat <: Category](val cat: is[Cat]) extends Category {
 
-  final def opposite[category <: Category](
-      c: is[category]): Opposite[category] =
-    new Category {
+    final type Objects =
+      Cat#Objects
 
-      type Objects =
-        category#Objects
+    final type C[X <: Objects, Y <: Objects] =
+      Cat#C[Y, X]
 
-      type C[X <: Objects, Y <: Objects] =
-        category#C[Y, X]
+    final def identity[X <: Objects]: C[X, X] =
+      cat.identity
 
-      final def identity[X <: Objects]: C[X, X] =
-        c.identity
+    final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+      : C[X, Y] × C[Y, Z] -> C[X, Z] =
+      swap >-> cat.composition
+  }
 
-      final def composition[X <: Objects, Y <: Objects, Z <: Objects]
-        : C[X, Y] × C[Y, Z] -> C[X, Z] =
-        swap >-> c.composition
-    }
+  final def opposite[Cat <: Category]: is[Cat] -> is[Opposite[Cat]] =
+    λ { new Opposite(_).asInstanceOf[is[Opposite[Cat]]] }
 
   type UnitCategory = UnitCategory.type
   object UnitCategory extends Category {
