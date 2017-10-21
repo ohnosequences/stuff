@@ -30,6 +30,8 @@ final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
   type C[X <: Objects, Y <: Objects] =
     BaseCat#C[X, M#On#F[Y]]
 
+  type F[X <: Objects] = M#On#F[X]
+
   @inline final def identity[X <: Objects]: C[X, X] =
     monad.ι[X]
 

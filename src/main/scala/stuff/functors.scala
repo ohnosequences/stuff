@@ -29,6 +29,7 @@ object Functor {
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
       functor.at[X, Y](f)
 
+    // TODO review types here
     @inline final def >->[Gn <: Functor { type Source = Fn#Target }](
         other: inferIs[Gn]): is[Fn ∘ Gn] =
       composition(functor and other)

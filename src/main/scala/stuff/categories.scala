@@ -32,7 +32,7 @@ abstract class Category {
 
   /** @group syntax */
   @inline
-  implicit final val _this: this.type =
+  implicit final val _this: Category.is[this.type] =
     this
 
   /** @group syntax */
@@ -178,7 +178,7 @@ object Category {
       : Source#C[X, Y] -> (F[X] -> F[Y]) =
       λ { fg =>
         λ { q =>
-          cat.composition(cat.composition(left(fg) and q) and right(fg))
+          cat ⊢ { left(fg) >=> q >=> right(fg) }
         }
       }
   }
