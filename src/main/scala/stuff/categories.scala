@@ -10,9 +10,8 @@ import functions._
   @groupprio syntax 0
   @groupname syntax Syntax
   @groupdesc These are aliases and infix operators (...)
-*/
-abstract
-class Category {
+  */
+abstract class Category {
 
   /**
     Acts as the 2-type of types which are objects of this category.
@@ -28,56 +27,49 @@ class Category {
   def identity[X <: Objects]: C[X, X]
 
   /** Morphism composition. */
-  def composition[X <: Objects, Y <: Objects, Z <: Objects]: C[X,Y] × C[Y,Z] -> C[X,Z]
+  def composition[X <: Objects, Y <: Objects, Z <: Objects]
+    : C[X, Y] × C[Y, Z] -> C[X, Z]
 
   /** @group syntax */
   @inline
-  implicit final
-  val _this: this.type =
+  implicit final val _this: this.type =
     this
 
   /** @group syntax */
   @infix
   type >=>[A <: Objects, B <: Objects] =
-    C[A,B]
+    C[A, B]
 
   /** @group syntax */
   @inline
-  implicit final
-  def morphismSyntax[X <: Objects, Y <: Objects](f: C[X,Y])
-  : Category.MorphismSyntax[this.type,X,Y] =
+  implicit final def morphismSyntax[X <: Objects, Y <: Objects](
+      f: C[X, Y]): Category.MorphismSyntax[this.type, X, Y] =
     new Category.MorphismSyntax(f)
 
   /** @group syntax */
   @inline
-  final
-  def id[X <: Objects]: C[X,X] =
+  final def id[X <: Objects]: C[X, X] =
     identity[X]
 }
 
 object Category {
 
-  final
-  class MorphismSyntax[
-    Cat <: Category,
-    X <: Cat#Objects,
-    Y <: Cat#Objects
-  ]
-  (val f: is[Cat]#C[X,Y]) extends scala.AnyVal {
+  final class MorphismSyntax[
+      Cat <: Category,
+      X <: Cat#Objects,
+      Y <: Cat#Objects
+  ](val f: is[Cat]#C[X, Y])
+      extends scala.AnyVal {
 
     @inline
-    final
-    def >=>[Z <: Cat#Objects](g: Cat#C[Y,Z])(
-      implicit cat: Category.is[Cat]
-    )
-    : Cat#C[X,Z] =
+    final def >=>[Z <: Cat#Objects](g: Cat#C[Y, Z])(
+        implicit cat: Category.is[Cat]
+    ): Cat#C[X, Z] =
       cat.composition at (f and g)
 
-    @inline final
-    def ∘[U <: Cat#Objects](h: Cat#C[U,X])(
-      implicit cat: Category.is[Cat]
-    )
-    : Cat#C[U,Y] =
+    @inline final def ∘[U <: Cat#Objects](h: Cat#C[U, X])(
+        implicit cat: Category.is[Cat]
+    ): Cat#C[U, Y] =
       cat.composition at (h and f)
   }
 

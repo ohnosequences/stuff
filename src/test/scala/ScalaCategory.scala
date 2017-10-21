@@ -41,12 +41,11 @@ class ScalaCategoryTests extends FunSuite {
     }
   }
 
-
   test("syntax") {
 
     def boh[X] =
       Scala ⊢ {
-        
+
         id[X] >=> id[X]
       }
 

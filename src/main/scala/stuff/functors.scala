@@ -2,15 +2,10 @@ package ohnosequences.stuff
 
 import functions._, products._
 
-abstract
-class Functor { me =>
+abstract class Functor { me =>
 
   type Source <: Category
   val source: Category.is[Source]
-
-  final
-  type SourceObjects =
-    Category.is[Source]#Objects
 
   type Target <: Category
   val target: Category.is[Target]
