@@ -1,0 +1,18 @@
+
+## Additions
+
+- monads and Kleisli categories
+- horizontal composition for natural transformations
+- opposite and product categories
+
+## Improvements
+
+- remove (almost) all casts
+- various syntax extensions/notation for functors and natural transformations
+
+## Other
+
+- add scalafmt
+- upgrade to Scala 2.12.4
+
+For the complete list of issues see the [0.4.0 milestone](https://github.com/ohnosequences/stuff/milestone/4?closed=1)

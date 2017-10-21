@@ -9,16 +9,21 @@ import org.scalatest.FunSuite
 
 case object boh {
 
-  val buh =
-    (Functor.identity at Scala) at { λ { x: String => s"hola ${x}!" } }
-
-  val idF =
+  val Id =
     Functor.identity at Scala
 
-  val ok: Functor.is[Functor.Identity[Scala]] = idF
+  val buh =
+    Id at {
+      λ { x: String =>
+        s"hola ${x}!"
+      }
+    }
 
-  val zzz = Functor.composition(idF and idF)
-  val uhoh = new Functor.FunctorSyntax(idF) >-> idF
+  val IdTwice =
+    Id >-> Id
+
+  val IdTwiceAgain =
+    Id ∘ Id
 }
 
 class FunctorsExamples extends FunSuite {
@@ -27,6 +32,10 @@ class FunctorsExamples extends FunSuite {
 
   test("identity functor") {
 
-    assert { (buh at "scalac") === (λ { x: String => s"hola ${x}!" })("scalac") }
+    assert {
+      (buh at "scalac") === (λ { x: String =>
+        s"hola ${x}!"
+      })("scalac")
+    }
   }
 }

@@ -1,11 +1,14 @@
-
-name          := "stuff"
-organization  := "ohnosequences"
-description   := "some stuff"
-bucketSuffix  := "era7.com"
-scalaVersion  := "2.12.4"
+name := "stuff"
+organization := "ohnosequences"
+description := "some stuff"
+bucketSuffix := "era7.com"
+scalaVersion := "2.12.4"
 
 addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+
+dependencyOverrides += "org.scala-lang" % "scala-library" % "2.12.4"
 
 scalacOptions ++= Seq(
   "-Xlint",
@@ -34,13 +37,22 @@ scalacOptions ++= Seq(
 )
 
 // scaladoc
-scalacOptions in (Compile,doc) ++= Seq("-groups")
+scalacOptions in (Compile, doc) ++= Seq("-groups")
 autoAPIMappings := true
 
-// // all these exceptions come from not being able to only exclude `asInstanceOf`
+// scalafmt
+scalafmtVersion := "1.3.0"
+scalafmtOnCompile := true
+
+// all these exceptions come from not being able to only exclude `asInstanceOf`
 wartremoverExcluded ++= Seq(
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"sums.scala",
-  baseDirectory.value/"src"/"main"/"scala"/"stuff"/"functors.scala"
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "naturalTransformations.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "categories.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "monads.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "monoidalCategories.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "functors.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "sums.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "tailrec.scala"
 )
 
 wartremoverErrors in (Test, compile) := Seq()
