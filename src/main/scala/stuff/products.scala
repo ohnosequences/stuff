@@ -2,12 +2,12 @@ package ohnosequences.stuff
 
 import functions._
 
-object products extends MonoidalCategory {
+final object products extends MonoidalCategory {
 
-  type On = Scala
-  val on = Scala
-  type ⊗[A, B] = A × B
-  type I       = ∗
+  final type On = Scala
+  val on: Category.is[On] = Scala
+  final type ⊗[A, B] = A × B
+  final type I       = ∗
 
   def ⊗[A, B, C, D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
     map
