@@ -25,6 +25,9 @@ package object stuff {
   type Scala =
     ohnosequences.stuff.Scala.type
 
+  def ??? =
+    scala.Predef.???
+
   /**
     The type of functions from A to B.
     @group functions

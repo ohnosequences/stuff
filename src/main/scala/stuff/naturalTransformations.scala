@@ -121,7 +121,7 @@ object NaturalTransformation {
 
     final def apply[X <: SourceObjects]
       : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
-      targetCategory ⊢ { first[X] >=> second[X] }
+      Category(targetCategory) ⊢ { first[X] >=> second[X] }
   }
 
   def verticalComposition[
@@ -176,7 +176,7 @@ object NaturalTransformation {
 
     final def apply[X <: SourceObjects]
       : TargetCategory#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
-      targetCategory ⊢ {
+      Category(targetCategory) ⊢ {
         second.sourceFunctor(first[X]) >=> second[is[M]#TargetFunctor#F[X]]
       }
   }

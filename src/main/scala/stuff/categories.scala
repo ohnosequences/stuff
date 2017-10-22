@@ -29,30 +29,34 @@ abstract class Category {
   /** Morphism composition. */
   def composition[X <: Objects, Y <: Objects, Z <: Objects]
     : C[X, Y] × C[Y, Z] -> C[X, Z]
-
-  /** @group syntax */
-  @inline
-  implicit final val _this: Category.is[this.type] =
-    this
-
-  /** @group syntax */
-  @infix
-  type >=>[A <: Objects, B <: Objects] =
-    C[A, B]
-
-  /** @group syntax */
-  @inline
-  implicit final def morphismSyntax[X <: Objects, Y <: Objects](
-      f: C[X, Y]): Category.MorphismSyntax[this.type, X, Y] =
-    new Category.MorphismSyntax(f)
-
-  /** @group syntax */
-  @inline
-  final def id[X <: Objects]: C[X, X] =
-    identity[X]
 }
 
 object Category {
+
+  @inline final def apply[Cat <: Category](cat: is[Cat]): Syntax[Cat] =
+    new Syntax(cat)
+
+  final class Syntax[Cat <: Category](val cat: is[Cat]) {
+
+    @inline
+    implicit final val _this: Category.is[Cat] =
+      cat
+
+    @inline
+    implicit final def morphismSyntax[X <: Cat#Objects, Y <: Cat#Objects](
+        f: Cat#C[X, Y]): Category.MorphismSyntax[Cat, X, Y] =
+      new MorphismSyntax(f)
+
+    /** @group syntax */
+    @infix
+    type >=>[A <: Cat#Objects, B <: Cat#Objects] =
+      Cat#C[A, B]
+
+    /** @group syntax */
+    @inline
+    final def id[X <: Cat#Objects]: X >=> X =
+      cat.identity[X]
+  }
 
   final class MorphismSyntax[
       Cat <: Category,
@@ -178,7 +182,7 @@ object Category {
       : Source#C[X, Y] -> (F[X] -> F[Y]) =
       λ { fg =>
         λ { q =>
-          cat ⊢ { left(fg) >=> q >=> right(fg) }
+          Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
         }
       }
   }
