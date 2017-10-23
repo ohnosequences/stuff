@@ -11,6 +11,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
 dependencyOverrides += "org.scala-lang" % "scala-library" % "2.12.4"
 
 scalacOptions ++= Seq(
+  "-Xsource:2.13",
   "-Xlint",
   "-Xfatal-warnings",
   "-Xlog-reflective-calls",
