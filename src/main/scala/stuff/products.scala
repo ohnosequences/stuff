@@ -2,7 +2,21 @@ package ohnosequences.stuff
 
 import functions._
 
-object products {
+final object products extends MonoidalCategory {
+
+  final type On = Scala
+  val on: Category.is[On] = Scala
+  final type ⊗[A, B] = A × B
+  final type I       = ∗
+
+  def ⊗[A, B, C, D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
+    map
+
+  def unitl[A]: (I × A) -> A =
+    right
+
+  def unitr[A]: (A × I) -> A =
+    left
 
   // TODO derive it from a Cartesian Structure
   object monoidalCategory extends MonoidalCategory {

@@ -30,6 +30,8 @@ final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
   type C[X <: Objects, Y <: Objects] =
     BaseCat#C[X, M#On#F[Y]]
 
+  type F[X <: Objects] = M#On#F[X]
+
   @inline final def identity[X <: Objects]: C[X, X] =
     monad.ι[X]
 
@@ -39,9 +41,9 @@ final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
       Z <: Objects
   ]: C[X, Y] × C[Y, Z] -> C[X, Z] =
     λ { fg =>
-      baseCat.composition(
-        left(fg) and baseCat.composition(monad.on(right(fg)) and monad.μ[Z])
-      )
+      Category(baseCat) ⊢ {
+        left(fg) >=> monad.on(right(fg)) >=> monad.μ[Z]
+      }
     }
 }
 

@@ -2,7 +2,7 @@ package ohnosequences.stuff
 
 import functions._, products._
 
-abstract class Functor {
+abstract class Functor { me =>
 
   type Source <: Category
   val source: Category.is[Source]
@@ -29,6 +29,7 @@ object Functor {
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
       functor.at[X, Y](f)
 
+    // TODO review types here
     @inline final def >->[Gn <: Functor { type Source = Fn#Target }](
         other: inferIs[Gn]): is[Fn ∘ Gn] =
       composition(functor and other)
@@ -65,7 +66,7 @@ object Functor {
     type Target = Cat
     val target = cat
 
-    type F[Z <: Cat#Objects] = Z
+    type F[Z <: SourceObjects] = Z
 
     def at[X <: SourceObjects, Y <: SourceObjects]
       : Source#C[X, Y] -> Target#C[F[X], F[Y]] =

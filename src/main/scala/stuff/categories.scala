@@ -6,6 +6,10 @@ import functions._
 /** Categories
 
   This encoding is close in spirit to a category enriched in [[Scala]].
+
+  @groupprio syntax 0
+  @groupname syntax Syntax
+  @groupdesc These are aliases and infix operators (...)
   */
 abstract class Category {
 
@@ -28,6 +32,50 @@ abstract class Category {
 }
 
 object Category {
+
+  @inline final def apply[Cat <: Category](cat: is[Cat]): Syntax[Cat] =
+    new Syntax(cat)
+
+  final class Syntax[Cat <: Category](val cat: is[Cat]) {
+
+    @inline
+    implicit final val _this: Category.is[Cat] =
+      cat
+
+    @inline
+    implicit final def syntax[X <: Cat#Objects, Y <: Cat#Objects](
+        f: Cat#C[X, Y]): Category.MorphismSyntax[Cat, X, Y] =
+      new MorphismSyntax(f)
+
+    /** @group syntax */
+    @infix
+    type >=>[A <: Cat#Objects, B <: Cat#Objects] =
+      Cat#C[A, B]
+
+    /** @group syntax */
+    @inline
+    final def id[X <: Cat#Objects]: X >=> X =
+      cat.identity[X]
+  }
+
+  final class MorphismSyntax[
+      Cat <: Category,
+      X <: Cat#Objects,
+      Y <: Cat#Objects
+  ](val f: is[Cat]#C[X, Y])
+      extends scala.AnyVal {
+
+    @inline
+    final def >=>[Z <: Cat#Objects](g: Cat#C[Y, Z])(
+        implicit cat: Category.is[Cat]
+    ): Cat#C[X, Z] =
+      cat.composition at (f and g)
+
+    @inline final def ∘[U <: Cat#Objects](h: Cat#C[U, X])(
+        implicit cat: Category.is[Cat]
+    ): Cat#C[U, Y] =
+      cat.composition at (h and f)
+  }
 
   type is[category <: Category] =
     category {
@@ -134,7 +182,7 @@ object Category {
       : Source#C[X, Y] -> (F[X] -> F[Y]) =
       λ { fg =>
         λ { q =>
-          cat.composition(cat.composition(left(fg) and q) and right(fg))
+          Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
         }
       }
   }

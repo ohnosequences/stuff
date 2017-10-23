@@ -40,4 +40,28 @@ class ScalaCategoryTests extends FunSuite {
       Scala.composition(Scala.identity[Int] and toStr)(234243) === toStr(234243)
     }
   }
+
+  test("syntax") {
+
+    val z0 =
+      Category(Scala) ⊢ { id[String] >=> id[String] }
+
+    assert { (z0 at "hola") === "hola" }
+
+    val z1 =
+      MonoidalCategory[products.type](products) ⊢ {
+        id[String]
+      }
+
+    assert { (z1 at "hola") === "hola" }
+
+    val u =
+      MonoidalCategory[products.type](products) ⊢ {
+        l ⊗ toStr
+      }
+
+    val _2and2 = (u at ("ab" and 2))
+
+    assert { left(_2and2) === 2 && right(_2and2) === "2" }
+  }
 }
