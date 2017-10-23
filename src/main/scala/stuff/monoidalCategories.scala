@@ -41,7 +41,7 @@ object MonoidalCategory {
     @inline implicit final val _monCat: is[MonCat] =
       monCat
 
-    @inline implicit final def morphismSyntax[X <: Objects, Y <: Objects](
+    @inline implicit final def categorySyntax[X <: Objects, Y <: Objects](
         f: MonCat#On#C[X, Y]): Category.MorphismSyntax[MonCat#On, X, Y] =
       new Category.MorphismSyntax[MonCat#On, X, Y](f)
 
@@ -49,17 +49,16 @@ object MonoidalCategory {
       monCat.on.identity[X]
 
     @inline
-    final def ⊗-[A <: Objects]: MonoidalCategory.LeftTensor[MonCat, A] =
-      new MonoidalCategory.LeftTensor(monCat)
+    final def ⊗-[A <: Objects]: LeftTensor[MonCat, A] =
+      new LeftTensor(monCat)
 
     @inline
-    final def -⊗[A <: Objects]: MonoidalCategory.RightTensor[MonCat, A] =
-      new MonoidalCategory.RightTensor(monCat)
+    final def -⊗[A <: Objects]: RightTensor[MonCat, A] =
+      new RightTensor(monCat)
 
-    @inline
-    implicit final def monoidalMorphismSyntax[X <: Objects, Y <: Objects](
-        f: MonCat#On#C[X, Y]): MonoidalCategory.MorphismSyntax[MonCat, X, Y] =
-      new MonoidalCategory.MorphismSyntax(f)
+    @inline implicit final def syntax[X <: Objects, Y <: Objects](
+        f: MonCat#On#C[X, Y]): MorphismSyntax[MonCat, X, Y] =
+      new MorphismSyntax(f)
   }
 
   final class MorphismSyntax[

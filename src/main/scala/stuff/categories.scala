@@ -43,7 +43,7 @@ object Category {
       cat
 
     @inline
-    implicit final def morphismSyntax[X <: Cat#Objects, Y <: Cat#Objects](
+    implicit final def syntax[X <: Cat#Objects, Y <: Cat#Objects](
         f: Cat#C[X, Y]): Category.MorphismSyntax[Cat, X, Y] =
       new MorphismSyntax(f)
 
