@@ -68,10 +68,11 @@ abstract class CartesianMonoidalCategory[P <: Product](
       D <: On#Objects
   ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] =
     λ { fg =>
-      product.both(
-        on.composition(product.left[A, C] and fg.left) and
-          on.composition(product.right[A, C] and fg.right)
-      )
+      Category(on) ⊢ {
+        product ⊢ {
+          both { (left[A, C] >=> fg.left) and (right[A, C] >=> fg.right) }
+        }
+      }
     }
 
   // TODO these two are nice exercises
