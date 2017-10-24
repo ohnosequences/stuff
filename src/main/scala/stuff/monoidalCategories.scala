@@ -13,11 +13,13 @@ abstract class MonoidalCategory {
   @infix
   type ⊗[X <: On#Objects, Y <: On#Objects] <: On#Objects
 
-  def ⊗[A <: On#Objects, B <: On#Objects, C <: On#Objects, D <: On#Objects]:
-    (On#C[A,B] × On#C[C,D]) -> On#C[A ⊗ C, B ⊗ D]
+  def ⊗[A <: On#Objects, B <: On#Objects, C <: On#Objects, D <: On#Objects]
+    : (On#C[A, B] × On#C[C, D]) -> On#C[A ⊗ C, B ⊗ D]
 
-  def assoc_right[A <: On#Objects, B <: On#Objects, C <: On#Objects]: On#C[ (A ⊗ B) ⊗ C, A ⊗ (B ⊗ C) ]
-  def  assoc_left[A <: On#Objects, B <: On#Objects, C <: On#Objects]: On#C[ A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C ]
+  def assoc_right[A <: On#Objects, B <: On#Objects, C <: On#Objects]
+    : On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)]
+  def assoc_left[A <: On#Objects, B <: On#Objects, C <: On#Objects]
+    : On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C]
 
   def unitl[A <: On#Objects]: On#C[I ⊗ A, A]
   def unitr[A <: On#Objects]: On#C[A ⊗ I, A]
@@ -25,57 +27,122 @@ abstract class MonoidalCategory {
 
 object MonoidalCategory {
 
-  class LeftTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: is[MCat]) extends Functor {
+  @inline final def apply[MonCat <: MonoidalCategory](
+      monCat: is[MonCat]): Syntax[MonCat] =
+    new Syntax(monCat)
 
-    type Source = MCat#On
-    val source  = mcat.on
+  final class Syntax[MonCat <: MonoidalCategory](val monCat: is[MonCat]) {
 
-    type Target = MCat#On
-    val target  = mcat.on
+    type Objects = MonCat#On#Objects
 
-    type F[X <: Source#Objects] =
-      MCat# ⊗[A,X]
+    @inline implicit final val _on: Category.is[MonCat#On] =
+      monCat.on
 
-    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
-      λ { f: Source#C[X,Y] => mcat.⊗(mcat.on.identity and f) }
+    @inline implicit final val _monCat: is[MonCat] =
+      monCat
+
+    @inline implicit final def categorySyntax[X <: Objects, Y <: Objects](
+        f: MonCat#On#C[X, Y]): Category.MorphismSyntax[MonCat#On, X, Y] =
+      new Category.MorphismSyntax[MonCat#On, X, Y](f)
+
+    @inline final def id[X <: Objects]: MonCat#On#C[X, X] =
+      monCat.on.identity[X]
+
+    @inline
+    final def ⊗-[A <: Objects]: LeftTensor[MonCat, A] =
+      new LeftTensor(monCat)
+
+    @inline
+    final def -⊗[A <: Objects]: RightTensor[MonCat, A] =
+      new RightTensor(monCat)
+
+    @inline implicit final def syntax[X <: Objects, Y <: Objects](
+        f: MonCat#On#C[X, Y]): MorphismSyntax[MonCat, X, Y] =
+      new MorphismSyntax(f)
   }
 
-  class RightTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](val mcat: is[MCat]) extends Functor {
+  final class MorphismSyntax[
+      MonCat <: MonoidalCategory,
+      A1 <: MonCat#On#Objects,
+      B1 <: MonCat#On#Objects
+  ](val f: MonCat#On#C[A1, B1])
+      extends scala.AnyVal {
 
-    type Source = MCat#On
-    val source  = mcat.on
-
-    type Target = MCat#On
-    val target  = mcat.on
-
-    type F[X <: Source#Objects] =
-      MCat# ⊗[X,A]
-
-    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
-      λ { f: Source#C[X,Y] => mcat ⊗ (f and mcat.on.identity) }
+    @inline
+    final def ⊗[
+        A2 <: MonCat#On#Objects,
+        B2 <: MonCat#On#Objects
+    ](g: MonCat#On#C[A2, B2])(
+        implicit monCat: MonoidalCategory.is[MonCat] // format: off
+    ): MonCat#On#C[MonCat# ⊗[A1, A2], MonCat# ⊗[B1, B2]] =  // format: on
+    monCat ⊗ (f and g)
   }
 
-  class TensorFunctor[MCat <: MonoidalCategory](val mcat: is[MCat]) extends Functor {
+  final class LeftTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](
+      val mcat: is[MCat])
+      extends Functor {
 
-    type Source = Category.Product[MCat#On, MCat#On]
-    val source  = Category.product(mcat.on, mcat.on)
+    type Source = MCat#On
+    val source = mcat.on
 
     type Target = MCat#On
-    val target  = mcat.on
+    val target = mcat.on
+
+    type F[X <: Source#Objects] = // format: off
+      MCat# ⊗[A, X]               // format: on
+
+    def at[X <: Source#Objects, Y <: Source#Objects]
+      : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
+      MonoidalCategory(mcat) ⊢ { λ { id ⊗ _ } }
+  }
+
+  final class RightTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](
+      val mcat: is[MCat])
+      extends Functor {
+
+    type Source = MCat#On
+    val source = mcat.on
+
+    type Target = MCat#On
+    val target = mcat.on
+
+    type F[X <: Source#Objects] = // format: off
+      MCat# ⊗[X, A]               // format: on
+
+    def at[X <: Source#Objects, Y <: Source#Objects]
+      : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
+      MonoidalCategory(mcat) ⊢ { λ { _ ⊗ id } }
+  }
+
+  class TensorFunctor[MCat <: MonoidalCategory](val mcat: is[MCat])
+      extends Functor {
+
+    type Source = Category.ProductCategory[MCat#On, MCat#On]
+    val source = Category.product(mcat.on and mcat.on)
+
+    type Target = MCat#On
+    val target = mcat.on
 
     type F[X <: Source#Objects] =
-      MCat# ⊗[X#Left,X#Right]
+      // format: off
+      MCat # ⊗[X#Left, X#Right]
+      // format: on
 
-    def at[X <: Source#Objects, Y <: Source#Objects]: Source#C[X,Y] -> Target#C[F[X], F[Y]] =
+    def at[X <: Source#Objects, Y <: Source#Objects]
+      : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
       mcat ⊗
   }
 
   type is[MCat <: MonoidalCategory] =
     MCat {
       type On = MCat#On
-      type I = MCat#I
-      type ⊗[X <: On#Objects, Y <: On#Objects] = MCat# ⊗[X,Y]
+      type I  = MCat#I
+      // format: off
+      type ⊗[X <: On#Objects, Y <: On#Objects] = MCat # ⊗[X, Y]
+      // format: on
     }
+
+  type inferIs[MCat <: MonoidalCategory] >: is[MCat] <: is[MCat]
 }
 
 abstract class SymmetricStructure {
@@ -83,5 +150,8 @@ abstract class SymmetricStructure {
   type On <: MonoidalCategory
   val on: MonoidalCategory.is[On]
 
-  def swap[X <: On#On#Objects, Y <: On#On#Objects]: On#On#C[On# ⊗[X,Y], On# ⊗[Y,X]]
+  def swap[X <: On#On#Objects, Y <: On#On#Objects]
+  // format: off
+    : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]]
+    // format: on
 }

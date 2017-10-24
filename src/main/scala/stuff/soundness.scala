@@ -10,9 +10,8 @@ case object kosher {
   // classical unsoundness example, coming from https://github.com/scala/bug/issues/4377
   // not that applicable given our conventions
   // it'd be good to fix it anyway
-  
-  abstract
-  class Animal {
+
+  abstract class Animal {
     type Food
     def find: Food
     def eat: Food -> Unit
@@ -22,11 +21,12 @@ case object kosher {
     A { type Food = A#Food }
 
   // is[A] works abstractly
-  abstract
-  class AnimalWithFood[X] extends Animal { type Food = X }
+  abstract class AnimalWithFood[X] extends Animal { type Food = X }
 
   def shouldWork[X, A <: AnimalWithFood[X]]: A -> is[A] =
-    λ { a => a }
+    λ { a =>
+      a
+    }
 
   // NOTE you cannot write this directly
   // def exchangeFood[A <: Animal]: A × A -> Unit =
@@ -39,7 +39,9 @@ case object kosher {
 
   // NOTE this is fine
   def exchangeFood[A <: Animal]: is[A] × is[A] -> Unit =
-    λ { xy => left(xy) eat right(xy).find }
+    λ { xy =>
+      left(xy) eat right(xy).find
+    }
 
   class Grass
   class Sheep extends Animal {
@@ -50,7 +52,9 @@ case object kosher {
       new Grass
 
     def eat: Food -> Unit =
-      λ { _ => () }
+      λ { _ =>
+        ()
+      }
   }
   class Wolf extends Animal {
 
@@ -60,7 +64,9 @@ case object kosher {
       new Sheep
 
     def eat: Food -> Unit =
-      λ { _ => () }
+      λ { _ =>
+        ()
+      }
   }
 
   // Whoops we made sheep cannibals, and wolfs eat grass.

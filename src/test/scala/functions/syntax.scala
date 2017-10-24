@@ -1,7 +1,7 @@
 package ohnosequences.stuff.test.functions
 
 import ohnosequences.stuff._, products._, functions._
-import scala.{ Int }
+import scala.{Int}
 import scala.Predef.String
 import org.scalatest.FunSuite
 
@@ -21,7 +21,9 @@ class FunctionSyntax extends FunSuite {
     // needs a type annotation at the beginning
     // note how the expression associates: (λ { ... }) >-> (λ { ... })
     val strLenIs2 =
-      λ { x: String => x.length } >-> λ { _ == 2 }
+      λ { x: String =>
+        x.length
+      } >-> λ { _ == 2 }
 
     val strLen: String -> Int =
       λ { _.length }
@@ -30,8 +32,9 @@ class FunctionSyntax extends FunSuite {
       λ { (_: Int) == 2 }
 
     assert {
-      { strLen >-> is2 at "hola" } === { strLenIs2("hola")  } &&
-        { strLen >-> is2 at "no" } === { strLenIs2("no") }
+      { strLen >-> is2 at "hola" } === { strLenIs2("hola") } && {
+        strLen >-> is2 at "no"
+      } === { strLenIs2("no") }
     }
   }
 
@@ -44,7 +47,9 @@ class FunctionSyntax extends FunSuite {
       λ { _.length }
 
     val sum: (Int × Int) -> Int =
-      λ { xy => left(xy) + right(xy) }
+      λ { xy =>
+        left(xy) + right(xy)
+      }
 
     val f: (Int × String) -> Int =
       identity × strLen >-> sum
@@ -59,7 +64,7 @@ class FunctionSyntax extends FunSuite {
 
     assert { (sumCurried at 2)(4) === 6 }
 
-    assert { (plus2 at 3) === sum (2 and 3) }
+    assert { (plus2 at 3) === sum(2 and 3) }
   }
 
   test("ccc") {
@@ -67,6 +72,6 @@ class FunctionSyntax extends FunSuite {
     val strLen: String -> Int =
       λ { _.length }
 
-    assert { ev("hola" and strLen) === (strLen at "hola")  }
+    assert { ev("hola" and strLen) === (strLen at "hola") }
   }
 }
