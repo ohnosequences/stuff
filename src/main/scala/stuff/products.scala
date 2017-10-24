@@ -25,6 +25,15 @@ abstract class Product {
 
   def left[A <: On#Objects, B <: On#Objects]: On#C[A × B, A]
   def right[A <: On#Objects, B <: On#Objects]: On#C[A × B, B]
+
+  final def components[
+      X <: On#Objects,
+      A <: On#Objects,
+      B <: On#Objects,
+  ]: On#C[X, A × B] -> ohnosequences.stuff.×[On#C[X, A], On#C[X, B]] =
+    λ { f =>
+      Category(on) ⊢ { (f >=> left) and (f >=> right) }
+    }
 }
 
 object Product {
