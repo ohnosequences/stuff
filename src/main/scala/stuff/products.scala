@@ -3,11 +3,10 @@ package ohnosequences.stuff
 import functions._
 import products._
 
-abstract
-class Product {
+abstract class Product {
 
   type On <: Category
-  val  on  : Category.is[On]
+  val on: Category.is[On]
 
   @infix
   type ×[X <: On#Objects, Y <: On#Objects] <: On#Objects
@@ -15,16 +14,16 @@ class Product {
   type ∗ <: On#Objects
 
   def both[
-    X <: On#Objects,
-    A <: On#Objects,
-    B <: On#Objects,
+      X <: On#Objects,
+      A <: On#Objects,
+      B <: On#Objects,
   ]
   // TODO find a convenient aliasing convention for both ×'s
-  : ohnosequences.stuff.×[On#C[X, A], On#C[X, B]] -> On#C[X, A × B]
+    : ohnosequences.stuff.×[On#C[X, A], On#C[X, B]] -> On#C[X, A × B]
 
   def erase[X <: On#Objects]: On#C[X, ∗]
 
-  def  left[A <: On#Objects, B <: On#Objects]: On#C[A × B, A]
+  def left[A <: On#Objects, B <: On#Objects]: On#C[A × B, A]
   def right[A <: On#Objects, B <: On#Objects]: On#C[A × B, B]
 }
 
@@ -33,51 +32,52 @@ object Product {
   type is[P <: Product] =
     P {
       type On = P#On
-      type ×[X <: P#On#Objects, Y <: P#On#Objects] = P# ×[X,Y]
-      type ∗ = P# ∗
+      // format: off
+      type ×[X <: P#On#Objects, Y <: P#On#Objects] = P# ×[X, Y]
+      type ∗                                       = P# ∗
+      // format: on
     }
 }
 
 // TODO make it final once we have assocs implemented
-abstract
-class CartesianMonoidalCategory[P <: Product](val product: Product.is[P]) {
+abstract class CartesianMonoidalCategory[P <: Product](
+    val product: Product.is[P]) {
 
   type On = P#On
-  val on  = product.on
+  val on = product.on
 
+  // format: off
   @infix
-  type ⊗[X <: On#Objects, Y <: On#Objects] = P # ×[X,Y]
-  type I = P # ∗
+  type ⊗[X <: On#Objects, Y <: On#Objects] = P# ×[X, Y]
+  type I                                   = P# ∗
+  // format: on
 
   def ⊗[
-    A <: On#Objects,
-    B <: On#Objects,
-    C <: On#Objects,
-    D <: On#Objects
-  ]
-  : On#C[A,B] × On#C[C,D] -> On#C[A ⊗ C, B ⊗ D] =
+      A <: On#Objects,
+      B <: On#Objects,
+      C <: On#Objects,
+      D <: On#Objects
+  ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] =
     λ { fg =>
       product.both(
-        on.composition( product.left[A,C] and fg.left ) and
-        on.composition(product.right[A,C] and fg.right)
+        on.composition(product.left[A, C] and fg.left) and
+          on.composition(product.right[A, C] and fg.right)
       )
     }
 
   // TODO these two are nice exercises
   // TODO rename params to X,Y,Z to avoid clashes with On#C[_,_]
   def assoc_right[
-    A <: On#Objects,
-    B <: On#Objects,
-    C <: On#Objects
-  ]
-  : On#C[ (A ⊗ B) ⊗ C, A ⊗ (B ⊗ C) ]
+      A <: On#Objects,
+      B <: On#Objects,
+      C <: On#Objects
+  ]: On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)]
 
   def assoc_left[
-    A <: On#Objects,
-    B <: On#Objects,
-    C <: On#Objects
-  ]
-  : On#C[ A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C ]
+      A <: On#Objects,
+      B <: On#Objects,
+      C <: On#Objects
+  ]: On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C]
 
   def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
     product.right
