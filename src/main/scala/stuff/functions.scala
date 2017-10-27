@@ -17,18 +17,6 @@ import products._
 object functions {
 
   /**
-    construct functions from lambdas.
-
-    This method for building a function out of [[scala.Function1]] instances. Apart from interoperability with other Scala code, it lets you use lambda syntax for functions:
-
-    {{{ λ { x: String => x.length } }}}
-
-    @group basic
-    */
-  @inline final def λ[A, B](f: A => B): A -> B =
-    new Function(f)
-
-  /**
     the identity function on `A`
 
     @group basic

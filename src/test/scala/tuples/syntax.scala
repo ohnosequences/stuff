@@ -1,6 +1,6 @@
 package ohnosequences.stuff.test.tuples
 
-import ohnosequences.stuff._, functions._, products._
+import ohnosequences.stuff._, products._
 import scala.{Boolean, Int}
 import scala.Predef.String
 import org.scalatest.FunSuite

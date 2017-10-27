@@ -1,7 +1,5 @@
 package ohnosequences.stuff
 
-import functions._
-
 /**
   =The Scala category=
 
