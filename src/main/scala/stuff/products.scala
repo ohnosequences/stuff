@@ -148,10 +148,6 @@ final object products extends MonoidalCategory {
       products.map
   }
 
-  // syntax
-  @inline final implicit def productOps[A](a: A): ProductOps[A] =
-    new ProductOps(a)
-
   @inline final class ProductOps[A](val a: A) extends scala.AnyVal {
 
     @inline final def and[B](b: B): A × B =

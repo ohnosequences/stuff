@@ -54,6 +54,10 @@ package object stuff {
   type ×[A, B] =
     TupleImpl[A, B]
 
+  /** @group products */
+  @inline final implicit def productOps[A](a: A): products.ProductOps[A] =
+    new products.ProductOps(a)
+
   /** @group sums */
   type ∅ =
     empty.type
