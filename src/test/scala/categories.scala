@@ -2,7 +2,6 @@ package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
 import ohnosequences.stuff.products.{I => _I, _}
-import ohnosequences.stuff.functions._
 
 sealed trait AnyMealy {
 

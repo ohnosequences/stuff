@@ -2,7 +2,6 @@ package ohnosequences.stuff
 
 import NaturalTransformation._
 import products._
-import functions._
 import Functor.{∘}
 
 abstract class Monad {

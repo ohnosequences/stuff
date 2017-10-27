@@ -1,7 +1,6 @@
 package ohnosequences.stuff.test.functors
 
 import ohnosequences.stuff._
-import ohnosequences.stuff.functions._
 import scala.StringContext
 import scala.Predef.String
 import org.scalatest.FunSuite

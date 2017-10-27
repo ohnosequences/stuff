@@ -1,6 +1,6 @@
 package soundness
 
-import ohnosequences.stuff._, products._, functions._
+import ohnosequences.stuff._, products._
 
 case object kosher {
 
