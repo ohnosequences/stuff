@@ -2,7 +2,6 @@ package ohnosequences.stuff
 
 import scala.{Any, AnyVal}
 import functions._
-import products._
 
 /*
   `Or` is a more reasonable sum type. Right now it is implemented using value classes for constructors; sadly, these will box (I think) in a lot of cases. A totally unboxed representation using type lists and unboxed denotations could be considered at some point.

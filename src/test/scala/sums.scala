@@ -2,7 +2,6 @@ package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
 import ohnosequences.stuff.sums._
-import ohnosequences.stuff.products._
 
 import scala.{Int}
 import scala.Predef.String

@@ -1,6 +1,6 @@
 package soundness
 
-import ohnosequences.stuff._, products._
+import ohnosequences.stuff._
 
 case object kosher {
 
@@ -40,7 +40,7 @@ case object kosher {
   // NOTE this is fine
   def exchangeFood[A <: Animal]: is[A] × is[A] -> Unit =
     λ { xy =>
-      left(xy) eat right(xy).find
+      products.left(xy) eat products.right(xy).find
     }
 
   class Grass
