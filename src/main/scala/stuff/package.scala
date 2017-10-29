@@ -52,7 +52,7 @@ package object stuff {
   /** @group products */
   @infix
   type ×[A, B] =
-    TupleImpl[A, B]
+    Tuple { type Left = A; type Right = B }
 
   /** @group products */
   @inline final implicit def productOps[A](a: A): products.ProductOps[A] =
