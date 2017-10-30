@@ -1,6 +1,5 @@
 package ohnosequences.stuff
 
-import scala.{Any, AnyVal}
 import functions._
 
 /*
@@ -115,7 +114,7 @@ object sums {
 
 private[stuff] object empty
 
-private[stuff] sealed trait Or extends Any {
+private[stuff] sealed abstract class Or extends {
 
   type Left
   type Right
@@ -124,16 +123,30 @@ private[stuff] sealed trait Or extends Any {
   def value: Value
 }
 
-private final class Left[L, R](val value: L) extends AnyVal with Or {
+private final class Left[L, R](val value: L) extends Or {
 
   type Left  = L
   type Right = R
-  type Value = Left
+  type Value = L
+
+  override final def equals(that: scala.Any): scala.Boolean =
+    that match {
+      case otherLeft: ohnosequences.stuff.Left[L, R] =>
+        otherLeft.value == this.value
+      case _ => false
+    }
 }
 
-private final class Right[L, R](val value: R) extends AnyVal with Or {
+private final class Right[L, R](val value: R) extends Or {
 
   type Left  = L
   type Right = R
   type Value = Right
+
+  override final def equals(that: scala.Any): scala.Boolean =
+    that match {
+      case otherRight: ohnosequences.stuff.Right[L, R] =>
+        otherRight.value == this.value
+      case _ => false
+    }
 }
