@@ -4,6 +4,7 @@ target/
 boot/
 lib_managed/
 src_managed/
+project/target/
 project/boot/
 project/project/
 project/plugins/project/
@@ -15,6 +16,7 @@ decompiled
 # Scala-IDE specific
 .scala_dependencies
 
+.vscode*
 .tags*
 .sublime*
 .atom*

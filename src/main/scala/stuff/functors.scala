@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import functions._, products._
+import products._
 
 abstract class Functor { me =>
 

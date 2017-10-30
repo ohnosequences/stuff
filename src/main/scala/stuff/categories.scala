@@ -1,7 +1,6 @@
 package ohnosequences.stuff
 
 import products._
-import functions._
 
 /** Categories
 

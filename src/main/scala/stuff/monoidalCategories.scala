@@ -1,8 +1,5 @@
 package ohnosequences.stuff
 
-import functions._
-import products._
-
 abstract class MonoidalCategory {
 
   type On <: Category

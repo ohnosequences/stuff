@@ -123,15 +123,19 @@ final object products extends MonoidalCategory {
 
     type I = ∗
 
-    def unitl[A] = right
-    def unitr[A] = left
+    def unitl[A]: (I × A) -> A =
+      right
 
-    def ⊗[A, B, C, D] = map
+    def unitr[A]: (A × I) -> A =
+      left
 
-    def assoc_left[A, B, C] =
+    def ⊗[A, B, C, D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
+      map
+
+    def assoc_left[A, B, C]: (A × (B × C)) -> ((A × B) × C) =
       products.assoc_left
 
-    def assoc_right[A, B, C] =
+    def assoc_right[A, B, C]: ((A × B) × C) -> (A × (B × C)) =
       products.assoc_right
   }
 
@@ -140,7 +144,7 @@ final object products extends MonoidalCategory {
     type On = monoidalCategory.type
     val on: On = monoidalCategory
 
-    def swap[X, Y] =
+    def swap[X, Y]: X × Y -> (Y × X) =
       products.swap
   }
 
@@ -241,10 +245,6 @@ final object products extends MonoidalCategory {
       : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
       products.map
   }
-
-  // syntax
-  @inline final implicit def productOps[A](a: A): ProductOps[A] =
-    new ProductOps(a)
 
   @inline final class ProductOps[A](val a: A) extends scala.AnyVal {
 
