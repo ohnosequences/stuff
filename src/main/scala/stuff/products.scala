@@ -1,7 +1,6 @@
 package ohnosequences.stuff
 
 import functions._
-import products._
 
 abstract class Product {
 
@@ -96,7 +95,7 @@ abstract class CartesianMonoidalCategory[P <: Product](
     product.left
 }
 
-final object products extends MonoidalCategory {
+object products extends MonoidalCategory {
 
   final type On = Scala
   val on: Category.is[On] = Scala
