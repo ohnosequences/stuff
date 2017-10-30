@@ -2,6 +2,39 @@ package ohnosequences.stuff
 
 import functions._
 
+abstract class Sum {
+
+  type On <: Category
+  val on: Category.is[On]
+
+  @infix
+  type +[X <: On#Objects, Y <: On#Objects] <: On#Objects
+
+  type ∅ <: On#Objects
+
+  def any[
+      X <: On#Objects,
+      A <: On#Objects,
+      B <: On#Objects,
+  ]
+  // TODO find a convenient aliasing convention for both +'s
+    : On#C[A, X] × On#C[B, X] -> On#C[A + B, X]
+
+  def intro[X <: On#Objects]: On#C[∅, X]
+
+  def left[A <: On#Objects, B <: On#Objects]: On#C[A, A + B]
+  def right[A <: On#Objects, B <: On#Objects]: On#C[B, A + B]
+
+  final def components[
+      X <: On#Objects,
+      A <: On#Objects,
+      B <: On#Objects,
+  ]: On#C[A + B, X] -> ohnosequences.stuff.×[On#C[A, X], On#C[B, X]] =
+    λ { f =>
+      Category(on) ⊢ { (left >=> f) and (right >=> f) }
+    }
+}
+
 /*
   `Or` is a more reasonable sum type. Right now it is implemented using value classes for constructors; sadly, these will box (I think) in a lot of cases. A totally unboxed representation using type lists and unboxed denotations could be considered at some point.
  */
