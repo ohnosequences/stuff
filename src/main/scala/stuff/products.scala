@@ -24,15 +24,6 @@ abstract class Product {
 
   def left[A <: On#Objects, B <: On#Objects]: On#C[A × B, A]
   def right[A <: On#Objects, B <: On#Objects]: On#C[A × B, B]
-
-  final def components[
-      X <: On#Objects,
-      A <: On#Objects,
-      B <: On#Objects,
-  ]: On#C[X, A × B] -> ohnosequences.stuff.×[On#C[X, A], On#C[X, B]] =
-    λ { f =>
-      Category(on) ⊢ { (f >=> left) and (f >=> right) }
-    }
 }
 
 object Product {
@@ -82,8 +73,23 @@ object Product {
         f: X >=> Y): ProductMorphismSyntax[Prod, X, Y] =
       new ProductMorphismSyntax(f)
 
-    // TODO add aliases for product operations:
-    // erase, projections, etc
+    @inline final def left[A <: Objects, B <: Objects]: A × B >=> A =
+      prod left
+
+    @inline final def right[A <: Objects, B <: Objects]: A × B >=> B =
+      prod right
+
+    @inline final def erase[A <: Objects]: A >=> I =
+      prod erase
+
+    @inline final def components[
+        X <: Objects,
+        A <: Objects,
+        B <: Objects,
+    ]: (X >=> (A × B)) -> ohnosequences.stuff.×[X >=> A, X >=> B] =
+      λ { f =>
+        (f >=> left) and (f >=> right)
+      }
 
     @inline final def id[X <: Objects]: X >=> X =
       prod.on.identity
