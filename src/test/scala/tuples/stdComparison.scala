@@ -1,6 +1,6 @@
 package ohnosequences.stuff.test.tuples
 
-import ohnosequences.stuff._, products._
+import ohnosequences.stuff._
 import scala.{Boolean, Int}
 import scala.Predef.String
 import org.scalatest.FunSuite
@@ -31,12 +31,29 @@ class TuplesVsStd extends FunSuite {
   }
 
   final val tupleSyntax =
-    all3(toStr and isZero and isZero)
+    Product(tuples) ⊢ { toStr ^ isZero ^ isZero }
 
   final val scalaFns =
     λ { i: Int =>
       (f(i), g(i), h(i))
     }
+
+  test("std inline evaluation") {
+
+    var i                             = 1
+    var z: (String, Boolean, Boolean) = null
+
+    while (i <= iterations) {
+      z = (({ x: Int =>
+        x.toString
+      })(i), ({ x: Int =>
+        (x == 0)
+      })(i), ({ x: Int =>
+        (x == 0)
+      })(i))
+      i = i + 1
+    }
+  }
 
   test("tuple syntax evaluation") {
 
@@ -56,23 +73,6 @@ class TuplesVsStd extends FunSuite {
 
     while (i <= iterations) {
       z = scalaFns(i)
-      i = i + 1
-    }
-  }
-
-  test("std inline evaluation") {
-
-    var i                             = 1
-    var z: (String, Boolean, Boolean) = null
-
-    while (i <= iterations) {
-      z = (({ x: Int =>
-        x.toString
-      })(i), ({ x: Int =>
-        (x == 0)
-      })(i), ({ x: Int =>
-        (x == 0)
-      })(i))
       i = i + 1
     }
   }

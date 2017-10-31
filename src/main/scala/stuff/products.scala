@@ -28,17 +28,29 @@ abstract class Product {
 
 object Product {
 
+  type infer[P <: Product] >: is[P] <: is[P]
+
+  implicit final class p[P <: Product with scala.Singleton](val p: is[P]) {
+
+    def boh =
+      new Syntax(p: is[P])
+  }
+
   type is[P <: Product] =
     P {
       type On = P#On
       // format: off
-      type ×[X <: P#On#Objects, Y <: P#On#Objects] = P# ×[X, Y]
+      type ×[X <: On#Objects, Y <: On#Objects] = P# ×[X, Y]
       type ∗                                       = P# ∗
       // format: on
     }
 
-  @inline final def apply[Prod <: Product](prod: is[Prod]): Syntax[Prod] =
-    new Syntax(prod)
+  import scala.Predef.<:<
+
+  @inline final def apply[
+      Prod <: Product
+  ](prod: Prod)(implicit ev: prod.type <:< is[Prod]): Syntax[Prod] =
+    new Syntax(ev(prod))
 
   final class Syntax[Prod <: Product](val prod: is[Prod]) {
 
