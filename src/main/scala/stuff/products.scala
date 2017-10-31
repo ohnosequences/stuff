@@ -37,6 +37,9 @@ object Product {
       // format: on
     }
 
+  @inline final def apply[Prod <: Product](prod: is[Prod]): Syntax[Prod] =
+    new Syntax(prod)
+
   final class Syntax[Prod <: Product](val prod: is[Prod]) {
 
     type Objects =
@@ -107,8 +110,14 @@ object Product {
     ) // format: off
     : Prod#On#C[X, Prod# ×[Y, Z]] = // format: on
     prod both (f and g)
-  }
 
+    @inline final def ×[U <: Prod#On#Objects, V <: Prod#On#Objects](
+        g: Prod#On#C[U, V])(
+        implicit prod: is[Prod] // format: off
+    )
+    : Prod#On#C[Prod# ×[X, U], Prod# ×[Y, V]] = // format: on
+    Category(prod.on) ⊢ { prod both (prod.left >=> f and prod.right >=> g) }
+  }
 }
 
 // TODO make it final once we have assocs implemented
