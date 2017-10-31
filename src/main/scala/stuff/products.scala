@@ -45,6 +45,54 @@ object Product {
       type ∗                                       = P# ∗
       // format: on
     }
+
+  final class Syntax[Prod <: Product](val prod: is[Prod]) {
+
+    type Objects =
+      Prod#On#Objects
+
+    @infix
+    type ×[X <: Prod#On#Objects, Y <: Prod#On#Objects] =
+      // format: off
+      Prod# ×[X, Y]
+      // format: on
+
+    @inline implicit final val _on: Category.is[Prod#On] =
+      prod.on
+
+    @inline implicit final val _prod: is[Prod] =
+      prod
+
+    @inline implicit final def categoryMorphismSyntax[X <: Objects,
+                                                      Y <: Objects](
+        f: Prod#On#C[X, Y]): Category.MorphismSyntax[Prod#On, X, Y] =
+      new Category.MorphismSyntax(f)
+
+    @inline implicit final def productMorphismSyntax[X <: Objects,
+                                                     Y <: Objects](
+        f: Prod#On#C[X, Y]): ProductMorphismSyntax[Prod, X, Y] =
+      new ProductMorphismSyntax(f)
+
+    // TODO add aliases for product operations
+
+    @inline final def id[X <: Objects]: Prod#On#C[X, X] =
+      prod.on.identity
+  }
+
+  final class ProductMorphismSyntax[
+      Prod <: Product,
+      X <: Prod#On#Objects,
+      Y <: Prod#On#Objects
+  ](val f: Prod#On#C[X, Y])
+      extends scala.AnyVal {
+
+    @inline final def ^[Z <: Prod#On#Objects](g: Prod#On#C[X, Z])(
+        implicit prod: is[Prod]
+    ) // format: off
+    : Prod#On#C[X, Prod# ×[Y, Z]] = // format: on
+    prod both (f and g)
+  }
+
 }
 
 // TODO make it final once we have assocs implemented
