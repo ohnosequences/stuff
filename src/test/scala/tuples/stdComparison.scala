@@ -18,7 +18,7 @@ class TuplesVsStd extends FunSuite {
   }
 
   val iterations =
-    5000000
+    500000
 
   final val f = { x: Int =>
     x.toString
