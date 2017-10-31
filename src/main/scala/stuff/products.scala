@@ -54,8 +54,17 @@ object Product {
     @infix
     type ×[X <: Prod#On#Objects, Y <: Prod#On#Objects] =
       // format: off
-      Prod# ×[X, Y]
+      Prod # ×[X, Y]
       // format: on
+
+    type I =
+      // format: off
+      Prod # ∗
+      // format: on
+
+    @infix
+    type >=>[X <: Prod#On#Objects, Y <: Prod#On#Objects] =
+      Prod#On#C[X, Y]
 
     @inline implicit final val _on: Category.is[Prod#On] =
       prod.on
@@ -65,17 +74,18 @@ object Product {
 
     @inline implicit final def categoryMorphismSyntax[X <: Objects,
                                                       Y <: Objects](
-        f: Prod#On#C[X, Y]): Category.MorphismSyntax[Prod#On, X, Y] =
+        f: X >=> Y): Category.MorphismSyntax[Prod#On, X, Y] =
       new Category.MorphismSyntax(f)
 
     @inline implicit final def productMorphismSyntax[X <: Objects,
                                                      Y <: Objects](
-        f: Prod#On#C[X, Y]): ProductMorphismSyntax[Prod, X, Y] =
+        f: X >=> Y): ProductMorphismSyntax[Prod, X, Y] =
       new ProductMorphismSyntax(f)
 
-    // TODO add aliases for product operations
+    // TODO add aliases for product operations:
+    // erase, projections, etc
 
-    @inline final def id[X <: Objects]: Prod#On#C[X, X] =
+    @inline final def id[X <: Objects]: X >=> X =
       prod.on.identity
   }
 
