@@ -165,7 +165,11 @@ abstract class CartesianMonoidalCategory[P <: Product](
       A <: On#Objects,
       B <: On#Objects,
       C <: On#Objects
-  ]: On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)]
+  ]: On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)] =
+    Product(product) ⊢ {
+      (left[(A ⊗ B), C] >=> left) ^
+        ((left[(A ⊗ B), C] >=> right) ^ right)
+    }
 
   def assoc_left[
       A <: On#Objects,
