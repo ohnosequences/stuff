@@ -132,8 +132,7 @@ object Product {
   }
 }
 
-// TODO make it final once we have assocs implemented
-abstract class CartesianMonoidalCategory[P <: Product](
+final class CartesianMonoidalCategory[P <: Product](
     val product: Product.is[P]) {
 
   type On = P#On
@@ -167,15 +166,19 @@ abstract class CartesianMonoidalCategory[P <: Product](
       C <: On#Objects
   ]: On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)] =
     Product(product) ⊢ {
-      (left[(A ⊗ B), C] >=> left) ^
-        ((left[(A ⊗ B), C] >=> right) ^ right)
+      (left[A × B, C] >=> left) ^
+        ((left[A × B, C] >=> right) ^ right)
     }
 
   def assoc_left[
       A <: On#Objects,
       B <: On#Objects,
       C <: On#Objects
-  ]: On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C]
+  ]: On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C] =
+    Product(product) ⊢ {
+      (left[A, B × C] ^ (right >=> left)) ^
+        (right[A, B × C] >=> right)
+    }
 
   def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
     product.right
