@@ -48,14 +48,14 @@ class ScalaCategoryTests extends FunSuite {
     assert { (z0 at "hola") === "hola" }
 
     val z1 =
-      MonoidalCategory[products.type](products) ⊢ {
+      MonoidalCategory(products) ⊢ {
         id[String]
       }
 
     assert { (z1 at "hola") === "hola" }
 
     val u =
-      MonoidalCategory[products.type](products) ⊢ {
+      MonoidalCategory(products) ⊢ {
         l ⊗ toStr
       }
 

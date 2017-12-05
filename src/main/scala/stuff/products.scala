@@ -28,14 +28,6 @@ abstract class Product {
 
 object Product {
 
-  type infer[P <: Product] >: is[P] <: is[P]
-
-  implicit final class p[P <: Product with scala.Singleton](val p: is[P]) {
-
-    def boh =
-      new Syntax(p: is[P])
-  }
-
   type is[P <: Product] =
     P {
       type On = P#On
@@ -194,13 +186,13 @@ object products extends MonoidalCategory {
   final type ⊗[A, B] = A × B
   final type I       = ∗
 
-  def ⊗[A, B, C, D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
+  final def ⊗[A, B, C, D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
     map
 
-  def unitl[A]: (I × A) -> A =
+  final def unitl[A]: (I × A) -> A =
     right
 
-  def unitr[A]: (A × I) -> A =
+  final def unitr[A]: (A × I) -> A =
     left
 
   // TODO derive it from a Cartesian Structure
