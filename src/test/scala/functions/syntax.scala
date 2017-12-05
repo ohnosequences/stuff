@@ -1,6 +1,6 @@
 package ohnosequences.stuff.test.functions
 
-import ohnosequences.stuff._, products._, functions._
+import ohnosequences.stuff._, functions._
 import scala.{Int}
 import scala.Predef.String
 import org.scalatest.FunSuite
@@ -38,9 +38,6 @@ class FunctionSyntax extends FunSuite {
     }
   }
 
-  // def η[A,X,Y]: ((A × X) -> Y) -> (A -> (X -> Y)) =
-  //   λ { f => λ { a => λ { x => f at (a and x) } } }
-
   test("η conversion") {
 
     val strLen: String -> Int =
@@ -48,7 +45,7 @@ class FunctionSyntax extends FunSuite {
 
     val sum: (Int × Int) -> Int =
       λ { xy =>
-        left(xy) + right(xy)
+        xy.left + xy.right
       }
 
     val f: (Int × String) -> Int =
@@ -65,13 +62,5 @@ class FunctionSyntax extends FunSuite {
     assert { (sumCurried at 2)(4) === 6 }
 
     assert { (plus2 at 3) === sum(2 and 3) }
-  }
-
-  test("ccc") {
-
-    val strLen: String -> Int =
-      λ { _.length }
-
-    assert { ev("hola" and strLen) === (strLen at "hola") }
   }
 }

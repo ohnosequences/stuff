@@ -24,16 +24,111 @@ abstract class Sum {
 
   def left[A <: On#Objects, B <: On#Objects]: On#C[A, A + B]
   def right[A <: On#Objects, B <: On#Objects]: On#C[B, A + B]
-
-  final def components[
-      X <: On#Objects,
-      A <: On#Objects,
-      B <: On#Objects,
-  ]: On#C[A + B, X] -> ohnosequences.stuff.×[On#C[A, X], On#C[B, X]] =
-    λ { f =>
-      Category(on) ⊢ { (left >=> f) and (right >=> f) }
-    }
 }
+
+object Sum {
+
+  type is[S <: Sum] =
+    S {
+      type On = S#On
+      // format: off
+    type +[X <: On#Objects, Y <: On#Objects] = S# +[X, Y]
+    type ∅                                       = S# ∅
+    // format: on
+    }
+
+  import scala.Predef.<:<
+
+  @inline final def apply[
+      S <: Sum
+  ](s: S)(implicit ev: s.type <:< is[S]): Syntax[S] =
+    new Syntax(ev(s))
+
+  final class Syntax[S <: Sum](val s: is[S]) {
+
+    // type aliases
+    /////////////////////////////////////////////////////////////////////////
+    type Objects =
+      S#On#Objects
+
+    @infix
+    type >=>[X <: S#On#Objects, Y <: S#On#Objects] =
+      S#On#C[X, Y]
+
+    @infix
+    type +[X <: S#On#Objects, Y <: S#On#Objects] =
+      // format: off
+      S # +[X, Y]
+      // format: on
+
+    type ∅ =
+      // format: off
+      S # ∅
+      // format: on
+
+    // implicits
+    /////////////////////////////////////////////////////////////////////////
+    @inline implicit final val _on: Category.is[S#On] =
+      s.on
+
+    @inline implicit final val _s: is[S] =
+      s
+
+    @inline implicit final def categoryMorphismSyntax[X <: Objects,
+                                                      Y <: Objects](
+        f: X >=> Y): Category.MorphismSyntax[S#On, X, Y] =
+      new Category.MorphismSyntax(f)
+
+    @inline implicit final def sumMorphismSyntax[X <: Objects, Y <: Objects](
+        f: X >=> Y): SumMorphismSyntax[S, X, Y] =
+      new SumMorphismSyntax(f)
+
+    // aliases
+    /////////////////////////////////////////////////////////////////////////
+    @inline final def id[X <: Objects]: X >=> X =
+      s.on.identity
+
+    @inline final def left[A <: Objects, B <: Objects]: A >=> (A + B) =
+      s.left[A, B]
+
+    @inline final def right[A <: Objects, B <: Objects]: B >=> (A + B) =
+      s.right[A, B]
+
+    @inline final def intro[A <: Objects]: ∅ >=> A =
+      s.intro[A]
+
+    @inline final def components[
+        X <: Objects,
+        A <: Objects,
+        B <: Objects,
+    ]: ((A + B) >=> X) -> ((A >=> X) × (B >=> X)) =
+      λ { f =>
+        left >=> f and right >=> f
+      }
+  }
+
+  final class SumMorphismSyntax[
+      S <: Sum,
+      X <: S#On#Objects,
+      Y <: S#On#Objects
+  ](val f: S#On#C[X, Y])
+      extends scala.AnyVal {
+
+    @inline final def |[Z <: S#On#Objects](g: S#On#C[Z, Y])(
+        implicit sum: is[S]
+    ) // format: off
+    : S#On#C[S# +[X, Z], Y] = // format: on
+    sum any (f and g)
+
+    @inline final def +[U <: S#On#Objects, V <: S#On#Objects](g: S#On#C[U, V])(
+        implicit sum: is[S] // format: off
+    )
+    : S#On#C[S# +[X, U], S# +[Y, V]] = // format: on
+    Category(sum.on) ⊢ { sum any (f >=> sum.left[Y, V] and g >=> sum.right) }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////
 
 /*
   `Or` is a more reasonable sum type. Right now it is implemented using value classes for constructors; sadly, these will box (I think) in a lot of cases. A totally unboxed representation using type lists and unboxed denotations could be considered at some point.
@@ -115,9 +210,6 @@ object sums {
         map(identity and f)
       }
   }
-
-  def f[X]: (scala.Predef.String + X) -> (scala.Int + X) =
-    -+ at λ { _.length }
 
   object SumFunctor extends Functor {
 

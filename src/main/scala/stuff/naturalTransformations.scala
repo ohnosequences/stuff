@@ -1,7 +1,5 @@
 package ohnosequences.stuff
 
-import products._
-
 abstract class NaturalTransformation { nat =>
 
   type SourceCategory <: Category
@@ -103,9 +101,9 @@ object NaturalTransformation {
   ](val pair: is[A] × is[B])
       extends NaturalTransformation {
 
-    @inline final def first = left(pair)
+    @inline final def first = pair.left
 
-    @inline final def second = right(pair)
+    @inline final def second = pair.right
 
     type SourceCategory = is[A]#SourceCategory
     val sourceCategory = first.sourceCategory
@@ -148,9 +146,9 @@ object NaturalTransformation {
   ](val pair: is[M] × is[N])
       extends NaturalTransformation {
 
-    @inline final def first = left(pair)
+    @inline final def first = pair.left
 
-    @inline final def second = right(pair)
+    @inline final def second = pair.right
 
     type SourceCategory = M#SourceCategory
     val sourceCategory = first.sourceCategory

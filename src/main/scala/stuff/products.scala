@@ -39,6 +39,10 @@ object Product {
 
   import scala.Predef.<:<
 
+  def monoidalCategory[P <: Product](p: P)(
+      implicit ev: p.type <:< is[P]): CartesianMonoidalCategory[P] =
+    new CartesianMonoidalCategory(ev(p))
+
   @inline final def apply[
       Prod <: Product
   ](prod: Prod)(implicit ev: prod.type <:< is[Prod]): Syntax[Prod] =
@@ -80,6 +84,10 @@ object Product {
         f: X >=> Y): ProductMorphismSyntax[Prod, X, Y] =
       new ProductMorphismSyntax(f)
 
+    // aliases and derived morphisms
+    @inline final def id[X <: Objects]: X >=> X =
+      prod.on.identity
+
     @inline final def left[A <: Objects, B <: Objects]: A × B >=> A =
       prod left
 
@@ -89,17 +97,23 @@ object Product {
     @inline final def erase[A <: Objects]: A >=> I =
       prod erase
 
+    @inline final def duplicate[Z <: Objects]: Z >=> (Z × Z) =
+      id ^ id
+
+    @inline final def Δ[Z <: Objects]: Z >=> (Z × Z) =
+      duplicate
+
+    @inline final def swap[A <: Objects, B <: Objects]: (A × B) >=> (B × A) =
+      right ^ left
+
     @inline final def components[
         X <: Objects,
         A <: Objects,
         B <: Objects,
     ]: (X >=> (A × B)) -> ohnosequences.stuff.×[X >=> A, X >=> B] =
       λ { f =>
-        (f >=> left) and (f >=> right)
+        f >=> left and f >=> right
       }
-
-    @inline final def id[X <: Objects]: X >=> X =
-      prod.on.identity
   }
 
   final class ProductMorphismSyntax[
@@ -124,8 +138,8 @@ object Product {
   }
 }
 
-final class CartesianMonoidalCategory[P <: Product](
-    val product: Product.is[P]) {
+final class CartesianMonoidalCategory[P <: Product](val product: Product.is[P])
+    extends MonoidalCategory {
 
   type On = P#On
   val on = product.on
@@ -143,15 +157,11 @@ final class CartesianMonoidalCategory[P <: Product](
       D <: On#Objects
   ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] =
     λ { fg =>
-      Category(on) ⊢ {
-        product ⊢ {
-          both { (left[A, C] >=> fg.left) and (right[A, C] >=> fg.right) }
-        }
+      Product(product) ⊢ {
+        left >=> fg.left ^ right >=> fg.right
       }
     }
 
-  // TODO these two are nice exercises
-  // TODO rename params to X,Y,Z to avoid clashes with On#C[_,_]
   def assoc_right[
       A <: On#Objects,
       B <: On#Objects,
@@ -179,57 +189,16 @@ final class CartesianMonoidalCategory[P <: Product](
     product.left
 }
 
-object products extends MonoidalCategory {
+object products {
 
-  final type On = Scala
-  val on: Category.is[On] = Scala
-  final type ⊗[A, B] = A × B
-  final type I       = ∗
+  // object symmetricStructure extends SymmetricStructure {
 
-  final def ⊗[A, B, C, D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
-    map
+  //   type On = monoidalCategory.type
+  //   val on: On = monoidalCategory
 
-  final def unitl[A]: (I × A) -> A =
-    right
-
-  final def unitr[A]: (A × I) -> A =
-    left
-
-  // TODO derive it from a Cartesian Structure
-  object monoidalCategory extends MonoidalCategory {
-
-    type On = Scala
-    val on: On = Scala
-
-    @infix
-    type ⊗[X <: On#Objects, Y <: On#Objects] = X × Y
-
-    type I = ∗
-
-    def unitl[A]: (I × A) -> A =
-      right
-
-    def unitr[A]: (A × I) -> A =
-      left
-
-    def ⊗[A, B, C, D]: ((A -> B) × (C -> D)) -> ((A × C) -> (B × D)) =
-      map
-
-    def assoc_left[A, B, C]: (A × (B × C)) -> ((A × B) × C) =
-      products.assoc_left
-
-    def assoc_right[A, B, C]: ((A × B) × C) -> (A × (B × C)) =
-      products.assoc_right
-  }
-
-  object symmetricStructure extends SymmetricStructure {
-
-    type On = monoidalCategory.type
-    val on: On = monoidalCategory
-
-    def swap[X, Y]: X × Y -> (Y × X) =
-      products.swap
-  }
+  //   def swap[X, Y]: X × Y -> (Y × X) =
+  //     products.swap
+  // }
 
   @inline final def ∗ : ∗ =
     EmptyTuple

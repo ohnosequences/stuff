@@ -2,8 +2,8 @@ package ohnosequences.stuff
 
 object tuples extends Product {
 
-  // def syntax: Product.Syntax[tuples.type] =
-  //   Product(this)
+  lazy val monoidalCategory: CartesianMonoidalCategory[this.type] =
+    Product monoidalCategory this
 
   type On = Scala
   val on = Scala

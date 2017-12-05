@@ -48,15 +48,15 @@ class ScalaCategoryTests extends FunSuite {
     assert { (z0 at "hola") === "hola" }
 
     val z1 =
-      MonoidalCategory(products) ⊢ {
+      Product(ohnosequences.stuff.tuples) ⊢ {
         id[String]
       }
 
     assert { (z1 at "hola") === "hola" }
 
     val u =
-      MonoidalCategory(products) ⊢ {
-        l ⊗ toStr
+      Product(ohnosequences.stuff.tuples) ⊢ {
+        l × toStr
       }
 
     val _2and2 = (u at ("ab" and 2))

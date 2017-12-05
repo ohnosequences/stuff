@@ -49,6 +49,9 @@ package object stuff {
   type ∗ =
     EmptyTuple.type
 
+  val ∗ : ∗ =
+    EmptyTuple
+
   /** @group products */
   @infix
   type ×[A, B] =
