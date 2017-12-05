@@ -353,10 +353,21 @@ private[stuff] sealed abstract class Tuple {
   val right: Right
 }
 
-private[stuff] object EmptyTuple
+private[stuff] object EmptyTuple {
+  @inline override final def equals(other: scala.Any): scala.Boolean =
+    if (other.isInstanceOf[this.type]) true else false
+}
 
 private[stuff] final class TupleImpl[A, B](val left: A, val right: B)
     extends Tuple {
+
+  @inline override final def equals(other: scala.Any): scala.Boolean =
+    if (other.isInstanceOf[TupleImpl[A, B]]) {
+
+      val asTuple = other.asInstanceOf[TupleImpl[A, B]]
+
+      asTuple.left == left && asTuple.right == right
+    } else false
 
   type Left  = A
   type Right = B

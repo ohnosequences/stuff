@@ -53,6 +53,7 @@ wartremoverExcluded ++= Seq(
   baseDirectory.value / "src" / "main" / "scala" / "stuff" / "monoidalCategories.scala",
   baseDirectory.value / "src" / "main" / "scala" / "stuff" / "functors.scala",
   baseDirectory.value / "src" / "main" / "scala" / "stuff" / "sums.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "products.scala",
   baseDirectory.value / "src" / "main" / "scala" / "stuff" / "tailrec.scala"
 )
 

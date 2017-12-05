@@ -26,8 +26,7 @@ class TuplesSyntax extends FunSuite {
     x.isEmpty
   }
 
-  // TODO fix tuple equality
-  ignore("build tuple values") {
+  test("build tuple values") {
 
     val buh: (String × Int) -> (Int × String) =
       l × toStr
@@ -47,8 +46,7 @@ class TuplesSyntax extends FunSuite {
     }
   }
 
-  // TODO fix tuple equality
-  ignore("product universal") {
+  test("product universal") {
 
     val x =
       both(toStr and isZero)
