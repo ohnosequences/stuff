@@ -8,7 +8,7 @@ object tuples extends Product {
   type On = Scala
   val on = Scala
 
-  final type ×[X <: On#Objects, Y <: On#Objects] =
+  type ×[X <: On#Objects, Y <: On#Objects] =
     ohnosequences.stuff.×[X, Y]
 
   type ∗ =

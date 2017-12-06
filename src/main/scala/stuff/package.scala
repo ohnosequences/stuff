@@ -77,4 +77,8 @@ package object stuff {
   /** @group annotations */
   type infix =
     scala.annotation.showAsInfix
+
+  @infix
+  type <:<[A, B] =
+    scala.Predef.<:<[A, B]
 }

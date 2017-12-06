@@ -37,21 +37,25 @@ object Product {
       // format: on
     }
 
-  import scala.Predef.<:<
-
   def monoidalCategory[P <: Product](p: P)(
       implicit ev: p.type <:< is[P]): CartesianMonoidalCategory[P] =
     new CartesianMonoidalCategory(ev(p))
 
   @inline final def apply[
-      Prod <: Product
-  ](prod: Prod)(implicit ev: prod.type <:< is[Prod]): Syntax[Prod] =
-    new Syntax(ev(prod))
+      P <: Product
+  ](p: P)(implicit ev: p.type <:< is[P]): Syntax[P] =
+    new Syntax(ev(p))
 
   final class Syntax[Prod <: Product](val prod: is[Prod]) {
 
+    // type aliases
+    /////////////////////////////////////////////////////////////////////////
     type Objects =
       Prod#On#Objects
+
+    @infix
+    type >=>[X <: Prod#On#Objects, Y <: Prod#On#Objects] =
+      Prod#On#C[X, Y]
 
     @infix
     type ×[X <: Prod#On#Objects, Y <: Prod#On#Objects] =
@@ -64,10 +68,8 @@ object Product {
       Prod # ∗
       // format: on
 
-    @infix
-    type >=>[X <: Prod#On#Objects, Y <: Prod#On#Objects] =
-      Prod#On#C[X, Y]
-
+    // implicits
+    /////////////////////////////////////////////////////////////////////////
     @inline implicit final val _on: Category.is[Prod#On] =
       prod.on
 
@@ -188,6 +190,8 @@ final class CartesianMonoidalCategory[P <: Product](val product: Product.is[P])
   def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
     product.left
 }
+
+////////////////////////////////////////////////////////////////////////////
 
 object products {
 
