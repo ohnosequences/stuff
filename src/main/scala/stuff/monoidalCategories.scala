@@ -24,8 +24,6 @@ abstract class MonoidalCategory {
 
 object MonoidalCategory {
 
-  import scala.Predef.<:<
-
   // NOTE we need this version when working with concrete values (sad)
   @inline final def apply[MonCat <: MonoidalCategory](monCat: MonCat)(
       implicit ev: monCat.type <:< is[MonCat]): Syntax[MonCat] =
