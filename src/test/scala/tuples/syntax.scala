@@ -1,7 +1,7 @@
-package ohnosequences.stuff.test.tuples
+package ohnosequences.stuff.test
 
-import ohnosequences.stuff._, products._
-import scala.{Boolean, Int}
+import ohnosequences.stuff._
+import scala.Int
 import scala.Predef.String
 import org.scalatest.FunSuite
 
@@ -26,44 +26,35 @@ class TuplesSyntax extends FunSuite {
     x.isEmpty
   }
 
-  // TODO fix tuple equality
-  ignore("build tuple values") {
+  test("build tuple values") {
 
-    val buh: (String × Int) -> (Int × String) =
-      l × toStr
+    Product(tuples) ⊢ {
 
-    assert { buh("hola" and 2) === (4 and "2") }
+      val buh: (String × Int) -> (Int × String) =
+        l × toStr
 
-    val boh: (String -> Int) × (Int -> String) × (String -> Boolean) =
-      l and toStr and isEmpty
+      assert { buh("hola" and 2) === (4 and "2") }
 
-    assert { (π_3_3 at boh)("") === true }
-
-    assert {
-      πL(l and toStr and isEmpty) === (l and toStr) &&
-      left(l and toStr and isEmpty) === (l and toStr) &&
-      πR(l and toStr and isEmpty) === isEmpty &&
-      right(l and toStr and isEmpty) === isEmpty
+      assert {
+        left(l and toStr and isEmpty) === (l and toStr) &&
+        right(l and toStr and isEmpty) === isEmpty
+      }
     }
   }
 
-  // TODO fix tuple equality
-  ignore("product universal") {
+  test("product universal") {
 
-    val x =
-      both(toStr and isZero)
+    Product(tuples) ⊢ {
 
-    assert { x(0) === ("0" and true) }
+      val x =
+        toStr ^ isZero
 
-    val y =
-      both(both(toStr and isZero) and isZero)
+      assert { x(0) === ("0" and true) }
 
-    val yAgain =
-      all3(toStr and isZero and isZero)
+      val y =
+        toStr ^ isZero ^ isZero
 
-    assert {
-      all3(toStr and isZero and isZero)(1) === ("1" and false and false) &&
-      y(12) === yAgain(12)
+      assert { y(1) === ("1" and false and false) }
     }
   }
 }

@@ -1,7 +1,5 @@
 package ohnosequences.stuff
 
-import products._
-
 abstract class Functor { me =>
 
   type Source <: Category
@@ -107,7 +105,7 @@ object Functor {
       G0 <: Functor { type Source = F0#Target }
   ]: (is[F0] × is[G0]) -> is[F0 ∘ G0] =
     λ { fg =>
-      new Composition(left(fg), right(fg))
+      new Composition(fg.left, fg.right)
         .asInstanceOf[is[Composition[F0, G0]]]
     }
 

@@ -1,7 +1,6 @@
 package ohnosequences.stuff
 
 import NaturalTransformation._
-import products._
 import Functor.{∘}
 
 abstract class Monad {
@@ -41,7 +40,7 @@ final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
   ]: C[X, Y] × C[Y, Z] -> C[X, Z] =
     λ { fg =>
       Category(baseCat) ⊢ {
-        left(fg) >=> monad.on(right(fg)) >=> monad.μ[Z]
+        fg.left >=> monad.on(fg.right) >=> monad.μ[Z]
       }
     }
 }

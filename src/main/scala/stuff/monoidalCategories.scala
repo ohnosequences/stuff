@@ -24,9 +24,10 @@ abstract class MonoidalCategory {
 
 object MonoidalCategory {
 
-  @inline final def apply[MonCat <: MonoidalCategory](
-      monCat: is[MonCat]): Syntax[MonCat] =
-    new Syntax(monCat)
+  // NOTE we need this version when working with concrete values (sad)
+  @inline final def apply[MonCat <: MonoidalCategory](monCat: MonCat)(
+      implicit ev: monCat.type <:< is[MonCat]): Syntax[MonCat] =
+    new Syntax(ev(monCat))
 
   final class Syntax[MonCat <: MonoidalCategory](val monCat: is[MonCat]) {
 
@@ -133,10 +134,10 @@ object MonoidalCategory {
   type is[MCat <: MonoidalCategory] =
     MCat {
       type On = MCat#On
-      type I  = MCat#I
       // format: off
       type ⊗[X <: On#Objects, Y <: On#Objects] = MCat # ⊗[X, Y]
       // format: on
+      type I = MCat#I
     }
 
   type inferIs[MCat <: MonoidalCategory] >: is[MCat] <: is[MCat]

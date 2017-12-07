@@ -1,7 +1,5 @@
 package ohnosequences.stuff
 
-import products._
-
 /**
   =Functions on functions=
 
@@ -56,24 +54,24 @@ object functions {
       }
     }
 
-  /** @group ccc */
-  final def ϵ[A, X, Y]: (A -> (X -> Y)) -> ((A × X) -> Y) =
-    λ { f =>
-      λ { ax =>
-        f at (left at ax) at (right at ax)
-      }
-    }
+  // /** @group ccc */
+  // final def ϵ[A, X, Y]: (A -> (X -> Y)) -> ((A × X) -> Y) =
+  //   λ { f =>
+  //     λ { ax =>
+  //       f at (left at ax) at (right at ax)
+  //     }
+  //   }
 
-  /** @group ccc */
-  final def ev[A, B]: (A × (A -> B)) -> B =
-    (point[A] × identity[A -> B]) >-> Scala.composition >-> force
-  // λ { af => right(af) at left(af) }
+  // /** @group ccc */
+  // final def ev[A, B]: (A × (A -> B)) -> B =
+  //   (point[A] × identity[A -> B]) >-> Scala.composition >-> force
+  // // λ { af => right(af) at left(af) }
 
-  /** @group ccc */
-  final def coev[A, B]: B -> (A -> (A × B)) =
-    λ { b =>
-      both(identity and (const at b))
-    }
+  // /** @group ccc */
+  // final def coev[A, B]: B -> (A -> (A × B)) =
+  //   λ { b =>
+  //     both(identity and (const at b))
+  //   }
 
   private[stuff] final class FunctionProductSyntax[A, B](val f: A => B)
       extends scala.AnyVal {

@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import products._
+import products.{πL, πR}
 
 /** Categories
 
@@ -95,7 +95,7 @@ object Category {
 
     final def composition[X <: Objects, Y <: Objects, Z <: Objects]
       : C[X, Y] × C[Y, Z] -> C[X, Z] =
-      swap >-> cat.composition
+      Product(tuples) ⊢ { swap >-> cat.composition }
   }
 
   final def opposite[Cat <: Category]: is[Cat] -> is[Opposite[Cat]] =
@@ -112,10 +112,9 @@ object Category {
 
     final def composition[X <: Objects, Y <: Objects, Z <: Objects]
       : C[X, Y] × C[Y, Z] -> C[X, Z] =
-      products.erase
+      Product(tuples) ⊢ { erase }
   }
 
-  // etc etc
   def lunit[Cat <: Category]: is[Cat] -> Functor =
     λ { cat =>
       new Functor {
@@ -130,7 +129,7 @@ object Category {
 
         final def at[X <: Source#Objects, Y <: Source#Objects]
           : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
-          right
+          Product(tuples) ⊢ right
       }
     }
 
@@ -156,16 +155,16 @@ object Category {
 
     final def composition[X <: Objects, Y <: Objects, Z <: Objects]
       : C[X, Y] × C[Y, Z] -> C[X, Z] =
-      both(
-        πL[C[X, Y]] × πL[C[Y, Z]] >-> leftCat.composition and
+      Product(tuples) ⊢ {
+        πL[C[X, Y]] × πL[C[Y, Z]] >-> leftCat.composition ^
           πR[C[X, Y]] × πR[C[Y, Z]] >-> rightCat.composition
-      )
+      }
   }
 
   final def product[LeftCat <: Category, RightCat <: Category]
     : (is[LeftCat] × is[RightCat]) -> is[ProductCategory[LeftCat, RightCat]] =
     λ { lr =>
-      new ProductCategory(left(lr), right(lr))
+      Product(tuples) ⊢ new ProductCategory(left(lr), right(lr))
         .asInstanceOf[is[ProductCategory[LeftCat, RightCat]]]
     }
 
@@ -181,7 +180,9 @@ object Category {
       : Source#C[X, Y] -> (F[X] -> F[Y]) =
       λ { fg =>
         λ { q =>
-          Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
+          Product(tuples) ⊢ {
+            Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
+          }
         }
       }
   }

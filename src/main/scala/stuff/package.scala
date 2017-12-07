@@ -49,6 +49,9 @@ package object stuff {
   type ∗ =
     EmptyTuple.type
 
+  val ∗ : ∗ =
+    EmptyTuple
+
   /** @group products */
   @infix
   type ×[A, B] =
@@ -74,4 +77,8 @@ package object stuff {
   /** @group annotations */
   type infix =
     scala.annotation.showAsInfix
+
+  @infix
+  type <:<[A, B] =
+    scala.Predef.<:<[A, B]
 }
