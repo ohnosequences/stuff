@@ -1,4 +1,4 @@
-package ohnosequences.stuff.test.tuples
+package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
 import scala.{Boolean, Int}

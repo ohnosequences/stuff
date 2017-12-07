@@ -1,7 +1,6 @@
 package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
-import ohnosequences.stuff.products._
 
 import scala.{Int}
 import scala.Predef.String
@@ -42,25 +41,24 @@ class ScalaCategoryTests extends FunSuite {
 
   test("syntax") {
 
-    val z0 =
-      Category(Scala) ⊢ { id[String] >=> id[String] }
+    Product(ohnosequences.stuff.tuples) ⊢ {
 
-    assert { (z0 at "hola") === "hola" }
+      val z0: String >=> String =
+        id[String] >=> id[String]
 
-    val z1 =
-      Product(ohnosequences.stuff.tuples) ⊢ {
+      val z1: String >=> String =
         id[String]
-      }
 
-    assert { (z1 at "hola") === "hola" }
-
-    val u =
-      Product(ohnosequences.stuff.tuples) ⊢ {
+      val u: (String × Int) >=> (Int × String) =
         l × toStr
-      }
 
-    val _2and2 = (u at ("ab" and 2))
+      val _2and2: Int × String =
+        u at ("ab" and 2)
 
-    assert { left(_2and2) === 2 && right(_2and2) === "2" }
+      assert { (z0 at "hola") === "hola" }
+      assert { (z1 at "hola") === "hola" }
+      assert { (left at _2and2) === 2 }
+      assert { (right at _2and2) === "2" }
+    }
   }
 }
