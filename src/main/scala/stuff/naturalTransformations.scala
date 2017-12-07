@@ -146,9 +146,11 @@ object NaturalTransformation {
   ](val pair: is[M] × is[N])
       extends NaturalTransformation {
 
-    @inline final def first = pair.left
+    @inline final def first: is[M] =
+      pair.left
 
-    @inline final def second = pair.right
+    @inline final def second: is[N] =
+      pair.right
 
     type SourceCategory = M#SourceCategory
     val sourceCategory = first.sourceCategory
