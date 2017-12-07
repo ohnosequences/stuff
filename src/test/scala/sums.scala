@@ -1,9 +1,8 @@
 package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
-import ohnosequences.stuff.sums._
 
-import scala.{Int}
+import scala.Int
 import scala.Predef.String
 import org.scalatest.FunSuite
 
@@ -24,31 +23,42 @@ class Sums extends FunSuite {
 
   test("either") {
 
-    assert {
-      either(isZero and isEmpty)(inL(0)) == isZero(0) &&
-      either(isZero and isEmpty)(inR("")) == isEmpty("")
+    Coproduct(sums) ⊢ {
+
+      assert {
+
+        ((isZero | isEmpty) at left(0)) == (isZero at 0) &&
+        ((isZero | isEmpty) at right("")) == isEmpty("")
+      }
     }
   }
 
   test("+") {
 
-    assert {
-      (l + toStr)(inR(2)) === inR("2") &&
-      (l + toStr >-> toStr + l)(inR(2)) === inR(1)
+    Coproduct(sums) ⊢ {
+
+      assert {
+        ((l + toStr) at right(2)) == right("2") && {
+          (l + toStr) >=> (toStr + l) at right(2)
+        } == right(1)
+      }
     }
   }
 
   test("any nothing commutative monoid") {
 
-    val l: String + String =
-      inL("hola")
+    Coproduct(sums) ⊢ {
 
-    val r: String + String =
-      inR("scalac")
+      val l: String + String =
+        left at "hola"
 
-    assert {
-      any(l) == (sums.swap >-> any[String])(l) &&
-      any(r) == (sums.swap >-> any[String])(r)
+      val r: String + String =
+        right at "scalac"
+
+      assert {
+        any(l) == { swap >=> any[String] at l } &&
+        any(r) == { swap >=> any[String] at r }
+      }
     }
   }
 }
