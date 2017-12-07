@@ -187,8 +187,14 @@ final class CartesianMonoidalCategory[P <: Product](val product: Product.is[P])
   def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
     product.right
 
+  def lunit[A <: On#Objects]: On#C[A, I ⊗ A] =
+    Product(product) ⊢ { erase ^ id }
+
   def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
     product.left
+
+  def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
+    Product(product) ⊢ { id ^ erase }
 }
 
 ////////////////////////////////////////////////////////////////////////////

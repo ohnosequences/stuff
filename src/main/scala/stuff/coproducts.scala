@@ -201,6 +201,12 @@ final class CocartesianMonoidalCategory[S <: Coproduct](
   def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
     Coproduct(coproduct) ⊢ (intro + id[A] >=> any)
 
+  def lunit[A <: On#Objects]: On#C[A, I ⊗ A] =
+    coproduct.right
+
   def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
     Coproduct(coproduct) ⊢ (id[A] + intro[A] >=> any)
+
+  def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
+    coproduct.left
 }
