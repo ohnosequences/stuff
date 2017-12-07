@@ -19,7 +19,9 @@ abstract class MonoidalCategory {
     : On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C]
 
   def unitl[A <: On#Objects]: On#C[I ⊗ A, A]
+  def lunit[A <: On#Objects]: On#C[A, I ⊗ A]
   def unitr[A <: On#Objects]: On#C[A ⊗ I, A]
+  def runit[A <: On#Objects]: On#C[A, A ⊗ I]
 }
 
 object MonoidalCategory {
@@ -146,6 +148,7 @@ abstract class SymmetricStructure {
   type On <: MonoidalCategory
   val on: MonoidalCategory.is[On]
 
+  // note that swap must be its own inverse modulo swapping at the level of types
   def swap[X <: On#On#Objects, Y <: On#On#Objects]
   // format: off
     : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]]
