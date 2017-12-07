@@ -112,7 +112,7 @@ object MonoidalCategory {
       MonoidalCategory(mcat) ⊢ { λ { _ ⊗ id } }
   }
 
-  class TensorFunctor[MCat <: MonoidalCategory](val mcat: is[MCat])
+  final class TensorFunctor[MCat <: MonoidalCategory](val mcat: is[MCat])
       extends Functor {
 
     type Source = Category.ProductCategory[MCat#On, MCat#On]
@@ -139,8 +139,6 @@ object MonoidalCategory {
       // format: on
       type I = MCat#I
     }
-
-  type inferIs[MCat <: MonoidalCategory] >: is[MCat] <: is[MCat]
 }
 
 abstract class SymmetricStructure {

@@ -101,10 +101,10 @@ object NaturalTransformation {
   ](val pair: is[A] × is[B])
       extends NaturalTransformation {
 
-    @inline final def first: is[A] = 
+    @inline final def first: is[A] =
       pair.left
 
-    @inline final def second: is[B] = 
+    @inline final def second: is[B] =
       pair.right
 
     type SourceCategory = is[A]#SourceCategory
