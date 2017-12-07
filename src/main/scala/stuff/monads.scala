@@ -1,18 +1,19 @@
 package ohnosequences.stuff
 
 import NaturalTransformation._
-import Functor.{∘}
+import Functor._
 
 abstract class Monad {
 
   type On <: Functor { type Target = Source }
   val on: Functor.is[On]
 
-  final type OnCat = On#Source
+  type OnCat = On#Source
 
-  val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On]
+  // NOTE I need Functor.is due to the bound on composition
+  val μ: (Functor.is[On] ∘ Functor.is[On]) ~> On
 
-  val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On]
+  val ι: Functor.Identity[OnCat] ~> On
 }
 
 final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
@@ -67,28 +68,17 @@ object Monad {
 
     type On = Functor.Identity[Cat]
 
-    val μ =
-      new NaturalTransformation {
+    object μ extends ((Functor.is[On] ∘ Functor.is[On]) ∼> On) {
 
-        type SourceCategory = Cat
-        val sourceCategory = on.source
-        type TargetCategory = Cat
-        val targetCategory = on.target
+      val sourceFunctor =
+        on >-> on
 
-        type SourceFunctor =
-          Functor.Composition[Functor.is[On], Functor.is[On]]
+      val targetFunctor =
+        on
 
-        val sourceFunctor: Functor.is[SourceFunctor] =
-          Functor.composition[Functor.is[On], Functor.is[On]](
-            on and on
-          )
-
-        type TargetFunctor = Functor.is[On]
-        val targetFunctor = on
-
-        def apply[X <: SourceCategory#Objects]: TargetCategory#C[X, X] =
-          on.source.identity
-      }
+      def apply[X <: SourceCategory#Objects]: TargetCategory#C[X, X] =
+        on.source.identity
+    }
 
     val ι =
       NaturalTransformation.identity(on)

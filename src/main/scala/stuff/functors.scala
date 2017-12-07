@@ -29,8 +29,8 @@ object Functor {
 
     // TODO review types here
     @inline final def >->[Gn <: Functor { type Source = Fn#Target }](
-        other: inferIs[Gn]): is[Fn ∘ Gn] =
-      composition(functor and other)
+        other: inferIs[Gn]): is[is[Fn] ∘ is[Gn]] =
+      composition[is[Fn], is[Gn]](functor and other)
 
     @inline final def ∘[Gn <: Functor { type Source = Fn#Target }](
         other: inferIs[Gn]): is[Fn ∘ Gn] =
