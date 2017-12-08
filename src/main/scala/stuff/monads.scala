@@ -1,11 +1,11 @@
 package ohnosequences.stuff
 
 import NaturalTransformation._
-import Functor._
+import Functor.{∘}
 
 abstract class Monad {
 
-  type On <: Functor { type Target = Source }
+  type On <: Functor.Endo
   val on: Functor.is[On]
 
   type OnCat = On#Source

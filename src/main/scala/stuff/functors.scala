@@ -21,7 +21,7 @@ abstract class Functor { me =>
 
 object Functor {
 
-  implicit final class FunctorSyntax[Fn <: Functor](val functor: inferIs[Fn]) {
+  implicit final class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
 
     @inline final def apply[X <: Fn#SourceObjects, Y <: Fn#SourceObjects](
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
@@ -29,12 +29,12 @@ object Functor {
 
     // TODO review types here
     @inline final def >->[Gn <: Functor { type Source = Fn#Target }](
-        other: inferIs[Gn]): is[is[Fn] ∘ is[Gn]] =
+        other: is[Gn]): is[Composition[is[Fn], is[Gn]]] =
       composition[is[Fn], is[Gn]](functor and other)
 
-    @inline final def ∘[Gn <: Functor { type Source = Fn#Target }](
-        other: inferIs[Gn]): is[Fn ∘ Gn] =
-      composition(functor and other)
+    @inline final def ∘[Gn <: Functor { type Target = Fn#Source }](
+        other: is[Gn]): is[Composition[is[Gn], is[Fn]]] =
+      composition[is[Gn], is[Fn]](other and functor)
   }
 
   type between[Src <: Category, Tgt <: Category] =
@@ -42,9 +42,6 @@ object Functor {
       type Source = Src
       type Target = Tgt
     }
-
-  // Let's hope https://github.com/scala/scala/pull/6140 makes this unnecessary
-  type inferIs[functor <: Functor] >: is[functor] <: is[functor]
 
   type is[functor <: Functor] =
     functor {
@@ -71,11 +68,16 @@ object Functor {
       Scala.identity
   }
 
-  // @infix
+  type Endo = Functor { type Source = Target }
+
+  type isEndo[Fn <: Endo] =
+    Fn { type Source = Fn#Source; type Target = Fn#Target }
+
+  @infix
   type ∘[
       F0 <: Functor,
-      G0 <: Functor { type Source = F0#Target }
-  ] = Composition[F0, G0]
+      G0 <: Functor { type Target = F0#Source }
+  ] = Composition[is[G0], is[F0]]
 
   final class Composition[
       F0 <: Functor,
@@ -103,7 +105,7 @@ object Functor {
   @inline final def composition[
       F0 <: Functor,
       G0 <: Functor { type Source = F0#Target }
-  ]: (is[F0] × is[G0]) -> is[F0 ∘ G0] =
+  ]: (is[F0] × is[G0]) -> is[Composition[F0, G0]] =
     λ { fg =>
       new Composition(fg.left, fg.right)
         .asInstanceOf[is[Composition[F0, G0]]]
