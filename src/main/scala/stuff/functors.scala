@@ -70,9 +70,6 @@ object Functor {
 
   type Endo = Functor { type Source = Target }
 
-  type isEndo[Fn <: Endo] =
-    Fn { type Source = Fn#Source; type Target = Fn#Target }
-
   @infix
   type ∘[
       F0 <: Functor,
