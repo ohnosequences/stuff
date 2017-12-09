@@ -7,6 +7,8 @@ import org.scalatest.FunSuite
 
 case object boh {
 
+  import Functor._
+
   val Id =
     Functor.identity at Scala
 

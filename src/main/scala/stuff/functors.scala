@@ -21,20 +21,24 @@ abstract class Functor { me =>
 
 object Functor {
 
-  implicit final class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
+  implicit def functorSyntax[Fn <: Functor](fn: Fn)(
+      implicit ev: fn.type <:< is[Fn]): FunctorSyntax[Fn] =
+    new FunctorSyntax(ev(fn))
+
+  final class FunctorSyntax[Fn <: Functor](val functor: is[Fn]) {
 
     @inline final def apply[X <: Fn#SourceObjects, Y <: Fn#SourceObjects](
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
       functor.at[X, Y](f)
 
     // TODO review types here
-    @inline final def >->[Gn <: Functor { type Source = Fn#Target }](
-        other: is[Gn]): is[Composition[is[Fn], is[Gn]]] =
-      composition[is[Fn], is[Gn]](functor and other)
+    @inline final def >->[Gn <: Functor { type Source = Fn#Target }](other: Gn)(
+        implicit ev: other.type <:< is[Gn]): is[Composition[is[Fn], is[Gn]]] =
+      composition[is[Fn], is[Gn]](functor and ev(other))
 
-    @inline final def ∘[Gn <: Functor { type Target = Fn#Source }](
-        other: is[Gn]): is[Composition[is[Gn], is[Fn]]] =
-      composition[is[Gn], is[Fn]](other and functor)
+    @inline final def ∘[Gn <: Functor { type Target = Fn#Source }](other: Gn)(
+        implicit ev: other.type <:< is[Gn]): is[Composition[is[Gn], is[Fn]]] =
+      composition[is[Gn], is[Fn]](ev(other) and functor)
   }
 
   type between[Src <: Category, Tgt <: Category] =
