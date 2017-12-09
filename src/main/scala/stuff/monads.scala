@@ -68,13 +68,7 @@ object Monad {
 
     type On = Functor.Identity[Cat]
 
-    object μ extends ((Functor.is[On] ∘ Functor.is[On]) ∼> On) {
-
-      val sourceFunctor =
-        on >-> on
-
-      val targetFunctor =
-        on
+    object μ extends Between(on >-> on, on) {
 
       def apply[X <: SourceCategory#Objects]: TargetCategory#C[X, X] =
         on.source.identity

@@ -29,19 +29,6 @@ abstract class NaturalTransformation { nat =>
 
 object NaturalTransformation {
 
-  abstract class ∼>[
-      F1 <: Functor,
-      F2 <: Functor { type Source = F1#Source; type Target = F1#Target }
-  ] extends NaturalTransformation {
-
-    type SourceCategory = F1#Source
-    val sourceCategory = sourceFunctor.source
-    type TargetCategory = F1#Target
-    val targetCategory = sourceFunctor.target
-    type SourceFunctor = Functor.is[F1]
-    type TargetFunctor = Functor.is[F2]
-  }
-
   abstract class Between[
       F1 <: Functor,
       F2 <: Functor { type Source = F1#Source; type Target = F1#Target }
