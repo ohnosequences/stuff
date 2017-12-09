@@ -50,10 +50,12 @@ object functions {
 private[stuff] final class Function[X, Y](val stdF: X => Y)
     extends CompileTime {
 
-  @inline final def at(d: X): Y =
+  @inline
+  final def at(d: X): Y =
     stdF apply d
 
-  @inline final def apply(a: X): Y =
+  @inline
+  final def apply(a: X): Y =
     this at a
 
   final def >->[C](g: Y -> C): X -> C =

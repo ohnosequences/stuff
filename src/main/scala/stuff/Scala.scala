@@ -16,11 +16,13 @@ object Scala extends Category {
     X -> Y
 
   /** The identity function `x: X => x` */
-  @inline final def identity[X <: Objects]: C[X, X] =
+  @inline
+  final def identity[X <: Objects]: C[X, X] =
     functions.identity
 
   /** Function composition. */
-  @inline final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+  @inline
+  final def composition[X <: Objects, Y <: Objects, Z <: Objects]
     : C[X, Y] × C[Y, Z] -> C[X, Z] =
     λ { fg =>
       fg.left >-> fg.right

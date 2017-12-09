@@ -42,7 +42,8 @@ package object stuff {
 
     @group functions
     */
-  @inline final def λ[A, B](f: A => B): A -> B =
+  @inline
+  final def λ[A, B](f: A => B): A -> B =
     new Function(f)
 
   /** @group products */

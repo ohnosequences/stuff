@@ -65,45 +65,56 @@ object Coproduct {
 
     // implicits
     /////////////////////////////////////////////////////////////////////////
-    @inline implicit final val _on: Category.is[S#On] =
+    @inline
+    implicit final val _on: Category.is[S#On] =
       s.on
 
-    @inline implicit final val _s: is[S] =
+    @inline
+    implicit final val _s: is[S] =
       s
 
-    @inline implicit final def categoryMorphismSyntax[X <: Objects,
-                                                      Y <: Objects](
+    @inline
+    implicit final def categoryMorphismSyntax[X <: Objects, Y <: Objects](
         f: X >=> Y): Category.MorphismSyntax[S#On, X, Y] =
       new Category.MorphismSyntax(f)
 
-    @inline implicit final def sumMorphismSyntax[X <: Objects, Y <: Objects](
+    @inline
+    implicit final def sumMorphismSyntax[X <: Objects, Y <: Objects](
         f: X >=> Y): SumMorphismSyntax[S, X, Y] =
       new SumMorphismSyntax(f)
 
     // aliases
     /////////////////////////////////////////////////////////////////////////
-    @inline final def id[X <: Objects]: X >=> X =
+    @inline
+    final def id[X <: Objects]: X >=> X =
       s.on.identity
 
-    @inline final def left[A <: Objects, B <: Objects]: A >=> (A + B) =
+    @inline
+    final def left[A <: Objects, B <: Objects]: A >=> (A + B) =
       s left
 
-    @inline final def right[A <: Objects, B <: Objects]: B >=> (A + B) =
+    @inline
+    final def right[A <: Objects, B <: Objects]: B >=> (A + B) =
       s right
 
-    @inline final def intro[A <: Objects]: ∅ >=> A =
+    @inline
+    final def intro[A <: Objects]: ∅ >=> A =
       s intro
 
-    @inline final def any[Z <: Objects]: (Z + Z) >=> Z =
+    @inline
+    final def any[Z <: Objects]: (Z + Z) >=> Z =
       id | id
 
-    @inline final def ∇[Z <: Objects]: (Z + Z) >=> Z =
+    @inline
+    final def ∇[Z <: Objects]: (Z + Z) >=> Z =
       any
 
-    @inline final def swap[A <: Objects, B <: Objects]: (A + B) >=> (B + A) =
+    @inline
+    final def swap[A <: Objects, B <: Objects]: (A + B) >=> (B + A) =
       right | left
 
-    @inline final def components[
+    @inline
+    final def components[
         A <: Objects,
         B <: Objects,
         X <: Objects,
@@ -133,13 +144,15 @@ object Coproduct {
   ](val f: S#On#C[X, Y])
       extends CompileTime {
 
-    @inline final def |[Z <: S#On#Objects](g: S#On#C[Z, Y])(
+    @inline
+    final def |[Z <: S#On#Objects](g: S#On#C[Z, Y])(
         implicit sum: is[S]
     ) // format: off
     : S#On#C[S# +[X, Z], Y] = // format: on
     sum either (f and g)
 
-    @inline final def +[U <: S#On#Objects, V <: S#On#Objects](g: S#On#C[U, V])(
+    @inline
+    final def +[U <: S#On#Objects, V <: S#On#Objects](g: S#On#C[U, V])(
         implicit sum: is[S] // format: off
     )
     : S#On#C[S# +[X, U], S# +[Y, V]] = // format: on

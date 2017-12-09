@@ -92,8 +92,8 @@ object NaturalTransformation {
       targetCategory.identity
   }
 
-  @inline final def identity[Fnctr <: Functor]
-    : Functor.is[Fnctr] -> Identity[Fnctr] =
+  @inline
+  final def identity[Fnctr <: Functor]: Functor.is[Fnctr] -> Identity[Fnctr] =
     λ { new Identity(_) }
 
   @infix
@@ -117,10 +117,12 @@ object NaturalTransformation {
   ](val pair: is[A] × is[B])
       extends NaturalTransformation {
 
-    @inline final def first: is[A] =
+    @inline
+    final def first: is[A] =
       pair.left
 
-    @inline final def second: is[B] =
+    @inline
+    final def second: is[B] =
       pair.right
 
     type SourceCategory = is[A]#SourceCategory
@@ -164,10 +166,12 @@ object NaturalTransformation {
   ](val pair: is[M] × is[N])
       extends NaturalTransformation {
 
-    @inline final def first: is[M] =
+    @inline
+    final def first: is[M] =
       pair.left
 
-    @inline final def second: is[N] =
+    @inline
+    final def second: is[N] =
       pair.right
 
     type SourceCategory = M#SourceCategory
@@ -199,7 +203,8 @@ object NaturalTransformation {
       }
   }
 
-  @inline final def horizontalComposition[
+  @inline
+  final def horizontalComposition[
       M <: NaturalTransformation,
       N <: NaturalTransformation { type SourceCategory = M#TargetCategory }
   ]: (is[M] × is[N]) -> (M >=> N) =

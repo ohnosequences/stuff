@@ -14,18 +14,22 @@ object sums extends Coproduct {
   type ∅ =
     ohnosequences.stuff.∅
 
-  @inline final def intro[X]: ∅ -> X =
+  @inline
+  final def intro[X]: ∅ -> X =
     λ { n: ∅ =>
       scala.sys.error("∅"): X
     }
 
-  @inline final def left[A, B]: A -> (A + B) =
+  @inline
+  final def left[A, B]: A -> (A + B) =
     λ { new Left(_) }
 
-  @inline final def right[A, B]: B -> (A + B) =
+  @inline
+  final def right[A, B]: B -> (A + B) =
     λ { new Right(_) }
 
-  @inline final def either[A, B, X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) =
+  @inline
+  final def either[A, B, X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) =
     λ { fg: (A -> X) × (B -> X) =>
       λ { aorb: A + B =>
         if (aorb.isInstanceOf[Left[_, _]])
@@ -35,16 +39,20 @@ object sums extends Coproduct {
       }
     }
 
-  @inline final def ιL[O <: Or]: O#Left -> (O#Left + O#Right) =
+  @inline
+  final def ιL[O <: Or]: O#Left -> (O#Left + O#Right) =
     λ { new Left(_) }
 
-  @inline final def ιR[O <: Or]: O#Right -> (O#Left + O#Right) =
+  @inline
+  final def ιR[O <: Or]: O#Right -> (O#Left + O#Right) =
     λ { new Right(_) }
 
-  @inline final def inL[A, B]: A -> (A + B) =
+  @inline
+  final def inL[A, B]: A -> (A + B) =
     left
 
-  @inline final def inR[A, B]: B -> (A + B) =
+  @inline
+  final def inR[A, B]: B -> (A + B) =
     right
 }
 

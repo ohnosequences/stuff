@@ -31,10 +31,12 @@ final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
 
   type F[X <: Objects] = M#On#F[X]
 
-  @inline final def identity[X <: Objects]: C[X, X] =
+  @inline
+  final def identity[X <: Objects]: C[X, X] =
     monad.ι[X]
 
-  @inline final def composition[
+  @inline
+  final def composition[
       X <: Objects,
       Y <: Objects,
       Z <: Objects
@@ -48,7 +50,8 @@ final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
 
 object KleisliCategory {
 
-  @inline final def apply[Mnd <: Monad]: Monad.is[Mnd] -> KleisliCategory[Mnd] =
+  @inline
+  final def apply[Mnd <: Monad]: Monad.is[Mnd] -> KleisliCategory[Mnd] =
     λ { new KleisliCategory(_) }
 }
 
@@ -78,7 +81,8 @@ object Monad {
       NaturalTransformation.identity(on)
   }
 
-  @inline final def identity[Cat <: Category]
+  @inline
+  final def identity[Cat <: Category]
     : Functor.is[Functor.Identity[Cat]] -> is[Identity[Cat]] =
     λ { new Identity(_) }
 }
