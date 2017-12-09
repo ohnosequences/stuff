@@ -29,13 +29,29 @@ abstract class NaturalTransformation { nat =>
 
 object NaturalTransformation {
 
+  abstract class Between[
+      F1 <: Functor,
+      F2 <: Functor { type Source = F1#Source; type Target = F1#Target }
+  ](
+      val sourceFunctor: Functor.is[F1],
+      val targetFunctor: Functor.is[F2]
+  ) extends NaturalTransformation {
+
+    type SourceCategory = F1#Source
+    val sourceCategory = sourceFunctor.source
+    type TargetCategory = F1#Target
+    val targetCategory = sourceFunctor.target
+    type SourceFunctor = Functor.is[F1]
+    type TargetFunctor = Functor.is[F2]
+  }
+
   // NOTE bounds are not checked in type aliases
   // we can use this to our advantage here
   type ~>[F1 <: Functor, F2 <: Functor] =
     NaturalTransformation {
       type SourceCategory = F1#Source
-      type SourceFunctor  = F1
-      type TargetFunctor  = F2
+      type SourceFunctor  = Functor.is[F1]
+      type TargetFunctor  = Functor.is[F2]
       type TargetCategory = F1#Target
     }
 
