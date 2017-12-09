@@ -73,11 +73,12 @@ object Monad {
 
     object μ extends Between(on >-> on, on) {
 
-      def apply[X <: SourceCategory#Objects]: TargetCategory#C[X, X] =
+      def apply[X <: SourceFunctor#Source#Objects]
+        : SourceFunctor#Target#C[X, X] =
         on.source.identity
     }
 
-    val ι =
+    val ι: Functor.Identity[OnCat] ~> On =
       NaturalTransformation.identity(on)
   }
 

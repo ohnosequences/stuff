@@ -52,11 +52,11 @@ object Functor {
 
   type is[functor <: Functor] =
     functor {
-      type Source                        = functor#Source
-      type SourceObjects                 = functor#SourceObjects
-      type Target                        = functor#Target
-      type TargetObjects                 = functor#TargetObjects
-      type F[Z <: functor#SourceObjects] = functor#F[Z]
+      type Source                = functor#Source
+      type SourceObjects         = functor#SourceObjects
+      type Target                = functor#Target
+      type TargetObjects         = functor#TargetObjects
+      type F[Z <: SourceObjects] = functor#F[Z]
     }
 
   final class Identity[Cat <: Category](val cat: Category.is[Cat])
