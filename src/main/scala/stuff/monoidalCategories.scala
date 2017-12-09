@@ -66,7 +66,7 @@ object MonoidalCategory {
       A1 <: MonCat#On#Objects,
       B1 <: MonCat#On#Objects
   ](val f: MonCat#On#C[A1, B1])
-      extends scala.AnyVal {
+      extends CompileTime {
 
     @inline
     final def ⊗[

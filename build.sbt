@@ -45,20 +45,30 @@ autoAPIMappings := true
 scalafmtVersion := "1.3.0"
 scalafmtOnCompile := true
 
-// all these exceptions come from not being able to only exclude `asInstanceOf`
-wartremoverExcluded ++= Seq(
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "naturalTransformations.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "categories.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "monads.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "monoidalCategories.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "functors.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "sums.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "coproducts.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "products.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "tailrec.scala"
+wartremoverErrors in (Compile, compile) := Warts.allBut(
+  Wart.AsInstanceOf,
+  Wart.IsInstanceOf,
+  Wart.Equals,
+  Wart.FinalVal,
+  Wart.ImplicitConversion,
+  Wart.Nothing // needed because of the contexts compiler plugin
+)
+wartremoverWarnings in (Compile, compile) := Warts.allBut(
+  Wart.AsInstanceOf,
+  Wart.IsInstanceOf,
+  Wart.Equals,
+  Wart.FinalVal,
+  Wart.ImplicitConversion,
+  Wart.Nothing // needed because of the contexts compiler plugin
 )
 
-wartremoverErrors in (Test, compile) := Seq()
+wartremoverExcluded ++= Seq(
+  // Any inferred in Hom functor
+  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "categories.scala",
+  baseDirectory.value / "src" / "test" / "scala" / "tuples" / "stdComparison.scala"
+)
 
-// shows time for each test:
+// shows time for each test
 testOptions in Test += Tests.Argument("-oD")
+// disables parallel test execution
+parallelExecution in Test := false

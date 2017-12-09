@@ -40,7 +40,9 @@ case object kosher {
   // NOTE this is fine
   def exchangeFood[A <: Animal]: is[A] × is[A] -> Unit =
     λ { xy =>
-      products.left(xy) eat products.right(xy).find
+      Product(tuples) ⊢ {
+        left(xy) eat right(xy).find
+      }
     }
 
   class Grass

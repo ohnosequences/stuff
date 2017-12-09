@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-import products.{πL, πR}
+import Tuple.{πL, πR}
 
 /** Categories
 
@@ -32,13 +32,14 @@ abstract class Category {
 
 object Category {
 
-  @inline final def apply[Cat <: Category](cat: is[Cat]): Syntax[Cat] =
+  @inline
+  final def apply[Cat <: Category](cat: is[Cat]): Syntax[Cat] =
     new Syntax(cat)
 
   final class Syntax[Cat <: Category](val cat: is[Cat]) {
 
     @inline
-    implicit final val _this: Category.is[Cat] =
+    implicit final val _cat: Category.is[Cat] =
       cat
 
     @inline
@@ -62,7 +63,7 @@ object Category {
       X <: Cat#Objects,
       Y <: Cat#Objects
   ](val f: is[Cat]#C[X, Y])
-      extends scala.AnyVal {
+      extends CompileTime {
 
     @inline
     final def >=>[Z <: Cat#Objects](g: Cat#C[Y, Z])(
@@ -70,7 +71,8 @@ object Category {
     ): Cat#C[X, Z] =
       cat.composition at (f and g)
 
-    @inline final def ∘[U <: Cat#Objects](h: Cat#C[U, X])(
+    @inline
+    final def ∘[U <: Cat#Objects](h: Cat#C[U, X])(
         implicit cat: Category.is[Cat]
     ): Cat#C[U, Y] =
       cat.composition at (h and f)
@@ -189,5 +191,8 @@ object Category {
 
   final def homFunctor[Cat <: Category]
     : is[Cat] -> Functor.is[HomFunctor[Cat]] =
-    λ { new HomFunctor(_).asInstanceOf[Functor.is[HomFunctor[Cat]]] }
+    λ {
+      new HomFunctor(_)
+        .asInstanceOf[Functor.is[HomFunctor[Cat]]]
+    }
 }

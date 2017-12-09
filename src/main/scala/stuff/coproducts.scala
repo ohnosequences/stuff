@@ -10,12 +10,7 @@ abstract class Coproduct {
 
   type ∅ <: On#Objects
 
-  def either[
-      A <: On#Objects,
-      B <: On#Objects,
-      X <: On#Objects,
-  ]
-  // TODO find a convenient aliasing convention for both +'s
+  def either[A <: On#Objects, B <: On#Objects, X <: On#Objects]
     : (On#C[A, X] × On#C[B, X]) -> On#C[A + B, X]
 
   def intro[X <: On#Objects]: On#C[∅, X]
@@ -40,7 +35,8 @@ object Coproduct {
     new CocartesianMonoidalCategory(ev(s))
       .asInstanceOf[MonoidalCategory.is[CocartesianMonoidalCategory[S]]]
 
-  @inline final def apply[
+  @inline
+  final def apply[
       S <: Coproduct
   ](s: S)(implicit ev: s.type <:< is[S]): Syntax[S] =
     new Syntax(ev(s))
@@ -135,7 +131,7 @@ object Coproduct {
       X <: S#On#Objects,
       Y <: S#On#Objects
   ](val f: S#On#C[X, Y])
-      extends scala.AnyVal {
+      extends CompileTime {
 
     @inline final def |[Z <: S#On#Objects](g: S#On#C[Z, Y])(
         implicit sum: is[S]
@@ -165,7 +161,7 @@ final class CocartesianMonoidalCategory[S <: Coproduct](
   type I                                   = S# ∅
   // format: on
 
-  def ⊗[
+  final def ⊗[
       A <: On#Objects,
       B <: On#Objects,
       C <: On#Objects,
@@ -175,7 +171,7 @@ final class CocartesianMonoidalCategory[S <: Coproduct](
       Coproduct(coproduct) ⊢ { fg.left + fg.right }
     }
 
-  def assoc_right[
+  final def assoc_right[
       A <: On#Objects,
       B <: On#Objects,
       C <: On#Objects
@@ -186,7 +182,7 @@ final class CocartesianMonoidalCategory[S <: Coproduct](
         right >=> right
     }
 
-  def assoc_left[
+  final def assoc_left[
       A <: On#Objects,
       B <: On#Objects,
       C <: On#Objects
@@ -198,15 +194,15 @@ final class CocartesianMonoidalCategory[S <: Coproduct](
       }
     }
 
-  def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
+  final def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
     Coproduct(coproduct) ⊢ (intro + id[A] >=> any)
 
-  def lunit[A <: On#Objects]: On#C[A, I ⊗ A] =
+  final def lunit[A <: On#Objects]: On#C[A, I ⊗ A] =
     coproduct.right
 
-  def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
+  final def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
     Coproduct(coproduct) ⊢ (id[A] + intro[A] >=> any)
 
-  def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
+  final def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
     coproduct.left
 }
