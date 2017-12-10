@@ -17,6 +17,21 @@ abstract class NaturalTransformation { nat =>
 
 object NaturalTransformation {
 
+  implicit final def natSyntax[N <: NaturalTransformation](n: N)(
+      implicit ev: n.type <:< is[N]): Syntax[N] =
+    new Syntax(ev(n))
+
+  final class Syntax[N <: NaturalTransformation](val n: is[N])
+      extends CompileTime {
+
+    // vertical
+    @inline
+    final def >->[M <: NaturalTransformation {
+      type SourceFunctor = is[N]#TargetFunctor
+    }](m: M)(implicit ev: m.type <:< is[M]): N >-> M =
+      verticalComposition(n and ev(m))
+  }
+
   abstract class Between[
       F1 <: Functor,
       F2 <: Functor { type Source = F1#Source; type Target = F1#Target }
@@ -50,10 +65,10 @@ object NaturalTransformation {
       extends NaturalTransformation {
 
     type SourceFunctor = Functor.is[Fnctr]
-    val sourceFunctor = fnctr
+    val sourceFunctor: Functor.is[Fnctr] = fnctr
 
     type TargetFunctor = Functor.is[Fnctr]
-    val targetFunctor = fnctr
+    val targetFunctor: Functor.is[Fnctr] = fnctr
 
     def apply[X <: SourceFunctor#Source#Objects]
       : TargetFunctor#Target#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
@@ -62,7 +77,7 @@ object NaturalTransformation {
 
   @inline
   final def identity[Fnctr <: Functor]: Functor.is[Fnctr] -> Identity[Fnctr] =
-    λ { new Identity(_) }
+    λ { new Identity(_).asInstanceOf[is[Identity[Fnctr]]] }
 
   @infix
   type >->[

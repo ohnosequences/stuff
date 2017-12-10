@@ -79,7 +79,7 @@ object Monad {
     }
 
     val ι: Functor.Identity[OnCat] ~> On =
-      NaturalTransformation.identity(on)
+      Functor.functorSyntax[On](on).id
   }
 
   @inline

@@ -28,6 +28,10 @@ object Functor {
   final class FunctorSyntax[Fn <: Functor](val functor: is[Fn])
       extends CompileTime {
 
+    final def id: NaturalTransformation.~>[Fn, Fn] =
+      // : NaturalTransformation.Identity[Fn] =
+      NaturalTransformation identity functor
+
     @inline
     final def apply[X <: Fn#SourceObjects, Y <: Fn#SourceObjects](
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
