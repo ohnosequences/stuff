@@ -8,10 +8,7 @@ abstract class Functor { me =>
   type Target <: Category
   val target: Category.is[Target]
 
-  type SourceObjects = Source#Objects
-  type TargetObjects = Target#Objects
-
-  type F[Z <: SourceObjects] <: TargetObjects
+  type F[Z <: Source#Objects] <: Target#Objects
 
   def at[
       X <: Source#Objects,
@@ -21,6 +18,13 @@ abstract class Functor { me =>
 
 object Functor {
 
+  type is[functor <: Functor] =
+    functor {
+      type Source = functor#Source
+      type Target = functor#Target
+      type F[Z <: Source#Objects] = functor#F[Z]
+    }
+
   implicit final def functorSyntax[Fn <: Functor](fn: Fn)(
       implicit ev: fn.type <:< is[Fn]): FunctorSyntax[Fn] =
     new FunctorSyntax(ev(fn))
@@ -28,12 +32,11 @@ object Functor {
   final class FunctorSyntax[Fn <: Functor](val functor: is[Fn])
       extends CompileTime {
 
-    final def id: NaturalTransformation.~>[Fn, Fn] =
-      // : NaturalTransformation.Identity[Fn] =
+    final def id: NaturalTransformation.Identity[Fn] =
       NaturalTransformation identity functor
 
     @inline
-    final def apply[X <: Fn#SourceObjects, Y <: Fn#SourceObjects](
+    final def apply[X <: Fn#Source#Objects, Y <: Fn#Source#Objects](
         f: Fn#Source#C[X, Y]): Fn#Target#C[Fn#F[X], Fn#F[Y]] =
       functor.at[X, Y](f)
 
@@ -54,31 +57,6 @@ object Functor {
       type Target = Tgt
     }
 
-  type is[functor <: Functor] =
-    functor {
-      type Source                = functor#Source
-      type SourceObjects         = functor#SourceObjects
-      type Target                = functor#Target
-      type TargetObjects         = functor#TargetObjects
-      type F[Z <: SourceObjects] = functor#F[Z]
-    }
-
-  final class Identity[Cat <: Category](val cat: Category.is[Cat])
-      extends Functor {
-
-    type Source = Cat
-    val source = cat
-
-    type Target = Cat
-    val target = cat
-
-    type F[Z <: SourceObjects] = Z
-
-    def at[X <: SourceObjects, Y <: SourceObjects]
-      : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
-      Scala.identity
-  }
-
   type Endo = Functor { type Source = Target }
 
   @infix
@@ -86,28 +64,17 @@ object Functor {
       F0 <: Functor,
       G0 <: Functor { type Target = F0#Source }
   ] = Composition[is[G0], is[F0]]
-
-  final class Composition[
+  //////////////////////////////////////////////////////////////////////////////
+  // Functor composition
+  //////////////////////////////////////////////////////////////////////////////
+  type Composition[
       F0 <: Functor,
       G0 <: Functor { type Source = F0#Target }
-  ](
-      val first: is[F0],
-      val second: is[G0]
-  ) extends Functor {
+  ] = CompositionImpl {
 
-    type Source = F0#Source
-    val source = first.source
-
-    type Target = G0#Target
-    val target = second.target
-
-    type F[Z <: F0#SourceObjects] = G0#F[F0#F[Z]]
-
-    def at[
-        X <: SourceObjects,
-        Y <: SourceObjects
-    ]: Source#C[X, Y] -> Target#C[F[X], F[Y]] =
-      first.at >-> second.at
+    type Source                    = F0#Source
+    type Target                    = G0#Target
+    type F[Z <: F0#Source#Objects] = G0#F[F0#F[Z]]
   }
 
   @inline
@@ -116,12 +83,52 @@ object Functor {
       G0 <: Functor { type Source = F0#Target }
   ]: (is[F0] × is[G0]) -> is[Composition[F0, G0]] =
     λ { fg =>
-      new Composition(fg.left, fg.right)
-        .asInstanceOf[is[Composition[F0, G0]]]
+      new CompositionImpl {
+        type Source                    = F0#Source
+        type Target                    = G0#Target
+        type F[Z <: F0#Source#Objects] = G0#F[F0#F[Z]]
+
+        val first: is[F0] =
+          fg.left
+        val second: is[G0] =
+          fg.right
+
+        val source = first.source
+        val target = second.target
+
+        def at[
+            X <: Source#Objects,
+            Y <: Source#Objects
+        ]: Source#C[X, Y] -> Target#C[F[X], F[Y]] =
+          first.at >-> second.at
+      }
     }
 
-  @inline
-  final def identity[Cat <: Category]
-    : Category.is[Cat] -> Functor.is[Identity[Cat]] =
-    λ { new Identity(_).asInstanceOf[Functor.is[Identity[Cat]]] }
+  sealed abstract class CompositionImpl extends Functor
+  //////////////////////////////////////////////////////////////////////////////
+  // Identity functors
+  //////////////////////////////////////////////////////////////////////////////
+  type Identity[Cat <: Category] = IdentityImpl {
+
+    type Source                 = Cat
+    type Target                 = Cat
+    type F[Z <: Source#Objects] = Z
+  }
+
+  def identity[Cat <: Category]: Category.is[Cat] -> is[Identity[Cat]] =
+    λ { cat =>
+      new IdentityImpl {
+        type Source = Cat
+        val source = cat
+        type Target = Cat
+        val target = cat
+        type F[Z <: Source#Objects] = Z
+        def at[X <: Source#Objects, Y <: Source#Objects]
+          : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
+          Scala.identity
+      }
+    }
+
+  sealed abstract class IdentityImpl extends Functor
+  //////////////////////////////////////////////////////////////////////////////
 }

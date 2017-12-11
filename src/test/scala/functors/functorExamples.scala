@@ -7,7 +7,7 @@ import org.scalatest.FunSuite
 
 case object boh {
 
-  val Id =
+  val Id: Functor.is[Functor.Identity[Scala]] =
     Functor.identity at Scala
 
   val buh =
@@ -23,7 +23,23 @@ case object boh {
   val IdTwiceAgain =
     Id ∘ Id
 
-  val idNat = Id.id
+  // 2-cells
+  import scala.Predef.implicitly
+  import NaturalTransformation._
+  val idNat: Identity[Functor.Identity[Scala]] =
+    identity[Functor.Identity[Scala]](Id)
+
+  class TC {
+
+    type F[X]
+  }
+
+  type Is[tc <: TC] = tc { type F[X] = tc#F[X] }
+
+  object IDTC extends TC { type F[X] = X }
+
+  implicitly[IDTC.type <:< Is[IDTC.type]]
+
 }
 
 class FunctorsExamples extends FunSuite {

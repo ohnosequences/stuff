@@ -11,9 +11,9 @@ abstract class Monad {
   type OnCat = On#Source
 
   // NOTE I need Functor.is due to the bound on composition
-  val μ: (Functor.is[On] ∘ Functor.is[On]) ~> On
+  val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On]
 
-  val ι: Functor.Identity[OnCat] ~> On
+  val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On]
 }
 
 final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
@@ -71,15 +71,18 @@ object Monad {
 
     type On = Functor.Identity[Cat]
 
-    object μ extends Between(on >-> on, on) {
+    val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On] =
+      new Between[Functor.is[On] ∘ Functor.is[On], Functor.is[On]](on >-> on,
+                                                                   on) {
 
-      def apply[X <: SourceFunctor#Source#Objects]
-        : SourceFunctor#Target#C[X, X] =
-        on.source.identity
-    }
+        @inline
+        final def apply[X <: SourceFunctor#Source#Objects]
+          : SourceFunctor#Target#C[X, X] =
+          on.source.identity
+      }
 
-    val ι: Functor.Identity[OnCat] ~> On =
-      Functor.functorSyntax[On](on).id
+    val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On] =
+      new NaturalTransformation.Identity(on)
   }
 
   @inline

@@ -43,7 +43,7 @@ object Category {
       cat
 
     @inline
-    implicit final def syntax[X <: Cat#Objects, Y <: Cat#Objects](
+    implicit final def morphismSyntax[X <: Cat#Objects, Y <: Cat#Objects](
         f: Cat#C[X, Y]): Category.MorphismSyntax[Cat, X, Y] =
       new MorphismSyntax(f)
 
@@ -178,7 +178,7 @@ object Category {
     val target = Scala
     type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
 
-    final def at[X <: SourceObjects, Y <: SourceObjects]
+    final def at[X <: Source#Objects, Y <: Source#Objects]
       : Source#C[X, Y] -> (F[X] -> F[Y]) =
       λ { fg =>
         λ { q =>

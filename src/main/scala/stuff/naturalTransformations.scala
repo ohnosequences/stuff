@@ -17,8 +17,47 @@ abstract class NaturalTransformation { nat =>
 
 object NaturalTransformation {
 
-  implicit final def natSyntax[N <: NaturalTransformation](n: N)(
-      implicit ev: n.type <:< is[N]): Syntax[N] =
+  type is[nat <: NaturalTransformation] =
+    nat {
+      type SourceFunctor = nat#SourceFunctor
+      type TargetFunctor = nat#TargetFunctor {
+        type Source = SourceFunctor#Source
+        type Target = SourceFunctor#Target
+      }
+    }
+
+  type ~>[F1 <: Functor,
+          F2 <: Functor {
+            type Source = F1#Source
+            type Target = F1#Target
+          }] =
+    NaturalTransformation {
+      type SourceFunctor = F1
+      type TargetFunctor = F2
+    }
+
+  final class Identity[Fnctr <: Functor](val fnctr: Functor.is[Fnctr])
+      extends NaturalTransformation {
+
+    final type SourceFunctor = Functor.is[Fnctr]
+    val sourceFunctor: Functor.is[Fnctr] = fnctr
+
+    final type TargetFunctor = Functor.is[Fnctr]
+    val targetFunctor: Functor.is[Fnctr] = fnctr
+
+    @inline final def apply[X <: SourceFunctor#Source#Objects]
+      : TargetFunctor#Target#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
+      targetFunctor.target.identity
+  }
+
+  @inline
+  final def identity[Fnctr <: Functor]: Functor.is[Fnctr] -> Identity[Fnctr] =
+    λ { new Identity(_) }
+
+  // syntax
+  ///////////////////////////////////////////////////////////////////////////
+  implicit final def syntaxNaturalTransformation[N <: NaturalTransformation](
+      n: N)(implicit ev: n.type <:< is[N]): Syntax[N] =
     new Syntax(ev(n))
 
   final class Syntax[N <: NaturalTransformation](val n: is[N])
@@ -30,6 +69,12 @@ object NaturalTransformation {
       type SourceFunctor = is[N]#TargetFunctor
     }](m: M)(implicit ev: m.type <:< is[M]): N >-> M =
       verticalComposition(n and ev(m))
+
+    @inline
+    final def andThen[M <: NaturalTransformation {
+      type SourceFunctor = is[N]#TargetFunctor
+    }](m: is[M]): N >-> M =
+      verticalComposition(n and m)
   }
 
   abstract class Between[
@@ -40,44 +85,9 @@ object NaturalTransformation {
       val targetFunctor: Functor.is[F2]
   ) extends NaturalTransformation {
 
-    type SourceFunctor = Functor.is[F1]
-    type TargetFunctor = Functor.is[F2]
+    type SourceFunctor = F1
+    type TargetFunctor = F2
   }
-
-  // NOTE bounds are not checked in type aliases
-  // we can use this to our advantage here
-  type ~>[F1 <: Functor, F2 <: Functor] =
-    NaturalTransformation {
-      type SourceFunctor = Functor.is[F1]
-      type TargetFunctor = Functor.is[F2]
-    }
-
-  type is[nat <: NaturalTransformation] =
-    nat {
-      type SourceFunctor = nat#SourceFunctor
-      type TargetFunctor = nat#TargetFunctor {
-        type Source = nat#SourceFunctor#Source
-        type Target = nat#SourceFunctor#Target
-      }
-    }
-
-  final class Identity[Fnctr <: Functor](val fnctr: Functor.is[Fnctr])
-      extends NaturalTransformation {
-
-    type SourceFunctor = Functor.is[Fnctr]
-    val sourceFunctor: Functor.is[Fnctr] = fnctr
-
-    type TargetFunctor = Functor.is[Fnctr]
-    val targetFunctor: Functor.is[Fnctr] = fnctr
-
-    def apply[X <: SourceFunctor#Source#Objects]
-      : TargetFunctor#Target#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
-      targetFunctor.target.identity
-  }
-
-  @inline
-  final def identity[Fnctr <: Functor]: Functor.is[Fnctr] -> Identity[Fnctr] =
-    λ { new Identity(_).asInstanceOf[is[Identity[Fnctr]]] }
 
   @infix
   type >->[
