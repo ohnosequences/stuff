@@ -81,8 +81,11 @@ object Monad {
           on.source.identity
       }
 
-    val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On] =
-      new NaturalTransformation.Identity(on)
+    val ι =
+      NaturalTransformation.identity(
+        Functor
+          .identity(on.source)
+      )
   }
 
   @inline

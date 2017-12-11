@@ -36,24 +36,35 @@ object NaturalTransformation {
       type TargetFunctor = F2
     }
 
-  final class Identity[Fnctr <: Functor](val fnctr: Functor.is[Fnctr])
-      extends NaturalTransformation {
+  //////////////////////////////////////////////////////////////////////////////
+  // Identities
+  //////////////////////////////////////////////////////////////////////////////
 
-    final type SourceFunctor = Functor.is[Fnctr]
-    val sourceFunctor: Functor.is[Fnctr] = fnctr
+  type Identity[Fn <: Functor] = IdentityImpl {
 
-    final type TargetFunctor = Functor.is[Fnctr]
-    val targetFunctor: Functor.is[Fnctr] = fnctr
-
-    @inline final def apply[X <: SourceFunctor#Source#Objects]
-      : TargetFunctor#Target#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
-      targetFunctor.target.identity
+    type SourceFunctor = Functor.is[Fn]
+    type TargetFunctor = Functor.is[Fn]
   }
 
   @inline
   final def identity[Fnctr <: Functor]: Functor.is[Fnctr] -> Identity[Fnctr] =
-    λ { new Identity(_) }
+    λ { functor =>
+      new IdentityImpl {
 
+        type SourceFunctor = Functor.is[Fnctr]
+        val sourceFunctor = functor
+        type TargetFunctor = Functor.is[Fnctr]
+        val targetFunctor = functor
+
+        @inline final def apply[X <: SourceFunctor#Source#Objects]
+          : TargetFunctor#Target#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
+          targetFunctor.target.identity
+      }
+    }
+
+  sealed abstract class IdentityImpl extends NaturalTransformation
+
+  //////////////////////////////////////////////////////////////////////////////
   // syntax
   ///////////////////////////////////////////////////////////////////////////
   implicit final def syntaxNaturalTransformation[N <: NaturalTransformation](

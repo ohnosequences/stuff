@@ -20,8 +20,8 @@ object Functor {
 
   type is[functor <: Functor] =
     functor {
-      type Source = functor#Source
-      type Target = functor#Target
+      type Source                 = functor#Source
+      type Target                 = functor#Target
       type F[Z <: Source#Objects] = functor#F[Z]
     }
 
@@ -33,7 +33,7 @@ object Functor {
       extends CompileTime {
 
     final def id: NaturalTransformation.Identity[Fn] =
-      NaturalTransformation identity functor
+      NaturalTransformation.identity[Fn](functor)
 
     @inline
     final def apply[X <: Fn#Source#Objects, Y <: Fn#Source#Objects](
