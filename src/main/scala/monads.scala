@@ -16,45 +16,6 @@ abstract class Monad {
   val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On]
 }
 
-final class KleisliCategory[M <: Monad](val monad: Monad.is[M])
-    extends Category {
-
-  type BaseCat = M#On#Source
-  val baseCat: Category.is[BaseCat] =
-    monad.on.source
-
-  type Objects =
-    M#On#Source#Objects
-
-  type C[X <: Objects, Y <: Objects] =
-    BaseCat#C[X, M#On#F[Y]]
-
-  type F[X <: Objects] = M#On#F[X]
-
-  @inline
-  final def identity[X <: Objects]: C[X, X] =
-    monad.ι[X]
-
-  @inline
-  final def composition[
-      X <: Objects,
-      Y <: Objects,
-      Z <: Objects
-  ]: C[X, Y] × C[Y, Z] -> C[X, Z] =
-    λ { fg =>
-      Category(baseCat) ⊢ {
-        fg.left >=> monad.on(fg.right) >=> monad.μ[Z]
-      }
-    }
-}
-
-object KleisliCategory {
-
-  @inline
-  final def apply[Mnd <: Monad]: Monad.is[Mnd] -> KleisliCategory[Mnd] =
-    λ { new KleisliCategory(_) }
-}
-
 object Monad {
 
   type is[M <: Monad] =
@@ -65,31 +26,45 @@ object Monad {
   type on[F0 <: Functor { type Target = Source }] =
     Monad { type On = F0 }
 
-  final class Identity[Cat <: Category](
-      val on: Functor.is[Functor.Identity[Cat]])
-      extends Monad {
+  type Identity[Cat <: Category] =
+    IdentityImpl {
 
-    type On = Functor.Identity[Cat]
+      type On =
+        Functor.Identity[Cat]
+    }
 
-    val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On] =
-      new Between[Functor.is[On] ∘ Functor.is[On], Functor.is[On]](on >-> on,
-                                                                   on) {
-
-        @inline
-        final def apply[X <: SourceFunctor#Source#Objects]
-          : SourceFunctor#Target#C[X, X] =
-          on.source.identity
-      }
-
-    val ι =
-      NaturalTransformation.identity(
-        Functor
-          .identity(on.source)
-      )
-  }
+  @inline
+  final def idMonad[Cat <: Category]: Category.is[Cat] -> is[Identity[Cat]] =
+    Functor.identity >-> identity
 
   @inline
   final def identity[Cat <: Category]
     : Functor.is[Functor.Identity[Cat]] -> is[Identity[Cat]] =
-    λ { new Identity(_) }
+    λ { idF =>
+      new IdentityImpl {
+
+        type On =
+          Functor.Identity[Cat]
+
+        val on: Functor.is[On] =
+          idF
+
+        val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On] =
+          new Between[Functor.is[On] ∘ Functor.is[On], Functor.is[On]](
+            on >-> on,
+            on
+          ) {
+
+            @inline
+            final def apply[X <: SourceFunctor#Source#Objects]
+              : SourceFunctor#Target#C[X, X] =
+              on.source.identity
+          }
+
+        val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On] =
+          NaturalTransformation identity (Functor identity on.source)
+      }
+    }
+
+  sealed abstract class IdentityImpl extends Monad
 }

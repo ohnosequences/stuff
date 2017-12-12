@@ -24,22 +24,20 @@ case object boh {
     Id ∘ Id
 
   // 2-cells
-  import scala.Predef.implicitly
-  import NaturalTransformation._
-  val idNat: Identity[Functor.Identity[Scala]] =
-    identity[Functor.Identity[Scala]](Id)
 
-  class TC {
+  val idMonad =
+    Monad idMonad Scala
 
-    type F[X]
-  }
+  val kl =
+    KleisliCategory of idMonad
 
-  type Is[tc <: TC] = tc { type F[X] = tc#F[X] }
+  val z =
+    Category(kl) ⊢ {
+      val f: String >=> String =
+        buh
 
-  object IDTC extends TC { type F[X] = X }
-
-  implicitly[IDTC.type <:< Is[IDTC.type]]
-
+      f >=> f
+    }
 }
 
 class FunctorsExamples extends FunSuite {
