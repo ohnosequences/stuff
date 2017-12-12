@@ -2,8 +2,8 @@ package ohnosequences.stuff
 
 object sums extends Coproduct {
 
-  lazy val monoidalCategory: CocartesianMonoidalCategory[this.type] =
-    Coproduct monoidalCategory this
+  lazy val monoidalCategory: Coproduct.CocartesianMonoidalCategory[this.type] =
+    Coproduct monoidalCategory (this: Coproduct.is[this.type])
 
   type On = Scala
   val on = Scala
@@ -32,10 +32,16 @@ object sums extends Coproduct {
   final def either[A, B, X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) =
     λ { fg: (A -> X) × (B -> X) =>
       λ { aorb: A + B =>
-        if (aorb.isInstanceOf[Left[_, _]])
-          fg.left(aorb.value.asInstanceOf[A])
-        else
-          fg.right(aorb.value.asInstanceOf[B])
+        @java.lang.SuppressWarnings(
+          scala.Array("org.wartremover.warts.AsInstanceOf",
+                      "org.wartremover.warts.IsInstanceOf"))
+        val x =
+          if (aorb.isInstanceOf[Left[_, _]])
+            fg.left(aorb.value.asInstanceOf[A])
+          else
+            fg.right(aorb.value.asInstanceOf[B])
+
+        x
       }
     }
 

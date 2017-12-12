@@ -45,17 +45,9 @@ autoAPIMappings := true
 scalafmtVersion := "1.3.0"
 scalafmtOnCompile := true
 
-wartremoverErrors in (Compile, compile) := Warts.allBut(
-  Wart.AsInstanceOf,
-  Wart.IsInstanceOf,
-  Wart.Equals,
-  Wart.FinalVal,
-  Wart.ImplicitConversion,
-  Wart.Nothing // needed because of the contexts compiler plugin
-)
+wartremoverErrors in (Compile, compile) := Seq()
+
 wartremoverWarnings in (Compile, compile) := Warts.allBut(
-  Wart.AsInstanceOf,
-  Wart.IsInstanceOf,
   Wart.Equals,
   Wart.FinalVal,
   Wart.ImplicitConversion,
@@ -63,8 +55,6 @@ wartremoverWarnings in (Compile, compile) := Warts.allBut(
 )
 
 wartremoverExcluded ++= Seq(
-  // Any inferred in Hom functor
-  baseDirectory.value / "src" / "main" / "scala" / "stuff" / "categories.scala",
   baseDirectory.value / "src" / "test" / "scala" / "tuples" / "stdComparison.scala"
 )
 

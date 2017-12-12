@@ -2,8 +2,8 @@ package ohnosequences.stuff
 
 object tuples extends Product {
 
-  lazy val monoidalCategory: CartesianMonoidalCategory[this.type] =
-    Product monoidalCategory this
+  lazy val monoidalCategory: Product.CartesianMonoidalCategory[this.type] =
+    Product monoidalCategory (this: Product.is[this.type])
 
   type On = Scala
   val on = Scala
@@ -48,7 +48,9 @@ private[stuff] sealed abstract class Tuple {
 }
 
 private[stuff] object EmptyTuple {
-  @inline
+
+  @inline @java.lang.SuppressWarnings(
+    scala.Array("org.wartremover.warts.IsInstanceOf"))
   override final def equals(other: scala.Any): scala.Boolean =
     other.isInstanceOf[this.type]
 }
@@ -56,7 +58,9 @@ private[stuff] object EmptyTuple {
 private[stuff] final class TupleImpl[A, B](val left: A, val right: B)
     extends Tuple {
 
-  @inline
+  @inline @java.lang.SuppressWarnings(
+    scala.Array("org.wartremover.warts.AsInstanceOf",
+                "org.wartremover.warts.IsInstanceOf"))
   override final def equals(other: scala.Any): scala.Boolean =
     if (other.isInstanceOf[TupleImpl[A, B]]) {
 

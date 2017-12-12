@@ -33,10 +33,6 @@ object Product {
       // format: on
     }
 
-  def monoidalCategory[P <: Product](p: P)(
-      implicit ev: p.type <:< is[P]): CartesianMonoidalCategory[P] =
-    new CartesianMonoidalCategory(ev(p))
-
   @inline
   final def apply[
       P <: Product
@@ -146,61 +142,87 @@ object Product {
     : Prod#On#C[Prod# ×[X, U], Prod# ×[Y, V]] = // format: on
     Category(prod.on) ⊢ { prod both (prod.left >=> f and prod.right >=> g) }
   }
-}
 
-final class CartesianMonoidalCategory[P <: Product](val product: Product.is[P])
-    extends MonoidalCategory {
+  type CartesianMonoidalCategory[P <: Product] =
+    CartesianMonoidalCategoryImpl {
 
-  type On = P#On
-  val on = product.on
+      type On =
+        P#On
 
-  // format: off
-  @infix
-  type ⊗[X <: On#Objects, Y <: On#Objects] = P# ×[X, Y]
-  type I                                   = P# ∗
-  // format: on
+      // format: off
+      type ⊗[X <: On#Objects, Y <: On#Objects] = 
+        P# ×[X, Y]
 
-  def ⊗[
-      A <: On#Objects,
-      B <: On#Objects,
-      C <: On#Objects,
-      D <: On#Objects
-  ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] =
-    λ { fg =>
-      Product(product) ⊢ {
-        left >=> fg.left ^ right >=> fg.right
+      type I = 
+        P# ∗
+      // format: on
+    }
+
+  @inline
+  final def monoidalCategory[P <: Product]
+    : is[P] -> MonoidalCategory.is[CartesianMonoidalCategory[P]] =
+    λ { product: is[P] =>
+      new CartesianMonoidalCategoryImpl {
+
+        type On =
+          P#On
+
+        // format: off
+        type ⊗[X <: On#Objects, Y <: On#Objects] = 
+          P# ×[X, Y]
+
+        type I = 
+          P# ∗
+        // format: on
+
+        val on =
+          product.on
+
+        def ⊗[
+            A <: On#Objects,
+            B <: On#Objects,
+            C <: On#Objects,
+            D <: On#Objects
+        ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] =
+          λ { fg =>
+            Product(product) ⊢ {
+              left >=> fg.left ^ right >=> fg.right
+            }
+          }
+
+        def assoc_right[
+            A <: On#Objects,
+            B <: On#Objects,
+            C <: On#Objects
+        ]: On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)] =
+          Product(product) ⊢ {
+            (left[A × B, C] >=> left) ^
+              ((left[A × B, C] >=> right) ^ right)
+          }
+
+        def assoc_left[
+            A <: On#Objects,
+            B <: On#Objects,
+            C <: On#Objects
+        ]: On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C] =
+          Product(product) ⊢ {
+            (left[A, B × C] ^ (right >=> left)) ^
+              (right[A, B × C] >=> right)
+          }
+
+        def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
+          product.right
+
+        def lunit[A <: On#Objects]: On#C[A, I ⊗ A] =
+          Product(product) ⊢ { erase ^ id }
+
+        def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
+          product.left
+
+        def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
+          Product(product) ⊢ { id ^ erase }
       }
     }
 
-  def assoc_right[
-      A <: On#Objects,
-      B <: On#Objects,
-      C <: On#Objects
-  ]: On#C[(A ⊗ B) ⊗ C, A ⊗ (B ⊗ C)] =
-    Product(product) ⊢ {
-      (left[A × B, C] >=> left) ^
-        ((left[A × B, C] >=> right) ^ right)
-    }
-
-  def assoc_left[
-      A <: On#Objects,
-      B <: On#Objects,
-      C <: On#Objects
-  ]: On#C[A ⊗ (B ⊗ C), (A ⊗ B) ⊗ C] =
-    Product(product) ⊢ {
-      (left[A, B × C] ^ (right >=> left)) ^
-        (right[A, B × C] >=> right)
-    }
-
-  def unitl[A <: On#Objects]: On#C[I ⊗ A, A] =
-    product.right
-
-  def lunit[A <: On#Objects]: On#C[A, I ⊗ A] =
-    Product(product) ⊢ { erase ^ id }
-
-  def unitr[A <: On#Objects]: On#C[A ⊗ I, A] =
-    product.left
-
-  def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
-    Product(product) ⊢ { id ^ erase }
+  sealed abstract class CartesianMonoidalCategoryImpl extends MonoidalCategory
 }
