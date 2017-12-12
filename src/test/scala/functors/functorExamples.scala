@@ -7,7 +7,7 @@ import org.scalatest.FunSuite
 
 case object boh {
 
-  val Id =
+  val Id: Functor.is[Functor.Identity[Scala]] =
     Functor.identity at Scala
 
   val buh =
@@ -22,6 +22,22 @@ case object boh {
 
   val IdTwiceAgain =
     Id ∘ Id
+
+  // 2-cells
+
+  val idMonad =
+    Monad idMonad Scala
+
+  val kl =
+    KleisliCategory of idMonad
+
+  val z =
+    Category(kl) ⊢ {
+      val f: String >=> String =
+        buh
+
+      f >=> f
+    }
 }
 
 class FunctorsExamples extends FunSuite {

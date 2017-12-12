@@ -42,7 +42,8 @@ package object stuff {
 
     @group functions
     */
-  @inline final def λ[A, B](f: A => B): A -> B =
+  @inline
+  final def λ[A, B](f: A => B): A -> B =
     new Function(f)
 
   /** @group products */
@@ -58,8 +59,9 @@ package object stuff {
     Tuple { type Left = A; type Right = B }
 
   /** @group products */
-  @inline final implicit def productOps[A](a: A): products.ProductOps[A] =
-    new products.ProductOps(a)
+  @inline
+  final implicit def tupleOps[A](a: A): Tuple.Syntax[A] =
+    new Tuple.Syntax(a)
 
   /** @group sums */
   type ∅ =
@@ -73,6 +75,9 @@ package object stuff {
   /** @group annotations */
   type inline =
     scala.inline
+
+  type CompileTime =
+    scala.AnyVal
 
   /** @group annotations */
   type infix =

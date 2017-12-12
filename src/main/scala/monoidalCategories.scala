@@ -27,7 +27,8 @@ abstract class MonoidalCategory {
 object MonoidalCategory {
 
   // NOTE we need this version when working with concrete values (sad)
-  @inline final def apply[MonCat <: MonoidalCategory](monCat: MonCat)(
+  @inline
+  final def apply[MonCat <: MonoidalCategory](monCat: MonCat)(
       implicit ev: monCat.type <:< is[MonCat]): Syntax[MonCat] =
     new Syntax(ev(monCat))
 
@@ -35,17 +36,21 @@ object MonoidalCategory {
 
     type Objects = MonCat#On#Objects
 
-    @inline implicit final val _on: Category.is[MonCat#On] =
+    @inline
+    implicit final val _on: Category.is[MonCat#On] =
       monCat.on
 
-    @inline implicit final val _monCat: is[MonCat] =
+    @inline
+    implicit final val _monCat: is[MonCat] =
       monCat
 
-    @inline implicit final def categorySyntax[X <: Objects, Y <: Objects](
+    @inline
+    implicit final def categorySyntax[X <: Objects, Y <: Objects](
         f: MonCat#On#C[X, Y]): Category.MorphismSyntax[MonCat#On, X, Y] =
       new Category.MorphismSyntax[MonCat#On, X, Y](f)
 
-    @inline final def id[X <: Objects]: MonCat#On#C[X, X] =
+    @inline
+    final def id[X <: Objects]: MonCat#On#C[X, X] =
       monCat.on.identity[X]
 
     @inline
@@ -56,7 +61,8 @@ object MonoidalCategory {
     final def -⊗[A <: Objects]: RightTensor[MonCat, A] =
       new RightTensor(monCat)
 
-    @inline implicit final def syntax[X <: Objects, Y <: Objects](
+    @inline
+    implicit final def syntax[X <: Objects, Y <: Objects](
         f: MonCat#On#C[X, Y]): MorphismSyntax[MonCat, X, Y] =
       new MorphismSyntax(f)
   }
@@ -66,7 +72,7 @@ object MonoidalCategory {
       A1 <: MonCat#On#Objects,
       B1 <: MonCat#On#Objects
   ](val f: MonCat#On#C[A1, B1])
-      extends scala.AnyVal {
+      extends CompileTime {
 
     @inline
     final def ⊗[
@@ -117,7 +123,7 @@ object MonoidalCategory {
   final class TensorFunctor[MCat <: MonoidalCategory](val mcat: is[MCat])
       extends Functor {
 
-    type Source = Category.ProductCategory[MCat#On, MCat#On]
+    type Source = Category.Product[MCat#On, MCat#On]
     val source = Category.product(mcat.on and mcat.on)
 
     type Target = MCat#On
