@@ -50,7 +50,7 @@ private[stuff] sealed abstract class Tuple {
 private[stuff] object EmptyTuple {
   @inline
   override final def equals(other: scala.Any): scala.Boolean =
-    if (other.isInstanceOf[this.type]) true else false
+    other.isInstanceOf[this.type]
 }
 
 private[stuff] final class TupleImpl[A, B](val left: A, val right: B)
