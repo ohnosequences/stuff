@@ -10,7 +10,7 @@ package ohnosequences
 
   @groupprio products 1
   @groupname products Products
-  @groupdesc products Types corresponding to the product structure on [[Scala]]. For functions working with products see [[products]].
+  @groupdesc products Types corresponding to the product structure on [[Scala]]. For functions working with products see [[tuples]].
 
   @groupprio sums 2
   @groupname sums Sums
