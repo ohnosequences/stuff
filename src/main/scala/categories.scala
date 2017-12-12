@@ -84,115 +84,164 @@ object Category {
       type C[X <: category#Objects, Y <: category#Objects] = category#C[X, Y]
     }
 
-  final class Opposite[Cat <: Category](val cat: is[Cat]) extends Category {
+  //////////////////////////////////////////////////////////////////////////////
+  // Opposite categories
+  //////////////////////////////////////////////////////////////////////////////
 
-    final type Objects =
-      Cat#Objects
+  type Op[Cat <: Category] =
+    OpImpl {
 
-    final type C[X <: Objects, Y <: Objects] =
-      Cat#C[Y, X]
+      type Objects =
+        Cat#Objects
 
-    final def identity[X <: Objects]: C[X, X] =
-      cat.identity
+      type C[X <: Objects, Y <: Objects] =
+        Cat#C[Y, X]
+    }
 
-    final def composition[X <: Objects, Y <: Objects, Z <: Objects]
-      : C[X, Y] × C[Y, Z] -> C[X, Z] =
-      Product(tuples) ⊢ { swap >-> cat.composition }
-  }
+  def op[Cat <: Category]: is[Cat] -> is[Op[Cat]] =
+    λ { cat =>
+      new OpImpl {
 
-  final def opposite[Cat <: Category]: is[Cat] -> is[Opposite[Cat]] =
-    λ { new Opposite(_).asInstanceOf[is[Opposite[Cat]]] }
+        type Objects =
+          Cat#Objects
 
-  type UnitCategory = UnitCategory.type
-  object UnitCategory extends Category {
+        type C[X <: Objects, Y <: Objects] =
+          Cat#C[Y, X]
+
+        @inline
+        final def identity[X <: Objects]: C[X, X] =
+          cat.identity
+
+        @inline
+        final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+          : C[X, Y] × C[Y, Z] -> C[X, Z] =
+          Product(tuples) ⊢ { swap >-> cat.composition }
+      }
+    }
+
+  sealed abstract class OpImpl extends Category
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Product categories
+  //////////////////////////////////////////////////////////////////////////////
+
+  type Unit =
+    UnitImpl.type
+
+  @inline
+  final def unit: is[Unit] =
+    UnitImpl
+
+  object UnitImpl extends Category {
 
     type Objects                       = ∗
     type C[X <: Objects, Y <: Objects] = ∗
 
+    @inline
     final def identity[X <: Objects]: C[X, X] =
       ∗
 
+    @inline
     final def composition[X <: Objects, Y <: Objects, Z <: Objects]
       : C[X, Y] × C[Y, Z] -> C[X, Z] =
       Product(tuples) ⊢ { erase }
   }
 
-  def lunit[Cat <: Category]: is[Cat] -> Functor =
-    λ { cat =>
-      new Functor {
+  type Product[LeftCat <: Category, RightCat <: Category] =
+    ProductImpl {
 
-        type Source = ProductCategory[UnitCategory, Cat]
-        val source = product(UnitCategory and cat)
+      type Objects =
+        Tuple {
+          type Left <: LeftCat#Objects
+          type Right <: RightCat#Objects
+        }
 
-        type Target = Cat
-        val target = cat
-
-        type F[Z <: Source#Objects] = Z#Right
-
-        final def at[X <: Source#Objects, Y <: Source#Objects]
-          : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
-          Product(tuples) ⊢ right
-      }
+      type C[X <: Objects, Y <: Objects] =
+        LeftCat#C[X#Left, Y#Left] × RightCat#C[X#Right, Y#Right]
     }
-
-  final class ProductCategory[
-      LeftCat <: Category,
-      RightCat <: Category
-  ](
-      val leftCat: is[LeftCat],
-      val rightCat: is[RightCat]
-  ) extends Category {
-
-    final type Objects =
-      Tuple {
-        type Left <: LeftCat#Objects
-        type Right <: RightCat#Objects
-      }
-
-    final type C[X <: Objects, Y <: Objects] =
-      LeftCat#C[X#Left, Y#Left] × RightCat#C[X#Right, Y#Right]
-
-    final def identity[X <: Objects]: C[X, X] =
-      leftCat.identity and rightCat.identity
-
-    final def composition[X <: Objects, Y <: Objects, Z <: Objects]
-      : C[X, Y] × C[Y, Z] -> C[X, Z] =
-      Product(tuples) ⊢ {
-        πL[C[X, Y]] × πL[C[Y, Z]] >-> leftCat.composition ^
-          πR[C[X, Y]] × πR[C[Y, Z]] >-> rightCat.composition
-      }
-  }
 
   final def product[LeftCat <: Category, RightCat <: Category]
-    : (is[LeftCat] × is[RightCat]) -> is[ProductCategory[LeftCat, RightCat]] =
+    : (is[LeftCat] × is[RightCat]) -> is[Product[LeftCat, RightCat]] =
     λ { lr =>
-      Product(tuples) ⊢ new ProductCategory(left(lr), right(lr))
-        .asInstanceOf[is[ProductCategory[LeftCat, RightCat]]]
+      new ProductImpl {
+
+        type Objects =
+          Tuple {
+            type Left <: LeftCat#Objects
+            type Right <: RightCat#Objects
+          }
+
+        type C[X <: Objects, Y <: Objects] =
+          LeftCat#C[X#Left, Y#Left] × RightCat#C[X#Right, Y#Right]
+
+        val leftCat =
+          lr.left
+
+        val rightCat =
+          lr.right
+
+        final def identity[X <: Objects]: C[X, X] =
+          leftCat.identity and rightCat.identity
+
+        final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+          : C[X, Y] × C[Y, Z] -> C[X, Z] =
+          ohnosequences.stuff.Product(tuples) ⊢ {
+            πL[C[X, Y]] × πL[C[Y, Z]] >-> leftCat.composition ^
+              πR[C[X, Y]] × πR[C[Y, Z]] >-> rightCat.composition
+          }
+      }
     }
 
-  final class HomFunctor[Cat <: Category](val cat: is[Cat]) extends Functor {
+  sealed abstract class ProductImpl extends Category
 
-    type Source = ProductCategory[Opposite[Cat], Cat]
-    val source = product(opposite(cat) and cat)
-    type Target = Scala
-    val target = Scala
-    type F[Z <: Source#Objects] = Cat#C[Z#Left, Z#Right]
+  //////////////////////////////////////////////////////////////////////////////
+  // Hom functors
+  //////////////////////////////////////////////////////////////////////////////
 
-    final def at[X <: Source#Objects, Y <: Source#Objects]
-      : Source#C[X, Y] -> (F[X] -> F[Y]) =
-      λ { fg =>
-        λ { q =>
-          Product(tuples) ⊢ {
-            Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
-          }
-        }
-      }
-  }
+  type HomFunctor[Cat <: Category] =
+    HomFunctorImpl {
+
+      type Source =
+        Product[Op[Cat], Cat]
+
+      type Target =
+        Scala
+
+      type F[Z <: Source#Objects] =
+        Cat#C[Z#Left, Z#Right]
+    }
 
   final def homFunctor[Cat <: Category]
     : is[Cat] -> Functor.is[HomFunctor[Cat]] =
-    λ {
-      new HomFunctor(_)
-        .asInstanceOf[Functor.is[HomFunctor[Cat]]]
+    λ { cat =>
+      new HomFunctorImpl {
+
+        type Source =
+          Product[Op[Cat], Cat]
+
+        type Target =
+          Scala
+
+        type F[Z <: Source#Objects] =
+          Cat#C[Z#Left, Z#Right]
+
+        val source =
+          product(op(cat) and cat)
+
+        val target =
+          Scala
+
+        final def at[X <: Source#Objects, Y <: Source#Objects]
+          : Source#C[X, Y] -> (F[X] -> F[Y]) =
+          λ { fg =>
+            λ { q =>
+              Product(tuples) ⊢ {
+                Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
+              }
+            }
+          }
+      }
     }
+
+  sealed abstract class HomFunctorImpl extends Functor
 }
