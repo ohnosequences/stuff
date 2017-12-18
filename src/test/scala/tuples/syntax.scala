@@ -1,19 +1,19 @@
 package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
-import scala.Int
+import scala.{Boolean, Int}
 import scala.Predef.String
 import org.scalatest.FunSuite
 
 class TuplesSyntax extends FunSuite {
 
-  val l = { x: String =>
+  val l: String -> Int = { x: String =>
     x.length
   }
-  val toStr = { x: Int =>
+  val toStr: Int -> String = { x: Int =>
     x.toString
   }
-  val isZero = { x: Int =>
+  val isZero: Int -> Boolean = { x: Int =>
     x == 0
   }
   val isPositive = { x: Int =>

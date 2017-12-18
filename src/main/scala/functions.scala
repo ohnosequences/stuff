@@ -48,5 +48,8 @@ object Function {
 
     def >->[Z](g: Y -> Z): X -> Z =
       x => g(f(x))
+
+    def at(x: X): Y =
+      f(x)
   }
 }

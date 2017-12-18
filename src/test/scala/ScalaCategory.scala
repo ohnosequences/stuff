@@ -24,7 +24,7 @@ class ScalaCategoryTests extends FunSuite {
 
   test("Hom functor") {
 
-    assert { ((uh at toStr) at "hola") === 1 }
+    assert { uh(toStr)("hola") === 1 }
   }
 
   test("composition and identity") {
@@ -53,12 +53,12 @@ class ScalaCategoryTests extends FunSuite {
         l × toStr
 
       val _2and2: Int × String =
-        u at ("ab" and 2)
+        u("ab" and 2)
 
-      assert { (z0 at "hola") === "hola" }
-      assert { (z1 at "hola") === "hola" }
-      assert { (left at _2and2) === 2 }
-      assert { (right at _2and2) === "2" }
+      assert { z0("hola") === "hola" }
+      assert { z1("hola") === "hola" }
+      assert { left(_2and2) === 2 }
+      assert { right(_2and2) === "2" }
     }
   }
 }

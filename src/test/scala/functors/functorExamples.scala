@@ -8,7 +8,7 @@ import org.scalatest.FunSuite
 case object boh {
 
   val Id: Functor.is[Functor.Identity[Scala]] =
-    Functor.identity at Scala
+    Functor identity Scala
 
   val buh =
     Id at {
@@ -47,7 +47,7 @@ class FunctorsExamples extends FunSuite {
   test("identity functor") {
 
     assert {
-      (buh at "scalac") === ({ x: String =>
+      buh("scalac") === ({ x: String =>
         s"hola ${x}!"
       })("scalac")
     }
