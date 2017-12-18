@@ -1,0 +1,82 @@
+
+This release is focused on *syntax* and *usability* improvements.
+
+## Syntax
+
+We have now real support for syntax, based on the [contexts](https://github.com/ohnosequences/contexts) compiler plugin. For any structure such as a `MonoidalCategory`, you can place yourself in the *context* of a value `m: MonoidalCategory` as
+
+``` scala
+MonoidalCategory(m) ⊢ {
+  val z = 
+    (f ⊗ g) >=> -⊗[A](k)
+}
+```
+
+The syntax is always `Structure(value) ⊢ { ... }` and it exposes the corresponding syntax for nested structures: you can compose morphisms inside `MonoidalCategory(m) ⊢ { ... }`.
+
+### (Co)Products
+
+There is now proper syntax for (co)products too, making it possible to write
+
+``` scala
+// f: X -> A, g: X -> B
+// f ^ g is the universal map
+Product(structure) ⊢ { (f ^ g ^ h) × j }
+// dually for coproducts
+Coproduct(structure) ⊢ { (f | g | h) + j }
+```
+
+Tuples and sums in `Scala` are now used (almost) exclusively through the corresponding product/coproduct APIs.
+
+Most of this is included in #45 and #54.
+
+## Monoidal structures
+
+We have added explicit isomorphisms for unit maps in monoidal categories #69. There are also implmementations of (co)cartesian monoidal categories derived from the corresponding structure #54.
+
+## Natural transformations
+
+We have been able to drop explicit source and target categories from their signature #70, which makes for a more pleasant user experience. There is still work to be done simplifying their structure and providing convenience constructors for their declaration.
+
+## Remove half-implemented stuff
+
+We have dropped `Monoid`s, `Boolean`s and `Maybe`. This does not mean that we don't plan to support these types; just that we don't want to have partial implementations of important notions.
+
+## Internal improvements
+
+### No more `asInstanceOf`
+
+For instances of abstract structures (like an identity functor) we have been able to make them conform to the corresponding `is[...]` type by creating anonymous classes conforming to a type refinement. It looks like type checking is more aggressive (or less buggy) when looking at anonymous classes with type constructors as members. The pattern we follow is
+
+``` scala
+type Identity[Cat <: Category] = IdentityImpl {
+
+  type Source                 = Cat
+  type Target                 = Cat
+  type F[Z <: Source#Objects] = Z
+}
+
+def identity[Cat <: Category]: Category.is[Cat] -> is[Identity[Cat]] =
+  λ { cat =>
+    new IdentityImpl {
+      type Source = Cat
+      val source = cat
+      type Target = Cat
+      val target = cat
+      type F[Z <: Source#Objects] = Z
+      def at[X <: Source#Objects, Y <: Source#Objects]
+        : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
+        Scala.identity
+    }
+  }
+
+sealed abstract class IdentityImpl extends Functor
+```
+
+### Less imports
+
+Now `import ohnosequences.stuff._` is enough for most needs. Basic syntax and functions such as `x and y` or `λ { x => x }` are part of the base package.
+
+### Value classes only for syntax
+
+We have make all classes normal classes but for those providing syntax.
