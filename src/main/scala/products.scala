@@ -235,6 +235,8 @@ object Product {
         CartesianMonoidalCategory[P0]
     }
 
+  @inline
+  final
   def symmetricMonoidalStructure[P0 <: Product]
     : is[P0] -> SymmetricStructure.is[SymmetricMonoidalStructure[P0]] =
     λ { product =>

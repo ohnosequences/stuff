@@ -127,6 +127,8 @@ object Coproduct {
         CocartesianMonoidalCategory[S0]
     }
 
+  @inline
+  final
   def symmetricMonoidalStructure[S0 <: Coproduct]
     : is[S0] -> SymmetricStructure.is[SymmetricMonoidalStructure[S0]] =
     λ { coproduct =>
