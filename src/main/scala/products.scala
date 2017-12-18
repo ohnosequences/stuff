@@ -225,4 +225,33 @@ object Product {
     }
 
   sealed abstract class CartesianMonoidalCategoryImpl extends MonoidalCategory
+
+  // symmetric monoidal structure
+  //////////////////////////////////////////////////////////////////////////////
+  type SymmetricMonoidalStructure[P0 <: Product] =
+    SymmetricMonoidalStructureImpl {
+
+      type On =
+        CartesianMonoidalCategory[P0]
+    }
+
+  def symmetricMonoidalStructure[P0 <: Product]
+    : is[P0] -> SymmetricStructure.is[SymmetricMonoidalStructure[P0]] =
+    λ { product =>
+      new SymmetricMonoidalStructureImpl {
+
+        type On = CartesianMonoidalCategory[P0]
+        val on = monoidalCategory(product)
+
+        def swap[X <: On#On#Objects, Y <: On#On#Objects]
+        // format: off
+        : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]] =
+        // format: on
+        Product(product) ⊢ { right ^ left }
+      }
+    }
+
+  sealed abstract class SymmetricMonoidalStructureImpl
+      extends SymmetricStructure
+  //////////////////////////////////////////////////////////////////////////////
 }
