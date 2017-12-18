@@ -47,8 +47,8 @@ object NaturalTransformation {
   }
 
   @inline
-  final def identity[Fnctr <: Functor]: Functor.is[Fnctr] -> Identity[Fnctr] =
-    λ { functor =>
+  final def identity[Fnctr <: Functor]: Functor.is[Fnctr] -> Identity[Fnctr] = {
+    functor =>
       new IdentityImpl {
 
         type SourceFunctor = Functor.is[Fnctr]
@@ -60,7 +60,7 @@ object NaturalTransformation {
           : TargetFunctor#Target#C[SourceFunctor#F[X], TargetFunctor#F[X]] =
           targetFunctor.target.identity
       }
-    }
+  }
 
   sealed abstract class IdentityImpl extends NaturalTransformation
 
@@ -146,7 +146,7 @@ object NaturalTransformation {
         type SourceFunctor = is[A]#TargetFunctor
       }
   ]: (is[A] × is[B]) -> (A >-> B) =
-    λ { new VerticalComposition(_) }
+    new VerticalComposition(_)
 
   @infix
   type >=>[
@@ -202,5 +202,5 @@ object NaturalTransformation {
         type SourceFunctor <: Functor { type Source = M#SourceFunctor#Target }
       }
   ]: (is[M] × is[N]) -> (M >=> N) =
-    λ { new HorizontalComposition(_) }
+    new HorizontalComposition(_)
 }

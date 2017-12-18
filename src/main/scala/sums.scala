@@ -15,23 +15,22 @@ object sums extends Coproduct {
     ohnosequences.stuff.∅
 
   @inline
-  final def intro[X]: ∅ -> X =
-    λ { n: ∅ =>
-      scala.sys.error("∅"): X
-    }
+  final def intro[X]: ∅ -> X = { n: ∅ =>
+    scala.sys.error("∅"): X
+  }
 
   @inline
   final def left[A, B]: A -> (A + B) =
-    λ { new Left(_) }
+    new Left(_)
 
   @inline
   final def right[A, B]: B -> (A + B) =
-    λ { new Right(_) }
+    new Right(_)
 
   @inline
-  final def either[A, B, X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) =
-    λ { fg: (A -> X) × (B -> X) =>
-      λ { aorb: A + B =>
+  final def either[A, B, X]: ((A -> X) × (B -> X)) -> ((A + B) -> X) = {
+    fg: (A -> X) × (B -> X) =>
+      { aorb: A + B =>
         @java.lang.SuppressWarnings(
           scala.Array("org.wartremover.warts.AsInstanceOf",
                       "org.wartremover.warts.IsInstanceOf"))
@@ -43,15 +42,15 @@ object sums extends Coproduct {
 
         x
       }
-    }
+  }
 
   @inline
   final def ιL[O <: Or]: O#Left -> (O#Left + O#Right) =
-    λ { new Left(_) }
+    new Left(_)
 
   @inline
   final def ιR[O <: Or]: O#Right -> (O#Left + O#Right) =
-    λ { new Right(_) }
+    new Right(_)
 
   @inline
   final def inL[A, B]: A -> (A + B) =

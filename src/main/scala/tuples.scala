@@ -16,26 +16,24 @@ object tuples extends Product {
 
   @inline
   final def left[A, B]: A × B -> A =
-    λ { _.left }
+    _.left
 
   @inline
   final def right[A, B]: A × B -> B =
-    λ { _.right }
+    _.right
 
   @inline
-  final def erase[A]: A -> ∗ =
-    λ { _ =>
-      EmptyTuple
-    }
+  final def erase[A]: A -> ∗ = { _ =>
+    EmptyTuple
+  }
 
   @inline
   final def both[X <: On#Objects, A <: On#Objects, B <: On#Objects]
-    : (X -> A) × (X -> B) -> (X -> (A × B)) =
-    λ { fg =>
-      λ { x =>
-        new TupleImpl(fg.left(x), fg.right(x))
-      }
+    : (X -> A) × (X -> B) -> (X -> (A × B)) = { fg =>
+    { x =>
+      new TupleImpl(fg.left(x), fg.right(x))
     }
+  }
 }
 
 private[stuff] sealed abstract class Tuple {
@@ -77,11 +75,11 @@ object Tuple {
 
   @inline
   final def πL[AB <: Tuple]: AB -> AB#Left =
-    λ { _.left }
+    _.left
 
   @inline
   final def πR[AB <: Tuple]: AB -> AB#Right =
-    λ { _.right }
+    _.right
 
   final class Syntax[A](val a: A) extends CompileTime {
 

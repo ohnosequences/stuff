@@ -49,8 +49,8 @@ object Coproduct {
 
   @inline
   final def monoidalCategory[S <: Coproduct]
-    : is[S] -> MonoidalCategory.is[CocartesianMonoidalCategory[S]] =
-    λ { coproduct: is[S] =>
+    : is[S] -> MonoidalCategory.is[CocartesianMonoidalCategory[S]] = {
+    coproduct: is[S] =>
       new CocartesianMonoidalCategoryImpl {
 
         type On =
@@ -73,10 +73,9 @@ object Coproduct {
             B <: On#Objects,
             C <: On#Objects,
             D <: On#Objects
-        ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] =
-          λ { fg =>
-            Coproduct(coproduct) ⊢ { fg.left + fg.right }
-          }
+        ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] = { fg =>
+          Coproduct(coproduct) ⊢ { fg.left + fg.right }
+        }
 
         final def assoc_right[
             A <: On#Objects,
@@ -113,7 +112,7 @@ object Coproduct {
         final def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
           coproduct.left
       }
-    }
+  }
 
   sealed abstract class CocartesianMonoidalCategoryImpl extends MonoidalCategory
   //////////////////////////////////////////////////////////////////////////////
@@ -129,8 +128,8 @@ object Coproduct {
 
   @inline
   final def symmetricMonoidalStructure[S0 <: Coproduct]
-    : is[S0] -> SymmetricStructure.is[SymmetricMonoidalStructure[S0]] =
-    λ { coproduct =>
+    : is[S0] -> SymmetricStructure.is[SymmetricMonoidalStructure[S0]] = {
+    coproduct =>
       new SymmetricMonoidalStructureImpl {
 
         type On = CocartesianMonoidalCategory[S0]
@@ -142,7 +141,7 @@ object Coproduct {
         // format: on
         Coproduct(coproduct) ⊢ { right | left }
       }
-    }
+  }
 
   sealed abstract class SymmetricMonoidalStructureImpl
       extends SymmetricStructure
@@ -230,10 +229,9 @@ object Coproduct {
         A <: Objects,
         B <: Objects,
         X <: Objects,
-    ]: ((A + B) >=> X) -> ((A >=> X) × (B >=> X)) =
-      λ { f =>
-        left >=> f and right >=> f
-      }
+    ]: ((A + B) >=> X) -> ((A >=> X) × (B >=> X)) = { f =>
+      left >=> f and right >=> f
+    }
 
     lazy val monCat: MonoidalCategory.is[CocartesianMonoidalCategory[S]] =
       monoidalCategory(s)

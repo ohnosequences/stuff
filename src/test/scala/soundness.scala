@@ -23,14 +23,13 @@ case object kosher {
   // is[A] works abstractly
   abstract class AnimalWithFood[X] extends Animal { type Food = X }
 
-  def shouldWork[X, A <: AnimalWithFood[X]]: A -> is[A] =
-    λ { a =>
-      a
-    }
+  def shouldWork[X, A <: AnimalWithFood[X]]: A -> is[A] = { a =>
+    a
+  }
 
   // NOTE you cannot write this directly
   // def exchangeFood[A <: Animal]: A × A -> Unit =
-  //   λ { xy: A × A =>
+  //   { xy: A × A =>
   //
   //     val x = left(xy); val y = right(xy)
   //
@@ -38,12 +37,11 @@ case object kosher {
   // }
 
   // NOTE this is fine
-  def exchangeFood[A <: Animal]: is[A] × is[A] -> Unit =
-    λ { xy =>
-      Product(tuples) ⊢ {
-        left(xy) eat right(xy).find
-      }
+  def exchangeFood[A <: Animal]: is[A] × is[A] -> Unit = { xy =>
+    Product(tuples) ⊢ {
+      left(xy) eat right(xy).find
     }
+  }
 
   class Grass
   class Sheep extends Animal {
@@ -53,10 +51,9 @@ case object kosher {
     def find: Food =
       new Grass
 
-    def eat: Food -> Unit =
-      λ { _ =>
-        ()
-      }
+    def eat: Food -> Unit = { _ =>
+      ()
+    }
   }
   class Wolf extends Animal {
 
@@ -65,10 +62,9 @@ case object kosher {
     def find: Food =
       new Sheep
 
-    def eat: Food -> Unit =
-      λ { _ =>
-        ()
-      }
+    def eat: Food -> Unit = { _ =>
+      ()
+    }
   }
 
   // Whoops we made sheep cannibals, and wolfs eat grass.

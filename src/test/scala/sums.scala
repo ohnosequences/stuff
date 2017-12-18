@@ -2,22 +2,22 @@ package ohnosequences.stuff.test
 
 import ohnosequences.stuff._
 
-import scala.Int
+import scala.{Boolean, Int}
 import scala.Predef.String
 import org.scalatest.FunSuite
 
 class Sums extends FunSuite {
 
-  val l = λ { x: String =>
+  val l: String -> Int = { x: String =>
     x.length
   }
-  val toStr = λ { x: Int =>
+  val toStr: Int -> String = { x: Int =>
     x.toString
   }
-  val isZero = λ { x: Int =>
+  val isZero: Int -> Boolean = { x: Int =>
     x == 0
   }
-  val isEmpty = λ { x: String =>
+  val isEmpty: String -> Boolean = { x: String =>
     x.isEmpty
   }
 
@@ -27,7 +27,7 @@ class Sums extends FunSuite {
 
       assert {
 
-        ((isZero | isEmpty) at left(0)) == (isZero at 0) &&
+        ((isZero | isEmpty) at left(0)) == isZero(0) &&
         ((isZero | isEmpty) at right("")) == isEmpty("")
       }
     }

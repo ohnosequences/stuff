@@ -33,18 +33,13 @@ package object stuff {
   type ->[A, B] =
     Function[A, B]
 
-  /**
-    construct functions from lambdas.
-
-    This method for building a function out of [[scala.Function1]] instances. Apart from interoperability with other Scala code, it lets you use lambda syntax for functions:
-
-    {{{ λ { x: String => x.length } }}}
-
-    @group functions
-    */
+  // TODO review the implications of this
   @inline
-  final def λ[A, B](f: A => B): A -> B =
-    new Function(f)
+  implicit final def functionSyntax[X, Y](
+      f_std: X => Y): Function.Syntax[X, Y] =
+    new Function.Syntax({ x =>
+      f_std(x)
+    })
 
   /** @group products */
   type ∗ =
