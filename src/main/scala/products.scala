@@ -115,10 +115,9 @@ object Product {
         X <: Objects,
         A <: Objects,
         B <: Objects,
-    ]: (X >=> (A × B)) -> ohnosequences.stuff.×[X >=> A, X >=> B] =
-      λ { f =>
-        f >=> left and f >=> right
-      }
+    ]: (X >=> (A × B)) -> ohnosequences.stuff.×[X >=> A, X >=> B] = { f =>
+      f >=> left and f >=> right
+    }
   }
 
   final class ProductMorphismSyntax[
@@ -160,8 +159,8 @@ object Product {
 
   @inline
   final def monoidalCategory[P <: Product]
-    : is[P] -> MonoidalCategory.is[CartesianMonoidalCategory[P]] =
-    λ { product: is[P] =>
+    : is[P] -> MonoidalCategory.is[CartesianMonoidalCategory[P]] = {
+    product: is[P] =>
       new CartesianMonoidalCategoryImpl {
 
         type On =
@@ -183,12 +182,11 @@ object Product {
             B <: On#Objects,
             C <: On#Objects,
             D <: On#Objects
-        ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] =
-          λ { fg =>
-            Product(product) ⊢ {
-              left >=> fg.left ^ right >=> fg.right
-            }
+        ]: On#C[A, B] × On#C[C, D] -> On#C[A ⊗ C, B ⊗ D] = { fg =>
+          Product(product) ⊢ {
+            left >=> fg.left ^ right >=> fg.right
           }
+        }
 
         def assoc_right[
             A <: On#Objects,
@@ -222,7 +220,7 @@ object Product {
         def runit[A <: On#Objects]: On#C[A, A ⊗ I] =
           Product(product) ⊢ { id ^ erase }
       }
-    }
+  }
 
   sealed abstract class CartesianMonoidalCategoryImpl extends MonoidalCategory
 
@@ -237,8 +235,8 @@ object Product {
 
   @inline
   final def symmetricMonoidalStructure[P0 <: Product]
-    : is[P0] -> SymmetricStructure.is[SymmetricMonoidalStructure[P0]] =
-    λ { product =>
+    : is[P0] -> SymmetricStructure.is[SymmetricMonoidalStructure[P0]] = {
+    product =>
       new SymmetricMonoidalStructureImpl {
 
         type On = CartesianMonoidalCategory[P0]
@@ -250,7 +248,7 @@ object Product {
         // format: on
         Product(product) ⊢ { right ^ left }
       }
-    }
+  }
 
   sealed abstract class SymmetricMonoidalStructureImpl
       extends SymmetricStructure

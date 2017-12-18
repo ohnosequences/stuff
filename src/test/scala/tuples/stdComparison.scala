@@ -7,13 +7,13 @@ import org.scalatest.FunSuite
 
 class TuplesVsStd extends FunSuite {
 
-  val l = λ { x: String =>
+  val l = { x: String =>
     x.length
   }
-  val toStr = λ { x: Int =>
+  val toStr = { x: Int =>
     x.toString
   }
-  val isZero = λ { x: Int =>
+  val isZero = { x: Int =>
     x == 0
   }
 
@@ -33,10 +33,9 @@ class TuplesVsStd extends FunSuite {
   val tupleSyntax =
     Product(tuples) ⊢ { toStr ^ isZero ^ isZero }
 
-  val scalaFns =
-    λ { i: Int =>
-      (f(i), g(i), h(i))
-    }
+  val scalaFns = { i: Int =>
+    (f(i), g(i), h(i))
+  }
 
   test("std inline evaluation") {
 

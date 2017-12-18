@@ -69,13 +69,13 @@ object Category {
     final def >=>[Z <: Cat#Objects](g: Cat#C[Y, Z])(
         implicit cat: Category.is[Cat]
     ): Cat#C[X, Z] =
-      cat.composition at (f and g)
+      cat.composition(f and g)
 
     @inline
     final def ∘[U <: Cat#Objects](h: Cat#C[U, X])(
         implicit cat: Category.is[Cat]
     ): Cat#C[U, Y] =
-      cat.composition at (h and f)
+      cat.composition(h and f)
   }
 
   type is[category <: Category] =
@@ -98,26 +98,25 @@ object Category {
         Cat#C[Y, X]
     }
 
-  def op[Cat <: Category]: is[Cat] -> is[Op[Cat]] =
-    λ { cat =>
-      new OpImpl {
+  def op[Cat <: Category]: is[Cat] -> is[Op[Cat]] = { cat =>
+    new OpImpl {
 
-        type Objects =
-          Cat#Objects
+      type Objects =
+        Cat#Objects
 
-        type C[X <: Objects, Y <: Objects] =
-          Cat#C[Y, X]
+      type C[X <: Objects, Y <: Objects] =
+        Cat#C[Y, X]
 
-        @inline
-        final def identity[X <: Objects]: C[X, X] =
-          cat.identity
+      @inline
+      final def identity[X <: Objects]: C[X, X] =
+        cat.identity
 
-        @inline
-        final def composition[X <: Objects, Y <: Objects, Z <: Objects]
-          : C[X, Y] × C[Y, Z] -> C[X, Z] =
-          Product(tuples) ⊢ { swap >-> cat.composition }
-      }
+      @inline
+      final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+        : C[X, Y] × C[Y, Z] -> C[X, Z] =
+        Product(tuples) ⊢ { swap >-> cat.composition }
     }
+  }
 
   sealed abstract class OpImpl extends Category
 
@@ -161,36 +160,35 @@ object Category {
     }
 
   final def product[LeftCat <: Category, RightCat <: Category]
-    : (is[LeftCat] × is[RightCat]) -> is[Product[LeftCat, RightCat]] =
-    λ { lr =>
-      new ProductImpl {
+    : (is[LeftCat] × is[RightCat]) -> is[Product[LeftCat, RightCat]] = { lr =>
+    new ProductImpl {
 
-        type Objects =
-          Tuple {
-            type Left <: LeftCat#Objects
-            type Right <: RightCat#Objects
-          }
+      type Objects =
+        Tuple {
+          type Left <: LeftCat#Objects
+          type Right <: RightCat#Objects
+        }
 
-        type C[X <: Objects, Y <: Objects] =
-          LeftCat#C[X#Left, Y#Left] × RightCat#C[X#Right, Y#Right]
+      type C[X <: Objects, Y <: Objects] =
+        LeftCat#C[X#Left, Y#Left] × RightCat#C[X#Right, Y#Right]
 
-        val leftCat =
-          lr.left
+      val leftCat =
+        lr.left
 
-        val rightCat =
-          lr.right
+      val rightCat =
+        lr.right
 
-        final def identity[X <: Objects]: C[X, X] =
-          leftCat.identity and rightCat.identity
+      final def identity[X <: Objects]: C[X, X] =
+        leftCat.identity and rightCat.identity
 
-        final def composition[X <: Objects, Y <: Objects, Z <: Objects]
-          : C[X, Y] × C[Y, Z] -> C[X, Z] =
-          ohnosequences.stuff.Product(tuples) ⊢ {
-            πL[C[X, Y]] × πL[C[Y, Z]] >-> leftCat.composition ^
-              πR[C[X, Y]] × πR[C[Y, Z]] >-> rightCat.composition
-          }
-      }
+      final def composition[X <: Objects, Y <: Objects, Z <: Objects]
+        : C[X, Y] × C[Y, Z] -> C[X, Z] =
+        ohnosequences.stuff.Product(tuples) ⊢ {
+          πL[C[X, Y]] × πL[C[Y, Z]] >-> leftCat.composition ^
+            πR[C[X, Y]] × πR[C[Y, Z]] >-> rightCat.composition
+        }
     }
+  }
 
   sealed abstract class ProductImpl extends Category
 
@@ -212,36 +210,35 @@ object Category {
     }
 
   final def homFunctor[Cat <: Category]
-    : is[Cat] -> Functor.is[HomFunctor[Cat]] =
-    λ { cat =>
-      new HomFunctorImpl {
+    : is[Cat] -> Functor.is[HomFunctor[Cat]] = { cat =>
+    new HomFunctorImpl {
 
-        type Source =
-          Product[Op[Cat], Cat]
+      type Source =
+        Product[Op[Cat], Cat]
 
-        type Target =
-          Scala
+      type Target =
+        Scala
 
-        type F[Z <: Source#Objects] =
-          Cat#C[Z#Left, Z#Right]
+      type F[Z <: Source#Objects] =
+        Cat#C[Z#Left, Z#Right]
 
-        val source =
-          product(op(cat) and cat)
+      val source =
+        product(op(cat) and cat)
 
-        val target =
-          Scala
+      val target =
+        Scala
 
-        final def at[X <: Source#Objects, Y <: Source#Objects]
-          : Source#C[X, Y] -> (F[X] -> F[Y]) =
-          λ { fg =>
-            λ { q =>
-              Product(tuples) ⊢ {
-                Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
-              }
-            }
+      final def at[X <: Source#Objects, Y <: Source#Objects]
+        : Source#C[X, Y] -> (F[X] -> F[Y]) = { fg =>
+        { q =>
+          Product(tuples) ⊢ {
+            // left(fg) >=> q >=> right(fg)
+            Category(cat) ⊢ { left(fg) >=> q >=> right(fg) }
           }
+        }
       }
     }
+  }
 
   sealed abstract class HomFunctorImpl extends Functor
 }

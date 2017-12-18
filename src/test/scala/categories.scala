@@ -42,7 +42,7 @@
 //     Mealy[X, ∗, X](swap)
 
 //   final def composition[X, Y, Z]: C[X, Y] × C[Y, Z] -> C[X, Z] =
-//     λ { mn =>
+//     { mn =>
 //       val m = left(mn); val n = right(mn)
 
 //       Mealy(

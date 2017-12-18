@@ -81,28 +81,27 @@ object Functor {
   final def composition[
       F0 <: Functor,
       G0 <: Functor { type Source = F0#Target }
-  ]: (is[F0] × is[G0]) -> is[Composition[F0, G0]] =
-    λ { fg =>
-      new CompositionImpl {
-        type Source                    = F0#Source
-        type Target                    = G0#Target
-        type F[Z <: F0#Source#Objects] = G0#F[F0#F[Z]]
+  ]: (is[F0] × is[G0]) -> is[Composition[F0, G0]] = { fg =>
+    new CompositionImpl {
+      type Source                    = F0#Source
+      type Target                    = G0#Target
+      type F[Z <: F0#Source#Objects] = G0#F[F0#F[Z]]
 
-        val first: is[F0] =
-          fg.left
-        val second: is[G0] =
-          fg.right
+      val first: is[F0] =
+        fg.left
+      val second: is[G0] =
+        fg.right
 
-        val source = first.source
-        val target = second.target
+      val source = first.source
+      val target = second.target
 
-        def at[
-            X <: Source#Objects,
-            Y <: Source#Objects
-        ]: Source#C[X, Y] -> Target#C[F[X], F[Y]] =
-          first.at >-> second.at
-      }
+      def at[
+          X <: Source#Objects,
+          Y <: Source#Objects
+      ]: Source#C[X, Y] -> Target#C[F[X], F[Y]] =
+        first.at >-> second.at
     }
+  }
 
   sealed abstract class CompositionImpl extends Functor
   //////////////////////////////////////////////////////////////////////////////
@@ -116,7 +115,7 @@ object Functor {
   }
 
   def identity[Cat <: Category]: Category.is[Cat] -> is[Identity[Cat]] =
-    λ { cat =>
+    cat =>
       new IdentityImpl {
         type Source = Cat
         val source = cat
@@ -126,7 +125,6 @@ object Functor {
         def at[X <: Source#Objects, Y <: Source#Objects]
           : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
           Scala.identity
-      }
     }
 
   sealed abstract class IdentityImpl extends Functor

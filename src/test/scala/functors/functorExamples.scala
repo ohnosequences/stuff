@@ -12,7 +12,7 @@ case object boh {
 
   val buh =
     Id at {
-      λ { x: String =>
+      { x: String =>
         s"hola ${x}!"
       }
     }
@@ -47,7 +47,7 @@ class FunctorsExamples extends FunSuite {
   test("identity functor") {
 
     assert {
-      (buh at "scalac") === (λ { x: String =>
+      (buh at "scalac") === ({ x: String =>
         s"hola ${x}!"
       })("scalac")
     }

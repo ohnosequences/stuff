@@ -8,16 +8,16 @@ import org.scalatest.FunSuite
 
 class Sums extends FunSuite {
 
-  val l = λ { x: String =>
+  val l = { x: String =>
     x.length
   }
-  val toStr = λ { x: Int =>
+  val toStr = { x: Int =>
     x.toString
   }
-  val isZero = λ { x: Int =>
+  val isZero = { x: Int =>
     x == 0
   }
-  val isEmpty = λ { x: String =>
+  val isEmpty = { x: String =>
     x.isEmpty
   }
 

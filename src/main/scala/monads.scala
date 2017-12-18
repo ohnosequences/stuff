@@ -39,32 +39,31 @@ object Monad {
 
   @inline
   final def identity[Cat <: Category]
-    : Functor.is[Functor.Identity[Cat]] -> is[Identity[Cat]] =
-    λ { idF =>
-      new IdentityImpl {
+    : Functor.is[Functor.Identity[Cat]] -> is[Identity[Cat]] = { idF =>
+    new IdentityImpl {
 
-        type On =
-          Functor.Identity[Cat]
+      type On =
+        Functor.Identity[Cat]
 
-        val on: Functor.is[On] =
-          idF
+      val on: Functor.is[On] =
+        idF
 
-        val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On] =
-          new Between[Functor.is[On] ∘ Functor.is[On], Functor.is[On]](
-            on >-> on,
-            on
-          ) {
+      val μ: (Functor.is[On] ∘ Functor.is[On]) ~> Functor.is[On] =
+        new Between[Functor.is[On] ∘ Functor.is[On], Functor.is[On]](
+          on >-> on,
+          on
+        ) {
 
-            @inline
-            final def apply[X <: SourceFunctor#Source#Objects]
-              : SourceFunctor#Target#C[X, X] =
-              on.source.identity
-          }
+          @inline
+          final def apply[X <: SourceFunctor#Source#Objects]
+            : SourceFunctor#Target#C[X, X] =
+            on.source.identity
+        }
 
-        val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On] =
-          NaturalTransformation identity (Functor identity on.source)
-      }
+      val ι: Functor.is[Functor.Identity[OnCat]] ~> Functor.is[On] =
+        NaturalTransformation identity (Functor identity on.source)
     }
+  }
 
   sealed abstract class IdentityImpl extends Monad
 }

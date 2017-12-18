@@ -23,8 +23,7 @@ object Scala extends Category {
   /** Function composition. */
   @inline
   final def composition[X <: Objects, Y <: Objects, Z <: Objects]
-    : C[X, Y] × C[Y, Z] -> C[X, Z] =
-    λ { fg =>
-      fg.left >-> fg.right
-    }
+    : C[X, Y] × C[Y, Z] -> C[X, Z] = { fg =>
+    fg.left >-> fg.right
+  }
 }

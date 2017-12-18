@@ -7,22 +7,22 @@ import org.scalatest.FunSuite
 
 class TuplesSyntax extends FunSuite {
 
-  val l = λ { x: String =>
+  val l = { x: String =>
     x.length
   }
-  val toStr = λ { x: Int =>
+  val toStr = { x: Int =>
     x.toString
   }
-  val isZero = λ { x: Int =>
+  val isZero = { x: Int =>
     x == 0
   }
-  val isPositive = λ { x: Int =>
+  val isPositive = { x: Int =>
     x > -1
   }
-  val plusOne = λ { x: Int =>
+  val plusOne = { x: Int =>
     x + 1
   }
-  val isEmpty = λ { x: String =>
+  val isEmpty = { x: String =>
     x.isEmpty
   }
 

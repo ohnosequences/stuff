@@ -8,10 +8,10 @@ import org.scalatest.FunSuite
 
 class ScalaCategoryTests extends FunSuite {
 
-  val l: String -> Int = λ { x: String =>
+  val l: String -> Int = { x: String =>
     x.length
   }
-  val toStr: Int -> String = λ { x: Int =>
+  val toStr: Int -> String = { x: Int =>
     x.toString
   }
   // val idInt : Int -> Int = Scala.identity

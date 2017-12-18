@@ -21,43 +21,32 @@ object functions {
     */
   @inline
   final def identity[A]: A -> A =
-    λ { a: A =>
-      a
-    }
+    a => a
 
   /** a constant function from Y to X given a value of X  */
   @inline
   final def const[Y, X]: X -> (Y -> X) =
-    λ { x: X =>
-      λ { y: Y =>
-        x
-      }
-    }
+    x => _ => x
 
   @inline
   final def point[X]: X -> (∗ -> X) =
-    λ { x =>
-      λ { _ =>
-        x
-      }
-    }
+    x => _ => x
 
   @inline
   final def force[X]: (∗ -> X) -> X =
-    λ { _ at ∗ }
+    _(∗)
 }
 
-private[stuff] final class Function[X, Y](val stdF: X => Y)
-    extends CompileTime {
+private[stuff] abstract class Function[X, Y] {
 
-  @inline
-  final def at(d: X): Y =
-    stdF apply d
+  def apply(a: X): Y
+}
 
-  @inline
-  final def apply(a: X): Y =
-    this at a
+object Function {
 
-  final def >->[C](g: Y -> C): X -> C =
-    new Function(this.stdF andThen g.stdF)
+  implicit final class Syntax[X, Y](val f: X -> Y) extends CompileTime {
+
+    def >->[Z](g: Y -> Z): X -> Z =
+      x => g(f(x))
+  }
 }
