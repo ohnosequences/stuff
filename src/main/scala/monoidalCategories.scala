@@ -160,3 +160,11 @@ abstract class SymmetricStructure {
     : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]]
     // format: on
 }
+
+object SymmetricStructure {
+
+  type is[SS <: SymmetricStructure] =
+    SS {
+      type On = SS#On
+    }
+}

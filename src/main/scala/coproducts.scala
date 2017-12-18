@@ -118,6 +118,34 @@ object Coproduct {
   sealed abstract class CocartesianMonoidalCategoryImpl extends MonoidalCategory
   //////////////////////////////////////////////////////////////////////////////
 
+  // symmetric monoidal structure
+  //////////////////////////////////////////////////////////////////////////////
+  type SymmetricMonoidalStructure[S0 <: Coproduct] =
+    SymmetricMonoidalStructureImpl {
+
+      type On =
+        CocartesianMonoidalCategory[S0]
+    }
+
+  def symmetricMonoidalStructure[S0 <: Coproduct]
+    : is[S0] -> SymmetricStructure.is[SymmetricMonoidalStructure[S0]] =
+    λ { coproduct =>
+      new SymmetricMonoidalStructureImpl {
+
+        type On = CocartesianMonoidalCategory[S0]
+        val on = monoidalCategory(coproduct)
+
+        def swap[X <: On#On#Objects, Y <: On#On#Objects]
+        // format: off
+        : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]] =
+        // format: on
+        Coproduct(coproduct) ⊢ { right | left }
+      }
+    }
+
+  sealed abstract class SymmetricMonoidalStructureImpl
+      extends SymmetricStructure
+  //////////////////////////////////////////////////////////////////////////////
   @inline
   final def apply[
       S <: Coproduct
