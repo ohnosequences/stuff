@@ -128,8 +128,7 @@ object Coproduct {
     }
 
   @inline
-  final
-  def symmetricMonoidalStructure[S0 <: Coproduct]
+  final def symmetricMonoidalStructure[S0 <: Coproduct]
     : is[S0] -> SymmetricStructure.is[SymmetricMonoidalStructure[S0]] =
     λ { coproduct =>
       new SymmetricMonoidalStructureImpl {
