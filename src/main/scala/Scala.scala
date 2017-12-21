@@ -27,3 +27,35 @@ object Scala extends Category {
     fg.left >-> fg.right
   }
 }
+
+object ScalaDist extends DistributiveCategory {
+
+  type Cat = Scala
+  val cat = Scala
+
+  type Prods = tuples.type
+  val prods = tuples
+
+  type Coprods = sums.type
+  val coprods = sums
+
+  // TODO can be done without vals, of course
+  // needs evaluation CCC structure
+  def expand[A, X, Y]: (A × (X + Y)) -> ((A × X) + (A × Y)) =
+    axory => {
+
+      import functions._
+
+      val a: A =
+        tuples left axory
+
+      val g: X + Y -> ((A × X) + (A × Y)) =
+        Coproduct(sums) ⊢ {
+          Product(tuples) ⊢ {
+            (const(a) ^ id[X]) + (const(a) ^ id)
+          }
+        }
+
+      g(tuples right axory)
+    }
+}
