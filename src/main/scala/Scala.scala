@@ -1,5 +1,7 @@
 package ohnosequences.stuff
 
+import functions._
+
 /**
   =The Scala category=
 
@@ -43,8 +45,6 @@ object ScalaDist extends DistributiveCategory {
   // needs evaluation CCC structure
   def expand[A, X, Y]: (A × (X + Y)) -> ((A × X) + (A × Y)) =
     axory => {
-
-      import functions._
 
       val a: A =
         tuples left axory
