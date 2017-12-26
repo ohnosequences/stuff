@@ -55,7 +55,8 @@ wartremoverWarnings in (Compile, compile) := Warts.allBut(
 )
 
 wartremoverExcluded ++= Seq(
-  baseDirectory.value / "src" / "test" / "scala" / "tuples" / "stdComparison.scala"
+  baseDirectory.value / "src" / "test" / "scala" / "tuples" / "stdComparison.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "distributiveCategories.scala"
 )
 
 // shows time for each test

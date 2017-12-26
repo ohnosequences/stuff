@@ -35,11 +35,11 @@ object ScalaDist extends DistributiveCategory {
   type Cat = Scala
   val cat = Scala
 
-  type Prods = tuples.type
-  val prods = tuples
+  type Products = tuples.type
+  val products = tuples
 
-  type Coprods = sums.type
-  val coprods = sums
+  type Coproducts = sums.type
+  val coproducts = sums
 
   // TODO can be done without vals, of course
   // needs evaluation CCC structure
