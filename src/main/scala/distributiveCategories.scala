@@ -1,6 +1,6 @@
 package ohnosequences.stuff
 
-abstract class DistributiveCategory {
+abstract class DistributiveCategory { dist =>
 
   type Cat <: Category
   val cat: Category.is[Cat]
@@ -20,10 +20,10 @@ abstract class DistributiveCategory {
   // format: on
 
   final def pack[
-      A <: Products#On#Objects,
-      X <: Products#On#Objects,
-      Y <: Products#On#Objects,
-  ]: Products#On#C[(A × X) + (A × Y), A × (X + Y)] =
+      A <: Cat#Objects,
+      X <: Cat#Objects,
+      Y <: Cat#Objects,
+  ]: Cat#C[(A × X) + (A × Y), A × (X + Y)] =
     Product(products) ⊢ {
       Coproduct(coproducts) ⊢ {
         (id × coproducts.left[X, Y]) | (id × coproducts.right[X, Y])
@@ -31,10 +31,10 @@ abstract class DistributiveCategory {
     }
 
   def expand[
-      A <: Products#On#Objects,
-      X <: Products#On#Objects,
-      Y <: Products#On#Objects,
-  ]: Products#On#C[A × (X + Y), (A × X) + (A × Y)]
+      A <: Cat#Objects,
+      X <: Cat#Objects,
+      Y <: Cat#Objects,
+  ]: Cat#C[A × (X + Y), (A × X) + (A × Y)]
 }
 
 object DistributiveCategory {
@@ -45,8 +45,9 @@ object DistributiveCategory {
   // format: off
   type is[D <: DistributiveCategory] =
     D {
+      type Cat        = D#Cat
       type Products   = D#Products
-      type Coproducts = D#Coproducts { type On = D#Products#On }
+      type Coproducts = D#Coproducts
     }
 
   protected type reallyIs[D <: DistributiveCategory] =
