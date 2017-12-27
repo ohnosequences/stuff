@@ -1,29 +1,26 @@
 package ohnosequences.stuff
 
-abstract class DistributiveCategory { dist =>
+abstract class DistributiveCategory {
 
-  type Cat <: Category
-  val cat: Category.is[Cat]
-
-  type Products <: Product { type On = Cat }
+  type Products <: Product
   val products: Product.is[Products]
 
-  type Coproducts <: Coproduct { type On = Cat }
+  type Coproducts <: Coproduct { type On = Products#On }
   val coproducts: Coproduct.is[Coproducts]
 
   // format: off
-  type ×[A <: Cat#Objects, B <: Cat#Objects] =
+  type ×[A <: Products#On#Objects, B <: Products#On#Objects] =
     Products# ×[A, B]
 
-  type +[A <: Cat#Objects, B <: Cat#Objects] =
+  type +[A <: Coproducts#On#Objects, B <: Coproducts#On#Objects] =
     Coproducts# +[A, B]
   // format: on
 
   final def pack[
-      A <: Cat#Objects,
-      X <: Cat#Objects,
-      Y <: Cat#Objects,
-  ]: Cat#C[(A × X) + (A × Y), A × (X + Y)] =
+      A <: Products#On#Objects,
+      X <: Products#On#Objects,
+      Y <: Products#On#Objects,
+  ]: Products#On#C[(A × X) + (A × Y), A × (X + Y)] =
     Product(products) ⊢ {
       Coproduct(coproducts) ⊢ {
         (id × coproducts.left[X, Y]) | (id × coproducts.right[X, Y])
@@ -31,19 +28,18 @@ abstract class DistributiveCategory { dist =>
     }
 
   def expand[
-      A <: Cat#Objects,
-      X <: Cat#Objects,
-      Y <: Cat#Objects,
-  ]: Cat#C[A × (X + Y), (A × X) + (A × Y)]
+      A <: Products#On#Objects,
+      X <: Products#On#Objects,
+      Y <: Products#On#Objects,
+  ]: Products#On#C[A × (X + Y), (A × X) + (A × Y)]
 }
 
 object DistributiveCategory {
 
   type is[D <: DistributiveCategory] =
     D {
-      type Cat        = D#Cat
       type Products   = D#Products
-      type Coproducts = D#Coproducts
+      type Coproducts = D#Coproducts { type On = D#Products#On }
     }
 
   final class Syntax[Dist <: DistributiveCategory](val dist: is[Dist]) {
@@ -51,20 +47,20 @@ object DistributiveCategory {
     // type aliases
     /////////////////////////////////////////////////////////////////////////
     @infix
-    type >=>[X <: Dist#Cat#Objects, Y <: Dist#Cat#Objects] =
-      Dist#Cat#C[X, Y]
+    type >=>[X <: Dist#Products#On#Objects, Y <: Dist#Products#On#Objects] =
+      Dist#Products#On#C[X, Y]
 
     // format: off
     @infix
-    type ×[X <: Dist#Cat#Objects, Y <: Dist#Cat#Objects] =
-      dist.×[X, Y] // TODO I have no clue why I need `dist.` here
+    type ×[X <: Dist#Products#On#Objects, Y <: Dist#Products#On#Objects] =
+      Dist#Products# ×[X, Y]
 
     type ∗ =
       Dist#Products# ∗
 
     @infix
-    type +[X <: Dist#Cat#Objects, Y <: Dist#Cat#Objects] =
-      dist.+[X, Y] // TODO I have no clue why I need `dist.` here
+    type +[X <: Dist#Coproducts#On#Objects, Y <: Dist#Coproducts#On#Objects] =
+      is[Dist]#Coproducts# +[X, Y]
 
     type ∅ =
       Dist#Products# ∗
@@ -73,27 +69,46 @@ object DistributiveCategory {
     // implicits
     /////////////////////////////////////////////////////////////////////////
     @inline
-    implicit final val _on: Category.is[Dist#Cat] =
-      dist.cat
+    implicit final val _on: Category.is[Dist#Products#On] =
+      dist.products.on
 
     @inline
     implicit final val _prod: Product.is[Dist#Products] =
-      dist.products.asInstanceOf[Product.is[Dist#Products]]
+      dist.products
+
+    @inline
+    implicit final val _coprod
+      : Coproduct.is[Dist#Coproducts { type On = Dist#Products#On }] =
+      dist.coproducts
 
     @inline
     implicit final def categoryMorphismSyntax[
-        X <: Dist#Cat#Objects,
-        Y <: Dist#Cat#Objects
-    ](f: X >=> Y): Category.MorphismSyntax[Dist#Cat, X, Y] =
-      new Category.MorphismSyntax[Dist#Cat, X, Y](f)
-
-    // what the hell
-    type _P = Dist#Products { type On = Dist#Cat }
+        X <: Dist#Products#On#Objects,
+        Y <: Dist#Products#On#Objects
+    ](f: X >=> Y): Category.MorphismSyntax[Dist#Products#On, X, Y] =
+      new Category.MorphismSyntax[Dist#Products#On, X, Y](f)
 
     @inline
-    implicit final def productMorphismSyntax[X <: Dist#Cat#Objects,
-                                             Y <: Dist#Cat#Objects](
-        f: Dist#Cat#C[X, Y]): Product.ProductMorphismSyntax[_P, X, Y] =
-      new Product.ProductMorphismSyntax[_P, X, Y](f.asInstanceOf[_P#On#C[X, Y]])
+    implicit final def productMorphismSyntax[
+        X <: Dist#Products#On#Objects,
+        Y <: Dist#Products#On#Objects
+    ](f: Dist#Products#On#C[X, Y])
+      : Product.ProductMorphismSyntax[Dist#Products, X, Y] =
+      new Product.ProductMorphismSyntax(f)
+
+    @inline
+    implicit final def coproductMorphismSyntax[
+        X <: Dist#Products#On#Objects,
+        Y <: Dist#Products#On#Objects
+    ](f: Dist#Products#On#C[X, Y]): Coproduct.SumMorphismSyntax[
+      Dist#Coproducts { type On = Dist#Products#On },
+      X,
+      Y
+    ] =
+      new Coproduct.SumMorphismSyntax[
+        Dist#Coproducts { type On = Dist#Products#On },
+        X,
+        Y
+      ](f)
   }
 }

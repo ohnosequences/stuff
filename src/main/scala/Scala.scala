@@ -32,9 +32,6 @@ object Scala extends Category {
 
 object ScalaDist extends DistributiveCategory {
 
-  type Cat = Scala
-  val cat = Scala
-
   type Products = tuples.type
   val products = tuples
 
