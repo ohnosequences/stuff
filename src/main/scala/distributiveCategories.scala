@@ -57,6 +57,9 @@ object DistributiveCategory {
       type Coproducts = D#Coproducts { type On = Cat }
     }
 
+  @inline final def apply[Dist <: DistributiveCategory](dist: Dist)(implicit ev: dist.type <:< is[Dist]): Syntax[Dist] =
+  new Syntax(ev(dist))
+
   final class Syntax[Dist <: DistributiveCategory](val dist: is[Dist]) {
 
     // type aliases
