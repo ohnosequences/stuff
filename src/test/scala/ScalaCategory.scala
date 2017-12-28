@@ -61,4 +61,21 @@ class ScalaCategoryTests extends FunSuite {
       assert { right(_2and2) === "2" }
     }
   }
+
+  test("Distributive category") {
+
+    DistributiveCategory(ScalaDist) ⊢ {
+
+      val u0 =
+        l × (l + toStr)
+
+      val u1 =
+        u0 >=> expand >=> pack
+
+      val x: String × (String + Int) =
+        "hola" and inRight(2)
+
+      assert { (u0 at x) == (u1 at x) }
+    }
+  }
 }

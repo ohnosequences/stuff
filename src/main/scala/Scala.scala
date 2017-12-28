@@ -1,5 +1,7 @@
 package ohnosequences.stuff
 
+import functions._
+
 /**
   =The Scala category=
 
@@ -26,4 +28,34 @@ object Scala extends Category {
     : C[X, Y] × C[Y, Z] -> C[X, Z] = { fg =>
     fg.left >-> fg.right
   }
+}
+
+object ScalaDist extends DistributiveCategory {
+
+  type Cat = Scala
+  val cat = Scala
+
+  type Products = tuples.type
+  val products = tuples
+
+  type Coproducts = sums.type
+  val coproducts = sums
+
+  // TODO can be done without vals, of course
+  // needs evaluation CCC structure
+  def expand[A, X, Y]: (A × (X + Y)) -> ((A × X) + (A × Y)) =
+    axory => {
+
+      val a: A =
+        tuples left axory
+
+      val g: X + Y -> ((A × X) + (A × Y)) =
+        Coproduct(sums) ⊢ {
+          Product(tuples) ⊢ {
+            (const(a) ^ id[X]) + (const(a) ^ id)
+          }
+        }
+
+      g(tuples right axory)
+    }
 }
