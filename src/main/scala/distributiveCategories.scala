@@ -63,8 +63,13 @@ object DistributiveCategory {
   final class Syntax[Dist <: DistributiveCategory](val dist: is[Dist]) {
 
     // values
+    /////////////////////////////////////////////////////////////////////////
     val sumMonoidal = 
       Coproduct monoidalCategory dist.coproducts
+
+    val productMonoidal = 
+      Product monoidalCategory dist.products
+
     // type aliases
     /////////////////////////////////////////////////////////////////////////
     type Cat =
@@ -125,6 +130,42 @@ object DistributiveCategory {
     final def Δ[Z <: Objects]: Z >=> (Z × Z) =
       duplicate
 
+    @inline
+    final def assr_×[
+        X <: Objects,
+        Y <: Objects,
+        Z <: Objects
+    ]: ((X × Y) × Z) >=> (X × (Y × Z)) =
+      productMonoidal.assoc_right
+
+    @inline
+    final def assl_×[
+        X <: Objects,
+        Y <: Objects,
+        Z <: Objects
+    ]: (X × (Y × Z)) >=> ((X × Y) × Z) =
+      productMonoidal.assoc_left
+
+    @inline
+    final def unitl_×[X <: Objects]: (∗ × X) >=> X =
+      productMonoidal.unitl
+
+    @inline
+    final def lunit_×[X <: Objects]: X >=> (∗ × X) =
+      productMonoidal.lunit
+
+    @inline
+    final def unitr_×[X <: Objects]: (X × ∗) >=> X =
+      productMonoidal.unitr
+
+    @inline
+    final def runit_×[X <: Objects]: X >=> (X × ∗) =
+      productMonoidal.runit
+
+    @inline
+    final def swap_×[X <: Objects, Y <: Objects]: (X × Y) >=> (Y × X) =
+      Product(dist.products) ⊢ swap
+
     // coproducts
     /////////////////////////////////////////////////////////////////////////
     @inline
@@ -178,6 +219,10 @@ object DistributiveCategory {
     @inline
     final def runit_+[X <: Objects]: X >=> (X + ∅) =
       sumMonoidal.runit
+
+    @inline
+    final def swap_+[X <: Objects, Y <: Objects]: (X + Y) >=> (Y + X) =
+      Coproduct(dist.coproducts) ⊢ swap
 
     // distributive structure
     /////////////////////////////////////////////////////////////////////////
