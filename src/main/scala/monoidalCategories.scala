@@ -34,10 +34,77 @@ object MonoidalCategory {
 
   final class Syntax[MonCat <: MonoidalCategory](val monCat: is[MonCat]) {
 
-    type Objects = MonCat#On#Objects
+    // type aliases
+    /////////////////////////////////////////////////////////////////////////
+    type Objects =
+      MonCat#On#Objects
+
+    type Cat =
+      MonCat#On
+
+    @infix
+    type >=>[X <: Objects, Y <: Objects] =
+      Cat#C[X, Y]
+
+    // format: off
+    @infix
+    type ⊗[X <: Objects, Y <: Objects] =
+      MonCat # ⊗[X, Y]
+
+    type I =
+      MonCat # I
+    // format: on
+
+    // function aliases
+    /////////////////////////////////////////////////////////////////////////
+    @inline
+    final def id[X <: Objects]: X >=> X =
+      monCat.on.identity[X]
 
     @inline
-    implicit final val _on: Category.is[MonCat#On] =
+    final def assr[
+        X <: Objects,
+        Y <: Objects,
+        Z <: Objects
+    ]: ((X ⊗ Y) ⊗ Z) >=> (X ⊗ (Y ⊗ Z)) =
+      monCat.assoc_right
+
+    @inline
+    final def assl[
+        X <: Objects,
+        Y <: Objects,
+        Z <: Objects
+    ]: (X ⊗ (Y ⊗ Z)) >=> ((X ⊗ Y) ⊗ Z) =
+      monCat.assoc_left
+
+    @inline
+    final def unitl[X <: Objects]: (I ⊗ X) >=> X =
+      monCat.unitl
+
+    @inline
+    final def lunit[X <: Objects]: X >=> (I ⊗ X) =
+      monCat.lunit
+
+    @inline
+    final def unitr[X <: Objects]: (X ⊗ I) >=> X =
+      monCat.unitr
+
+    @inline
+    final def runit[X <: Objects]: X >=> (X ⊗ I) =
+      monCat.runit
+
+    @inline
+    final def ⊗-[A <: Objects]: LeftTensor[MonCat, A] =
+      new LeftTensor(monCat)
+
+    @inline
+    final def -⊗[A <: Objects]: RightTensor[MonCat, A] =
+      new RightTensor(monCat)
+
+    // implicits
+    /////////////////////////////////////////////////////////////////////////
+    @inline
+    implicit final val _on: Category.is[Cat] =
       monCat.on
 
     @inline
@@ -48,18 +115,6 @@ object MonoidalCategory {
     implicit final def categorySyntax[X <: Objects, Y <: Objects](
         f: MonCat#On#C[X, Y]): Category.MorphismSyntax[MonCat#On, X, Y] =
       new Category.MorphismSyntax[MonCat#On, X, Y](f)
-
-    @inline
-    final def id[X <: Objects]: MonCat#On#C[X, X] =
-      monCat.on.identity[X]
-
-    @inline
-    final def ⊗-[A <: Objects]: LeftTensor[MonCat, A] =
-      new LeftTensor(monCat)
-
-    @inline
-    final def -⊗[A <: Objects]: RightTensor[MonCat, A] =
-      new RightTensor(monCat)
 
     @inline
     implicit final def syntax[X <: Objects, Y <: Objects](
