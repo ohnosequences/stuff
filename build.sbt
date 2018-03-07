@@ -6,6 +6,8 @@ scalaVersion := "2.12.4"
 
 addCompilerPlugin("ohnosequences" %% "contexts" % "0.5.0")
 
+resolvers += Resolver.bintrayRepo("scalameta", "maven")
+
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
 
 dependencyOverrides += "org.scala-lang" % "scala-library" % "2.12.4"
@@ -42,7 +44,7 @@ scalacOptions in (Compile, doc) ++= Seq("-groups")
 autoAPIMappings := true
 
 // scalafmt
-scalafmtVersion := "1.3.0"
+scalafmtVersion := "1.4.0-25-15b52145"
 scalafmtOnCompile := true
 
 wartremoverErrors in (Compile, compile) := Seq()

@@ -46,14 +46,12 @@ object MonoidalCategory {
     type >=>[X <: Objects, Y <: Objects] =
       Cat#C[X, Y]
 
-    // format: off
     @infix
     type ⊗[X <: Objects, Y <: Objects] =
-      MonCat # ⊗[X, Y]
+      MonCat# ⊗[X, Y]
 
     type I =
-      MonCat # I
-    // format: on
+      MonCat#I
 
     // function aliases
     /////////////////////////////////////////////////////////////////////////
@@ -134,9 +132,9 @@ object MonoidalCategory {
         A2 <: MonCat#On#Objects,
         B2 <: MonCat#On#Objects
     ](g: MonCat#On#C[A2, B2])(
-        implicit monCat: MonoidalCategory.is[MonCat] // format: off
-    ): MonCat#On#C[MonCat# ⊗[A1, A2], MonCat# ⊗[B1, B2]] =  // format: on
-    monCat ⊗ (f and g)
+        implicit monCat: MonoidalCategory.is[MonCat]
+    ): MonCat#On#C[MonCat# ⊗[A1, A2], MonCat# ⊗[B1, B2]] =
+      monCat ⊗ (f and g)
   }
 
   final class LeftTensor[MCat <: MonoidalCategory, A <: MCat#On#Objects](
@@ -149,8 +147,8 @@ object MonoidalCategory {
     type Target = MCat#On
     val target = mcat.on
 
-    type F[X <: Source#Objects] = // format: off
-      MCat# ⊗[A, X]               // format: on
+    type F[X <: Source#Objects] =
+      MCat# ⊗[A, X]
 
     def at[X <: Source#Objects, Y <: Source#Objects]
       : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
@@ -167,8 +165,8 @@ object MonoidalCategory {
     type Target = MCat#On
     val target = mcat.on
 
-    type F[X <: Source#Objects] = // format: off
-      MCat# ⊗[X, A]               // format: on
+    type F[X <: Source#Objects] =
+      MCat# ⊗[X, A]
 
     def at[X <: Source#Objects, Y <: Source#Objects]
       : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
@@ -185,9 +183,7 @@ object MonoidalCategory {
     val target = mcat.on
 
     type F[X <: Source#Objects] =
-      // format: off
-      MCat # ⊗[X#Left, X#Right]
-      // format: on
+      MCat# ⊗[X#Left, X#Right]
 
     def at[X <: Source#Objects, Y <: Source#Objects]
       : Source#C[X, Y] -> Target#C[F[X], F[Y]] =
@@ -197,9 +193,9 @@ object MonoidalCategory {
   type is[MCat <: MonoidalCategory] =
     MCat {
       type On = MCat#On
-      // format: off
-      type ⊗[X <: On#Objects, Y <: On#Objects] = MCat # ⊗[X, Y]
-      // format: on
+
+      type ⊗[X <: On#Objects, Y <: On#Objects] = MCat# ⊗[X, Y]
+
       type I = MCat#I
     }
 }
@@ -211,9 +207,8 @@ abstract class SymmetricStructure {
 
   // note that swap must be its own inverse modulo swapping at the level of types
   def swap[X <: On#On#Objects, Y <: On#On#Objects]
-  // format: off
-    : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]]
-    // format: on
+    : On#On#C[On# ⊗[X, Y], On# ⊗[Y, X]]
+
 }
 
 object SymmetricStructure {

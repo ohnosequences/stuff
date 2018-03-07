@@ -27,10 +27,10 @@ object Product {
   type is[P <: Product] =
     P {
       type On = P#On
-      // format: off
+
       type ×[X <: On#Objects, Y <: On#Objects] = P# ×[X, Y]
-      type ∗                                       = P# ∗
-      // format: on
+      type ∗                                   = P# ∗
+
     }
 
   @inline
@@ -52,14 +52,10 @@ object Product {
 
     @infix
     type ×[X <: Prod#On#Objects, Y <: Prod#On#Objects] =
-      // format: off
-      Prod # ×[X, Y]
-      // format: on
+      Prod# ×[X, Y]
 
     type I =
-      // format: off
-      Prod # ∗
-      // format: on
+      Prod# ∗
 
     // implicits
     /////////////////////////////////////////////////////////////////////////
@@ -130,16 +126,14 @@ object Product {
     @inline
     final def ^[Z <: Prod#On#Objects](g: Prod#On#C[X, Z])(
         implicit prod: is[Prod]
-    ) // format: off
-    : Prod#On#C[X, Prod# ×[Y, Z]] = // format: on
-    prod both (f and g)
+    ): Prod#On#C[X, Prod# ×[Y, Z]] =
+      prod both (f and g)
 
     @inline
     final def ×[U <: Prod#On#Objects, V <: Prod#On#Objects](g: Prod#On#C[U, V])(
-        implicit prod: is[Prod] // format: off
-    )
-    : Prod#On#C[Prod# ×[X, U], Prod# ×[Y, V]] = // format: on
-    Category(prod.on) ⊢ { prod both (prod.left >=> f and prod.right >=> g) }
+        implicit prod: is[Prod]
+    ): Prod#On#C[Prod# ×[X, U], Prod# ×[Y, V]] =
+      Category(prod.on) ⊢ { prod both (prod.left >=> f and prod.right >=> g) }
   }
 
   type CartesianMonoidalCategory[P <: Product] =
@@ -148,13 +142,12 @@ object Product {
       type On =
         P#On
 
-      // format: off
-      type ⊗[X <: On#Objects, Y <: On#Objects] = 
+      type ⊗[X <: On#Objects, Y <: On#Objects] =
         P# ×[X, Y]
 
-      type I = 
+      type I =
         P# ∗
-      // format: on
+
     }
 
   @inline
@@ -166,13 +159,11 @@ object Product {
         type On =
           P#On
 
-        // format: off
-        type ⊗[X <: On#Objects, Y <: On#Objects] = 
+        type ⊗[X <: On#Objects, Y <: On#Objects] =
           P# ×[X, Y]
 
-        type I = 
+        type I =
           P# ∗
-        // format: on
 
         val on =
           product.on
@@ -243,10 +234,8 @@ object Product {
         val on = monoidalCategory(product)
 
         def swap[X <: On#On#Objects, Y <: On#On#Objects]
-        // format: off
-        : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]] =
-        // format: on
-        Product(product) ⊢ { right ^ left }
+          : On#On#C[On# ⊗[X, Y], On# ⊗[Y, X]] =
+          Product(product) ⊢ { right ^ left }
       }
   }
 

@@ -11,13 +11,11 @@ abstract class DistributiveCategory { dist =>
   type Coproducts <: Coproduct { type On            = Cat }
   val coproducts: Coproduct.is[Coproducts { type On = Cat }]
 
-  // format: off
   final type ×[A <: Cat#Objects, B <: Cat#Objects] =
     Products# ×[A, B]
 
   final type +[A <: Cat#Objects, B <: Cat#Objects] =
     Coproducts# +[A, B]
-  // format: on
 
   final def pack[
       A <: Cat#Objects,
@@ -42,7 +40,6 @@ object DistributiveCategory {
   type ProductsOn[C0 <: Category] =
     Product { type On = C0 }
 
-  // format: off
   type is[D <: DistributiveCategory] =
     D {
       type Cat        = D#Cat
@@ -57,17 +54,18 @@ object DistributiveCategory {
       type Coproducts = D#Coproducts { type On = Cat }
     }
 
-  @inline final def apply[Dist <: DistributiveCategory](dist: Dist)(implicit ev: dist.type <:< is[Dist]): Syntax[Dist] =
-  new Syntax(ev(dist))
+  @inline final def apply[Dist <: DistributiveCategory](dist: Dist)(
+      implicit ev: dist.type <:< is[Dist]): Syntax[Dist] =
+    new Syntax(ev(dist))
 
   final class Syntax[Dist <: DistributiveCategory](val dist: is[Dist]) {
 
     // values
     /////////////////////////////////////////////////////////////////////////
-    val sumMonoidal = 
+    val sumMonoidal =
       Coproduct monoidalCategory dist.coproducts
 
-    val productMonoidal = 
+    val productMonoidal =
       Product monoidalCategory dist.products
 
     // type aliases
@@ -85,22 +83,19 @@ object DistributiveCategory {
     // what the hell
     private type _P = Dist#Products { type On   = Dist#Cat }
     private type _C = Dist#Coproducts { type On = Dist#Cat }
-
-    // format: off
     @infix
     type ×[X <: Objects, Y <: Objects] =
-      reallyIs[Dist] # Products # ×[X, Y]
+      reallyIs[Dist]#Products# ×[X, Y]
 
     type ∗ =
-      reallyIs[Dist] # Products # ∗
+      reallyIs[Dist]#Products# ∗
 
     @infix
     type +[X <: Objects, Y <: Objects] =
-      reallyIs[Dist] # Coproducts # +[X, Y]
+      reallyIs[Dist]#Coproducts# +[X, Y]
 
     type ∅ =
-      reallyIs[Dist] # Coproducts # ∅
-    // format: on
+      reallyIs[Dist]#Coproducts# ∅
 
     // function aliases
     /////////////////////////////////////////////////////////////////////////

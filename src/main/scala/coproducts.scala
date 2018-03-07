@@ -24,10 +24,10 @@ object Coproduct {
   type is[S <: Coproduct] =
     S {
       type On = S#On
-      // format: off
+
       type +[X <: On#Objects, Y <: On#Objects] = S# +[X, Y]
       type ∅                                   = S# ∅
-      // format: on
+
     }
 
   // Cocartesian monoidal categories
@@ -38,13 +38,12 @@ object Coproduct {
       type On =
         S0#On
 
-      // format: off
-      type ⊗[X <: On#Objects, Y <: On#Objects] = 
+      type ⊗[X <: On#Objects, Y <: On#Objects] =
         S0# +[X, Y]
 
-      type I = 
+      type I =
         S0# ∅
-      // format: on
+
     }
 
   @inline
@@ -55,15 +54,12 @@ object Coproduct {
 
         type On =
           S#On
-
-        // format: off
         @infix
-        type ⊗[X <: S#On#Objects, Y <: S#On#Objects] = 
+        type ⊗[X <: S#On#Objects, Y <: S#On#Objects] =
           S# +[X, Y]
 
-        type I = 
+        type I =
           S# ∅
-        // format: on
 
         val on =
           coproduct.on
@@ -136,10 +132,8 @@ object Coproduct {
         val on = monoidalCategory(coproduct)
 
         def swap[X <: On#On#Objects, Y <: On#On#Objects]
-        // format: off
-        : On#On#C[On # ⊗[X, Y], On # ⊗[Y, X]] =
-        // format: on
-        Coproduct(coproduct) ⊢ { right | left }
+          : On#On#C[On# ⊗[X, Y], On# ⊗[Y, X]] =
+          Coproduct(coproduct) ⊢ { right | left }
       }
   }
 
@@ -165,14 +159,10 @@ object Coproduct {
 
     @infix
     type +[X <: S#On#Objects, Y <: S#On#Objects] =
-      // format: off
-      S # +[X, Y]
-      // format: on
+      S# +[X, Y]
 
     type ∅ =
-      // format: off
-      S # ∅
-      // format: on
+      S# ∅
 
     // implicits
     /////////////////////////////////////////////////////////////////////////
@@ -257,15 +247,15 @@ object Coproduct {
     @inline
     final def |[Z <: S#On#Objects](g: S#On#C[Z, Y])(
         implicit sum: is[S]
-    ) // format: off
-    : S#On#C[S# +[X, Z], Y] = // format: on
-    sum either (f and g)
+    ): S#On#C[S# +[X, Z], Y] =
+      sum either (f and g)
 
     @inline
     final def +[U <: S#On#Objects, V <: S#On#Objects](g: S#On#C[U, V])(
-        implicit sum: is[S] // format: off
-    )
-    : S#On#C[S# +[X, U], S# +[Y, V]] = // format: on
-    Category(sum.on) ⊢ { sum either (f >=> sum.left[Y, V] and g >=> sum.right) }
+        implicit sum: is[S]
+    ): S#On#C[S# +[X, U], S# +[Y, V]] =
+      Category(sum.on) ⊢ {
+        sum either (f >=> sum.left[Y, V] and g >=> sum.right)
+      }
   }
 }
